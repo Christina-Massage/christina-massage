@@ -46,25 +46,18 @@ export default function ChristinaMassageWebsite() {
     },
   ];
 
-  const highlights = [
-    "Moderne, natürliche Atmosphäre",
-    "Individuell abgestimmte Behandlungen",
-    "30 oder 60 Minuten wählbar",
-    "Ruhige Praxis in Hohenpeißenberg",
-  ];
-
   const benefits = [
     {
-      title: "Ankommen & loslassen",
-      text: "Ein ruhiges Design und klare Inhalte schaffen schon auf der Website Vertrauen und Entspannung.",
+      title: "Individuell abgestimmte Behandlungen",
+      text: "Jede Massage wird achtsam auf deine Bedürfnisse abgestimmt, damit du genau die Entspannung und Unterstützung bekommst, die dir guttut.",
     },
     {
-      title: "Natürlich & modern",
-      text: "Warme Naturtöne, viel Weißraum und weiche Formen sorgen für einen hochwertigen ersten Eindruck.",
+      title: "Ruhige Atmosphäre zum Wohlfühlen",
+      text: "Eine angenehme, entspannte Umgebung lädt dazu ein, den Alltag loszulassen, zur Ruhe zu kommen und neue Energie zu tanken.",
     },
     {
-      title: "Klar und verständlich",
-      text: "Besucher sehen sofort, welche Behandlungen angeboten werden und wie sie Kontakt aufnehmen können.",
+      title: "Zeit für dich und dein Wohlbefinden",
+      text: "Ob kurze Auszeit oder intensive Regeneration – hier steht dein persönliches Wohlbefinden im Mittelpunkt.",
     },
   ];
 
@@ -100,7 +93,7 @@ export default function ChristinaMassageWebsite() {
             href="#kontakt"
             className="rounded-full bg-stone-800 px-5 py-2.5 text-sm font-medium text-white transition hover:-translate-y-0.5"
           >
-            Termin anfragen
+            Anrufen oder WhatsApp
           </a>
         </div>
       </header>
@@ -128,7 +121,7 @@ export default function ChristinaMassageWebsite() {
                 href="#kontakt"
                 className="rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-stone-300/30 transition hover:-translate-y-0.5"
               >
-                Jetzt Termin anfragen
+                Anrufen oder WhatsApp
               </a>
 
               <a
@@ -140,14 +133,18 @@ export default function ChristinaMassageWebsite() {
             </div>
 
             <div className="mt-12 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
-              {highlights.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm"
-                >
-                  {item}
-                </div>
-              ))}
+              <div className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm">
+                Moderne, natürliche Atmosphäre
+              </div>
+              <div className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm">
+                Individuell abgestimmte Behandlungen
+              </div>
+              <div className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm">
+                30 oder 60 Minuten wählbar
+              </div>
+              <div className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm">
+                Ruhige Praxis in Hohenpeißenberg
+              </div>
             </div>
           </div>
 
@@ -201,13 +198,13 @@ export default function ChristinaMassageWebsite() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="max-w-2xl">
+        <div className="max-w-3xl">
           <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-            Warum diese Seite wirkt
+            Was dich bei Christina Massage erwartet
           </p>
 
           <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-            Mehr Ruhe, mehr Vertrauen, mehr Qualität im ersten Eindruck
+            Ein Ort für Entspannung, Achtsamkeit und individuelles Wohlbefinden
           </h2>
         </div>
 
@@ -272,12 +269,12 @@ export default function ChristinaMassageWebsite() {
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold text-stone-900">
-              Transparent & unkompliziert
+              Preise für deine Auszeit
             </h2>
 
             <p className="mt-4 leading-8 text-stone-600">
-              Klare Preise schaffen Vertrauen und machen die Entscheidung für
-              eine Anfrage leichter.
+              Wähle die Behandlungsdauer, die am besten zu dir und deinen
+              Bedürfnissen passt.
             </p>
           </div>
 
@@ -336,12 +333,12 @@ export default function ChristinaMassageWebsite() {
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              Jetzt Termin anfragen
+              Anrufen oder WhatsApp
             </h2>
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-600">
               Du möchtest eine Massage buchen oder hast Fragen zu einer
-              Behandlung? Melde dich gerne telefonisch.
+              Behandlung? Melde dich gerne telefonisch oder per WhatsApp.
             </p>
 
             <div className="mt-8 space-y-4 text-stone-700">
@@ -357,20 +354,31 @@ export default function ChristinaMassageWebsite() {
             </div>
 
             <h3 className="mt-3 text-2xl font-semibold text-stone-900">
-              Einfach anrufen
+              Direkt anfragen
             </h3>
 
             <p className="mt-4 leading-7 text-stone-600">
-              Für eine schnelle Terminvereinbarung erreichst du Christina
-              Massage direkt telefonisch.
+              Für eine schnelle Terminvereinbarung kannst du Christina Massage
+              direkt anrufen oder per WhatsApp schreiben.
             </p>
 
-            <a
-              href="tel:01722664648"
-              className="mt-8 inline-block rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
-            >
-              0172 2664648 anrufen
-            </a>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <a
+                href="tel:01722664648"
+                className="inline-block rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
+              >
+                Anrufen
+              </a>
+
+              <a
+                href="https://wa.me/491722664648"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-800 transition hover:-translate-y-0.5"
+              >
+                WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </section>
