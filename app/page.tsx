@@ -166,9 +166,10 @@ export default function ChristinaMassageWebsite() {
                 </h2>
 
                 <p className="mt-4 leading-8 text-stone-600">
-                  Eine ruhige, moderne Website vermittelt genau das Gefühl, das
-                  deine Kundinnen und Kunden auch bei der Behandlung erwarten:
-                  Vertrauen, Wärme und Entspannung.
+                  Gönn dir eine bewusste Auszeit vom Alltag. In ruhiger
+                  Atmosphäre kannst du abschalten, neue Energie tanken und
+                  deinem Körper genau die Aufmerksamkeit schenken, die er
+                  braucht.
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -188,8 +189,8 @@ export default function ChristinaMassageWebsite() {
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-dashed border-stone-300 p-5 text-sm leading-7 text-stone-600">
-                  Auch ohne viele Fotos wirkt die Seite hochwertig – durch
-                  klare Struktur, natürliche Farben und genügend Weißraum.
+                  Jede Behandlung ist darauf ausgerichtet, dir spürbare
+                  Entlastung, Ruhe und ein nachhaltiges Wohlgefühl zu schenken.
                 </div>
               </div>
             </div>
