@@ -1,11 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 type Language = "de" | "hu";
 
+type ServiceCard = {
+  title: string;
+  text: string;
+};
+
 export default function ChristinaMassageWebsite() {
   const [language, setLanguage] = useState<Language>("de");
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollServices = (direction: "left" | "right") => {
+    if (!sliderRef.current) return;
+    const amount = sliderRef.current.clientWidth * 0.8;
+    sliderRef.current.scrollBy({
+      left: direction === "right" ? amount : -amount,
+      behavior: "smooth",
+    });
+  };
 
   const content = useMemo(() => {
     const de = {
@@ -18,7 +33,7 @@ export default function ChristinaMassageWebsite() {
         address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
       },
       nav: {
-        services: "Leistungen",
+        services: "Angebot",
         special: "Sonderleistung",
         prices: "Preise",
         about: "Über mich",
@@ -31,9 +46,9 @@ export default function ChristinaMassageWebsite() {
         text:
           "Individuelle Massagen in Hohenpeißenberg für Entspannung, Regeneration und ein neues Gefühl von Leichtigkeit im Alltag.",
         primary: "Anrufen oder WhatsApp",
-        secondary: "Behandlungen ansehen",
+        secondary: "Angebot ansehen",
       },
-      quickFacts: [
+      trustCards: [
         "Moderne, natürliche Atmosphäre",
         "Individuell abgestimmte Behandlungen",
         "30 oder 60 Minuten wählbar",
@@ -44,18 +59,18 @@ export default function ChristinaMassageWebsite() {
         title: "Natürliches Wohlbefinden",
         text:
           "Gönn dir eine bewusste Auszeit vom Alltag. In ruhiger Atmosphäre kannst du abschalten, neue Energie tanken und deinem Körper genau die Aufmerksamkeit schenken, die er braucht.",
-        box1Label: "30 Minuten",
-        box1Value: "30 €",
-        box2Label: "60 Minuten",
-        box2Value: "60 €",
-        bottomText:
+        item1: "30 Minuten",
+        item1Price: "30 €",
+        item2: "60 Minuten",
+        item2Price: "60 €",
+        note:
           "Jede Behandlung ist darauf ausgerichtet, dir spürbare Entlastung, Ruhe und ein nachhaltiges Wohlgefühl zu schenken.",
       },
-      expectations: {
+      intro: {
         eyebrow: "Was dich bei Christina Massage erwartet",
         title:
           "Ein Ort für Entspannung, Achtsamkeit und individuelles Wohlbefinden",
-        items: [
+        cards: [
           {
             title: "Individuell abgestimmte Behandlungen",
             text:
@@ -74,11 +89,12 @@ export default function ChristinaMassageWebsite() {
         ],
       },
       services: {
-        eyebrow: "Behandlungen",
-        title: "Individuelle Massagen für Wohlbefinden und Balance",
+        eyebrow: "Angebot",
+        title: "Massagen für Wohlbefinden, Entspannung und Balance",
         text:
-          "Wische oder scrolle durch die verschiedenen Anwendungen und entdecke die Behandlung, die am besten zu deinen Bedürfnissen passt.",
-        cards: [
+          "Mit den Pfeilen kannst du durch die verschiedenen Anwendungen klicken. Auf dem Handy kannst du einfach nach links und rechts wischen.",
+        button: "Weiterlesen",
+        items: [
           {
             title: "Klassische Massage",
             text:
@@ -134,7 +150,7 @@ export default function ChristinaMassageWebsite() {
             text:
               "Behutsame Behandlung zur Unterstützung von Geschmeidigkeit und Wohlbefinden im betroffenen Bereich.",
           },
-        ],
+        ] as ServiceCard[],
       },
       special: {
         eyebrow: "Sonderleistung",
@@ -147,8 +163,10 @@ export default function ChristinaMassageWebsite() {
           "Nicht-invasive Behandlung",
           "Fokus auf Aktivierung und Stärkung des Beckenbodens",
         ],
-        trial: "Probesitzung 30 €",
-        pack: "10er-Karte: 28 € pro Sitzung",
+        trialLabel: "Probesitzung",
+        trialPrice: "30 €",
+        packLabel: "10er-Karte",
+        packPrice: "28 € pro Sitzung",
         note:
           "Ideal für alle, die ihren Beckenboden gezielt stärken und ihr Körpergefühl nachhaltig verbessern möchten.",
       },
@@ -157,14 +175,18 @@ export default function ChristinaMassageWebsite() {
         title: "Preise für deine Auszeit",
         text:
           "Wähle die Behandlungsdauer, die am besten zu dir und deinen Bedürfnissen passt.",
-        card1Title: "30 Minuten",
-        card1Price: "30 €",
-        card1Text:
-          "Ideal für gezielte Anwendungen und kürzere Entspannungsphasen.",
-        card2Title: "60 Minuten",
-        card2Price: "60 €",
-        card2Text:
-          "Perfekt für tiefere Regeneration und eine spürbare Auszeit vom Alltag.",
+        card1: {
+          title: "30 Minuten",
+          price: "30 €",
+          text:
+            "Ideal für gezielte Anwendungen und kürzere Entspannungsphasen.",
+        },
+        card2: {
+          title: "60 Minuten",
+          price: "60 €",
+          text:
+            "Perfekt für tiefere Regeneration und eine spürbare Auszeit vom Alltag.",
+        },
       },
       about: {
         eyebrow: "Über mich",
@@ -183,20 +205,20 @@ export default function ChristinaMassageWebsite() {
         title: "Anrufen oder WhatsApp",
         text:
           "Du möchtest eine Massage buchen oder hast Fragen zu einer Behandlung? Melde dich gerne telefonisch oder per WhatsApp.",
-        quick: "Schneller Kontakt",
+        quickEyebrow: "Schneller Kontakt",
         quickTitle: "Direkt anfragen",
         quickText:
           "Für eine schnelle Terminvereinbarung kannst du Christina Massage direkt anrufen oder per WhatsApp schreiben.",
         call: "Anrufen",
         whatsapp: "WhatsApp",
-        hours: "30 Minuten – 30 € · 60 Minuten – 60 €",
+        extra: "30 Minuten – 30 € · 60 Minuten – 60 €",
       },
       footer: {
         copyright: "© 2026 Christina Massage",
         imprint: "Impressum",
         privacy: "Datenschutz",
       },
-      languageSwitcher: {
+      lang: {
         de: "DE",
         hu: "HU",
       },
@@ -212,7 +234,7 @@ export default function ChristinaMassageWebsite() {
         address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
       },
       nav: {
-        services: "Kezelések",
+        services: "Ajánlat",
         special: "Különleges kezelés",
         prices: "Árak",
         about: "Rólam",
@@ -225,11 +247,11 @@ export default function ChristinaMassageWebsite() {
         text:
           "Egyéni masszázskezelések Hohenpeißenbergben a nyugalomért, regenerációért és a könnyedség új érzéséért a mindennapokban.",
         primary: "Hívás vagy WhatsApp",
-        secondary: "Kezelések megtekintése",
+        secondary: "Ajánlat megtekintése",
       },
-      quickFacts: [
+      trustCards: [
         "Modern, természetes hangulat",
-        "Egyénre szabott kezelések",
+        "Személyre szabott kezelések",
         "30 vagy 60 perces időtartam",
         "Nyugodt rendelő Hohenpeißenbergben",
       ],
@@ -238,17 +260,17 @@ export default function ChristinaMassageWebsite() {
         title: "Természetes jóllét",
         text:
           "Ajándékozz magadnak egy tudatos kiszakadást a mindennapokból. Nyugodt környezetben kikapcsolhatsz, feltöltődhetsz, és megadhatod a testednek azt a figyelmet, amire szüksége van.",
-        box1Label: "30 perc",
-        box1Value: "30 €",
-        box2Label: "60 perc",
-        box2Value: "60 €",
-        bottomText:
+        item1: "30 perc",
+        item1Price: "30 €",
+        item2: "60 perc",
+        item2Price: "60 €",
+        note:
           "Minden kezelés célja, hogy érezhető könnyebbséget, nyugalmat és tartós jó közérzetet adjon.",
       },
-      expectations: {
+      intro: {
         eyebrow: "Amit a Christina Massage-nál megtapasztalhatsz",
         title: "Egy hely a nyugalomért, odafigyelésért és a személyes jóllétért",
-        items: [
+        cards: [
           {
             title: "Személyre szabott kezelések",
             text:
@@ -267,11 +289,12 @@ export default function ChristinaMassageWebsite() {
         ],
       },
       services: {
-        eyebrow: "Kezelések",
-        title: "Egyéni masszázsok a jó közérzetért és az egyensúlyért",
+        eyebrow: "Ajánlat",
+        title: "Masszázsok a jó közérzetért, pihenésért és egyensúlyért",
         text:
-          "Lapozz vagy görgess a különböző kezelések között, és találd meg azt, amelyik a legjobban megfelel az igényeidnek.",
-        cards: [
+          "A nyilakkal végiglapozhatod a különböző kezeléseket. Telefonon egyszerűen húzz balra vagy jobbra.",
+        button: "Tovább",
+        items: [
           {
             title: "Klasszikus masszázs",
             text:
@@ -327,7 +350,7 @@ export default function ChristinaMassageWebsite() {
             text:
               "Kíméletes kezelés a rugalmasság és a komfortérzet támogatására az érintett területen.",
           },
-        ],
+        ] as ServiceCard[],
       },
       special: {
         eyebrow: "Különleges kezelés",
@@ -340,8 +363,10 @@ export default function ChristinaMassageWebsite() {
           "Nem invazív kezelés",
           "A medencefenék aktiválására és erősítésére fókuszál",
         ],
-        trial: "Próbaalkalom 30 €",
-        pack: "10 alkalmas bérlet: 28 € / alkalom",
+        trialLabel: "Próbaalkalom",
+        trialPrice: "30 €",
+        packLabel: "10 alkalmas bérlet",
+        packPrice: "28 € / alkalom",
         note:
           "Ideális mindazoknak, akik célzottan szeretnék erősíteni a medencefeneküket és javítani a testérzetüket.",
       },
@@ -350,14 +375,17 @@ export default function ChristinaMassageWebsite() {
         title: "Árak a te pihenésedhez",
         text:
           "Válaszd azt a kezelési időtartamot, amely leginkább megfelel neked és az igényeidnek.",
-        card1Title: "30 perc",
-        card1Price: "30 €",
-        card1Text:
-          "Ideális célzott kezelésekhez és rövidebb kikapcsolódáshoz.",
-        card2Title: "60 perc",
-        card2Price: "60 €",
-        card2Text:
-          "Tökéletes a mélyebb regenerációhoz és a mindennapokból való valódi kiszakadáshoz.",
+        card1: {
+          title: "30 perc",
+          price: "30 €",
+          text: "Ideális célzott kezelésekhez és rövidebb kikapcsolódáshoz.",
+        },
+        card2: {
+          title: "60 perc",
+          price: "60 €",
+          text:
+            "Tökéletes a mélyebb regenerációhoz és a mindennapokból való valódi kiszakadáshoz.",
+        },
       },
       about: {
         eyebrow: "Rólam",
@@ -376,20 +404,20 @@ export default function ChristinaMassageWebsite() {
         title: "Hívás vagy WhatsApp",
         text:
           "Masszázst szeretnél foglalni vagy kérdésed van? Keress bátran telefonon vagy WhatsAppon.",
-        quick: "Gyors kapcsolat",
+        quickEyebrow: "Gyors kapcsolat",
         quickTitle: "Közvetlen érdeklődés",
         quickText:
           "A gyors időpont-egyeztetéshez hívd a Christina Massage-t vagy írj WhatsAppon.",
         call: "Hívás",
         whatsapp: "WhatsApp",
-        hours: "30 perc – 30 € · 60 perc – 60 €",
+        extra: "30 perc – 30 € · 60 perc – 60 €",
       },
       footer: {
         copyright: "© 2026 Christina Massage",
         imprint: "Impresszum",
         privacy: "Adatvédelem",
       },
-      languageSwitcher: {
+      lang: {
         de: "DE",
         hu: "HU",
       },
@@ -398,37 +426,39 @@ export default function ChristinaMassageWebsite() {
     return language === "de" ? de : hu;
   }, [language]);
 
+  const contentAny = content as any;
+
   return (
-    <div className="min-h-screen bg-[#f7f3ec] text-stone-800">
-      <header className="sticky top-0 z-50 border-b border-stone-200/70 bg-[#f7f3ec]/85 backdrop-blur-xl">
+    <div className="min-h-screen bg-[#f6ead8] text-stone-800">
+      <header className="sticky top-0 z-50 border-b border-[#d8cdbf] bg-[#f6ead8]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <div>
-            <p className="text-lg font-semibold tracking-[0.04em] text-stone-800">
-              {content.brand.name}
+            <p className="text-lg font-semibold tracking-[0.04em] text-stone-900">
+              {contentAny.brand.name}
             </p>
             <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
-              {content.brand.city}
+              {contentAny.brand.city}
             </p>
           </div>
 
-          <nav className="hidden gap-8 text-sm text-stone-600 md:flex">
+          <nav className="hidden items-center gap-8 text-sm text-stone-700 lg:flex">
             <a href="#leistungen" className="transition hover:text-stone-900">
-              {content.nav.services}
+              {contentAny.nav.services}
             </a>
             <a href="#special" className="transition hover:text-stone-900">
-              {content.nav.special}
+              {contentAny.nav.special}
             </a>
             <a href="#preise" className="transition hover:text-stone-900">
-              {content.nav.prices}
+              {contentAny.nav.prices}
             </a>
             <a href="#ueber" className="transition hover:text-stone-900">
-              {content.nav.about}
+              {contentAny.nav.about}
             </a>
             <a href="#anfahrt" className="transition hover:text-stone-900">
-              {content.nav.location}
+              {contentAny.nav.location}
             </a>
             <a href="#kontakt" className="transition hover:text-stone-900">
-              {content.nav.contact}
+              {contentAny.nav.contact}
             </a>
           </nav>
 
@@ -442,7 +472,7 @@ export default function ChristinaMassageWebsite() {
                     : "text-stone-700 hover:bg-stone-100"
                 }`}
               >
-                {content.languageSwitcher.de}
+                {contentAny.lang.de}
               </button>
               <button
                 onClick={() => setLanguage("hu")}
@@ -452,15 +482,15 @@ export default function ChristinaMassageWebsite() {
                     : "text-stone-700 hover:bg-stone-100"
                 }`}
               >
-                {content.languageSwitcher.hu}
+                {contentAny.lang.hu}
               </button>
             </div>
 
             <a
               href="#kontakt"
-              className="rounded-full bg-stone-800 px-5 py-2.5 text-sm font-medium text-white transition hover:-translate-y-0.5"
+              className="rounded-full bg-[#405e3f] px-5 py-2.5 text-sm font-medium text-white transition hover:-translate-y-0.5"
             >
-              {content.hero.primary}
+              {contentAny.hero.primary}
             </a>
           </div>
         </div>
@@ -492,40 +522,39 @@ export default function ChristinaMassageWebsite() {
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(152,169,132,0.18),transparent_28%),radial-gradient(circle_at_left,rgba(205,184,155,0.24),transparent_30%)]" />
-
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(172,183,168,0.22),transparent_28%),radial-gradient(circle_at_left,rgba(205,184,155,0.2),transparent_26%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:py-28">
           <div>
             <div className="inline-flex rounded-full border border-[#d8cfc2] bg-white/60 px-4 py-2 text-sm text-stone-600 backdrop-blur">
-              {content.hero.badge}
+              {contentAny.hero.badge}
             </div>
 
             <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-stone-900 md:text-6xl">
-              {content.hero.title}
+              {contentAny.hero.title}
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-600 md:text-xl">
-              {content.hero.text}
+              {contentAny.hero.text}
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
               <a
                 href="#kontakt"
-                className="rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-stone-300/30 transition hover:-translate-y-0.5"
+                className="rounded-full bg-[#405e3f] px-6 py-3 text-sm font-medium text-white shadow-lg shadow-stone-300/30 transition hover:-translate-y-0.5"
               >
-                {content.hero.primary}
+                {contentAny.hero.primary}
               </a>
 
               <a
                 href="#leistungen"
                 className="rounded-full border border-stone-300 bg-white/70 px-6 py-3 text-sm font-medium text-stone-800 transition hover:bg-white"
               >
-                {content.hero.secondary}
+                {contentAny.hero.secondary}
               </a>
             </div>
 
             <div className="mt-12 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
-              {content.quickFacts.map((item) => (
+              {contentAny.trustCards.map((item: string) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-stone-200 bg-white/70 p-4 text-sm text-stone-700 shadow-sm"
@@ -540,45 +569,45 @@ export default function ChristinaMassageWebsite() {
             <div className="overflow-hidden rounded-[1.6rem] bg-[#efe7da]">
               <img
                 src="/massage-hero.png"
-                alt="Entspannende Massage"
+                alt="Massage"
                 className="h-[340px] w-full object-cover"
               />
 
               <div className="p-7">
                 <p className="text-xs uppercase tracking-[0.3em] text-stone-500">
-                  {content.heroCard.eyebrow}
+                  {contentAny.heroCard.eyebrow}
                 </p>
 
                 <h2 className="mt-3 text-3xl font-semibold text-stone-900">
-                  {content.heroCard.title}
+                  {contentAny.heroCard.title}
                 </h2>
 
                 <p className="mt-4 leading-8 text-stone-600">
-                  {content.heroCard.text}
+                  {contentAny.heroCard.text}
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-2xl bg-white/80 p-5 shadow-sm">
                     <div className="text-sm text-stone-500">
-                      {content.heroCard.box1Label}
+                      {contentAny.heroCard.item1}
                     </div>
                     <div className="mt-2 text-2xl font-semibold text-stone-900">
-                      {content.heroCard.box1Value}
+                      {contentAny.heroCard.item1Price}
                     </div>
                   </div>
 
                   <div className="rounded-2xl bg-white/80 p-5 shadow-sm">
                     <div className="text-sm text-stone-500">
-                      {content.heroCard.box2Label}
+                      {contentAny.heroCard.item2}
                     </div>
                     <div className="mt-2 text-2xl font-semibold text-stone-900">
-                      {content.heroCard.box2Value}
+                      {contentAny.heroCard.item2Price}
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-dashed border-stone-300 p-5 text-sm leading-7 text-stone-600">
-                  {content.heroCard.bottomText}
+                  {contentAny.heroCard.note}
                 </div>
               </div>
             </div>
@@ -589,16 +618,16 @@ export default function ChristinaMassageWebsite() {
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="max-w-3xl">
           <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-            {content.expectations.eyebrow}
+            {contentAny.intro.eyebrow}
           </p>
 
           <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-            {content.expectations.title}
+            {contentAny.intro.title}
           </h2>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {content.expectations.items.map((item) => (
+          {contentAny.intro.cards.map((item: ServiceCard) => (
             <div
               key={item.title}
               className="rounded-[1.8rem] border border-stone-200 bg-white/80 p-7 shadow-sm transition hover:-translate-y-1"
@@ -612,70 +641,109 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="leistungen" className="bg-white/45 py-20">
+      <section id="leistungen" className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-2xl">
+          <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.services.eyebrow}
+              {contentAny.services.eyebrow}
             </p>
-
             <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {content.services.title}
+              {contentAny.services.title}
             </h2>
-
-            <p className="mt-5 text-lg leading-8 text-stone-600">
-              {content.services.text}
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
+              {contentAny.services.text}
             </p>
           </div>
 
-          <div className="mt-12 flex gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {content.services.cards.map((service) => (
-              <div
-                key={service.title}
-                className="min-w-[300px] max-w-[300px] rounded-[1.8rem] border border-stone-200 bg-[#fcfaf6] p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:min-w-[340px] sm:max-w-[340px]"
-              >
-                <div className="inline-flex rounded-full bg-[#e6ddcf] px-3 py-1 text-xs uppercase tracking-[0.18em] text-stone-600">
-                  {language === "de" ? "Behandlung" : "Kezelés"}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => scrollServices("left")}
+              className="absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
+              aria-label="Zurück"
+            >
+              <span className="text-2xl leading-none">‹</span>
+            </button>
+
+            <div
+              ref={sliderRef}
+              className="flex snap-x snap-mandatory gap-8 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {contentAny.services.items.map((service: ServiceCard) => (
+                <div
+                  key={service.title}
+                  className="min-w-[88%] snap-center md:min-w-[78%] lg:min-w-[86%]"
+                >
+                  <div className="relative mx-auto grid min-h-[520px] overflow-hidden rounded-[2.2rem] bg-transparent md:grid-cols-[0.95fr_1.25fr]">
+                    <div className="relative z-10 flex items-center justify-center px-8 py-10 md:px-10">
+                      <div className="absolute left-0 top-1/2 hidden h-[280px] w-[420px] -translate-y-1/2 rounded-[2rem] bg-[#cfd5cb] md:block" />
+                      <div className="relative z-10 w-full max-w-[360px] rounded-[2rem] bg-[#cfd5cb] p-10 text-center shadow-sm md:-mr-12">
+                        <h3 className="text-4xl font-medium leading-tight text-stone-800">
+                          {service.title}
+                        </h3>
+                        <p className="mt-6 leading-8 text-stone-700">
+                          {service.text}
+                        </p>
+                        <a
+                          href="#kontakt"
+                          className="mt-8 inline-block rounded-none bg-[#405e3f] px-8 py-4 text-base font-medium text-white transition hover:-translate-y-0.5"
+                        >
+                          {contentAny.services.button}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
+                      <img
+                        src="/massage-hero.png"
+                        alt={service.title}
+                        className="h-full min-h-[420px] w-full object-cover"
+                      />
+                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <h3 className="mt-4 text-2xl font-semibold text-stone-900">
-                  {service.title}
-                </h3>
-
-                <p className="mt-4 leading-7 text-stone-600">{service.text}</p>
-              </div>
-            ))}
+            <button
+              type="button"
+              onClick={() => scrollServices("right")}
+              className="absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
+              aria-label="Weiter"
+            >
+              <span className="text-2xl leading-none">›</span>
+            </button>
           </div>
         </div>
       </section>
 
       <section id="special" className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_30px_80px_rgba(120,100,80,0.12)]">
-            <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="bg-stone-900">
+          <div className="overflow-hidden rounded-[2.2rem] border border-stone-200 bg-white shadow-[0_30px_80px_rgba(120,100,80,0.12)]">
+            <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="bg-[#19202a]">
                 <img
                   src="/hiemt-pad.jpg"
-                  alt="HIEMT Beckenboden Gerät"
-                  className="h-full min-h-[320px] w-full object-cover"
+                  alt="HIEMT Gerät"
+                  className="h-full min-h-[360px] w-full object-cover"
                 />
               </div>
 
               <div className="bg-[#f8f5ef] p-8 md:p-10">
                 <div className="inline-flex rounded-full bg-[#dfe6da] px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-stone-700">
-                  {content.special.eyebrow}
+                  {contentAny.special.eyebrow}
                 </div>
 
                 <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-                  {content.special.title}
+                  {contentAny.special.title}
                 </h2>
 
                 <p className="mt-5 text-lg leading-8 text-stone-600">
-                  {content.special.text}
+                  {contentAny.special.text}
                 </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  {content.special.bullets.map((bullet) => (
+                  {contentAny.special.bullets.map((bullet: string) => (
                     <div
                       key={bullet}
                       className="rounded-2xl border border-stone-200 bg-white p-4 text-sm text-stone-700 shadow-sm"
@@ -686,27 +754,27 @@ export default function ChristinaMassageWebsite() {
                 </div>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-stone-800 p-6 text-white">
+                  <div className="rounded-[1.6rem] bg-stone-800 p-6 text-white">
                     <div className="text-sm uppercase tracking-[0.18em] text-stone-300">
-                      {language === "de" ? "Einstieg" : "Első alkalom"}
+                      {contentAny.special.trialLabel}
                     </div>
                     <div className="mt-2 text-3xl font-semibold">
-                      {content.special.trial}
+                      {contentAny.special.trialPrice}
                     </div>
                   </div>
 
-                  <div className="rounded-2xl bg-[#9eab8d] p-6 text-stone-900">
+                  <div className="rounded-[1.6rem] bg-[#9eab8d] p-6 text-stone-900">
                     <div className="text-sm uppercase tracking-[0.18em] text-stone-700">
-                      {language === "de" ? "Angebot" : "Ajánlat"}
+                      {contentAny.special.packLabel}
                     </div>
                     <div className="mt-2 text-3xl font-semibold">
-                      {content.special.pack}
+                      {contentAny.special.packPrice}
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-dashed border-stone-300 p-5 text-sm leading-7 text-stone-600">
-                  {content.special.note}
+                  {contentAny.special.note}
                 </div>
               </div>
             </div>
@@ -718,40 +786,40 @@ export default function ChristinaMassageWebsite() {
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-[2rem] border border-stone-200 bg-white/80 p-8 shadow-sm">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.prices.eyebrow}
+              {contentAny.prices.eyebrow}
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold text-stone-900">
-              {content.prices.title}
+              {contentAny.prices.title}
             </h2>
 
             <p className="mt-4 leading-8 text-stone-600">
-              {content.prices.text}
+              {contentAny.prices.text}
             </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="rounded-[2rem] bg-stone-800 p-8 text-white shadow-sm">
               <div className="text-sm uppercase tracking-[0.28em] text-stone-300">
-                {content.prices.card1Title}
+                {contentAny.prices.card1.title}
               </div>
               <div className="mt-4 text-4xl font-semibold">
-                {content.prices.card1Price}
+                {contentAny.prices.card1.price}
               </div>
               <p className="mt-4 leading-7 text-stone-300">
-                {content.prices.card1Text}
+                {contentAny.prices.card1.text}
               </p>
             </div>
 
             <div className="rounded-[2rem] bg-[#9eab8d] p-8 text-stone-900 shadow-sm">
               <div className="text-sm uppercase tracking-[0.28em] text-stone-700">
-                {content.prices.card2Title}
+                {contentAny.prices.card2.title}
               </div>
               <div className="mt-4 text-4xl font-semibold">
-                {content.prices.card2Price}
+                {contentAny.prices.card2.price}
               </div>
               <p className="mt-4 leading-7 text-stone-800">
-                {content.prices.card2Text}
+                {contentAny.prices.card2.text}
               </p>
             </div>
           </div>
@@ -762,53 +830,58 @@ export default function ChristinaMassageWebsite() {
         <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
           <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
             <img
-              src="/christina-about.avif"
-              alt="Christina Massage Portrait"
-              className="h-full min-h-[420px] w-full object-cover"
+              src="/christina-about.jpg"
+              alt="Christina Portrait"
+              className="h-full min-h-[460px] w-full object-cover"
             />
           </div>
 
           <div className="flex flex-col justify-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.about.eyebrow}
+              {contentAny.about.eyebrow}
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {content.about.title}
+              {contentAny.about.title}
             </h2>
 
             <div className="mt-8 rounded-[2rem] bg-white/70 p-8 leading-8 text-stone-700 shadow-sm">
-              {content.about.text}
+              {contentAny.about.text}
             </div>
           </div>
         </div>
       </section>
 
-      <section id="anfahrt" className="bg-white/45 py-20">
+      <section id="anfahrt" className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.location.eyebrow}
+              {contentAny.location.eyebrow}
             </p>
             <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {content.location.title}
+              {contentAny.location.title}
             </h2>
-            <p className="mt-4 text-lg leading-8 text-stone-600">
-              {content.location.text}
-            </p>
           </div>
 
-          <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
-            <iframe
-              src="https://www.google.com/maps?q=Bahnhofstraße%2021,%2082383%20Hohenpeißenberg&output=embed"
-              width="100%"
-              height="500"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Google Maps Standort Christina Massage"
-            />
+          <div className="rounded-[2rem] bg-[#cfd5cb] px-8 py-10 text-center shadow-sm">
+            <h3 className="text-3xl font-semibold text-stone-800 md:text-5xl">
+              {contentAny.location.title}
+            </h3>
+          </div>
+
+          <div className="mx-auto -mt-6 max-w-6xl rounded-[2rem] bg-[#f8f1e6] px-4 pb-4 pt-10 shadow-sm">
+            <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-sm">
+              <iframe
+                src="https://www.google.com/maps?q=Bahnhofstraße%2021,%2082383%20Hohenpeißenberg&output=embed"
+                width="100%"
+                height="500"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Google Maps Standort Christina Massage"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -817,52 +890,52 @@ export default function ChristinaMassageWebsite() {
         <div className="grid gap-8 lg:grid-cols-[1fr_0.95fr]">
           <div>
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.contact.eyebrow}
+              {contentAny.contact.eyebrow}
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {content.contact.title}
+              {contentAny.contact.title}
             </h2>
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-600">
-              {content.contact.text}
+              {contentAny.contact.text}
             </p>
 
             <div className="mt-8 space-y-4 text-stone-700">
-              <p>📍 {content.brand.address}</p>
-              <p>📞 {content.brand.phoneDisplay}</p>
-              <p>⏱ {content.contact.hours}</p>
+              <p>📍 {contentAny.brand.address}</p>
+              <p>📞 {contentAny.brand.phoneDisplay}</p>
+              <p>⏱ {contentAny.contact.extra}</p>
             </div>
           </div>
 
           <div className="rounded-[2rem] border border-stone-200 bg-white/80 p-8 shadow-sm">
             <div className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {content.contact.quick}
+              {contentAny.contact.quickEyebrow}
             </div>
 
             <h3 className="mt-3 text-2xl font-semibold text-stone-900">
-              {content.contact.quickTitle}
+              {contentAny.contact.quickTitle}
             </h3>
 
             <p className="mt-4 leading-7 text-stone-600">
-              {content.contact.quickText}
+              {contentAny.contact.quickText}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href={`tel:${content.brand.phoneLink}`}
-                className="inline-block rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
+                href={`tel:${contentAny.brand.phoneLink}`}
+                className="inline-block rounded-full bg-[#405e3f] px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
               >
-                {content.contact.call}
+                {contentAny.contact.call}
               </a>
 
               <a
-                href={content.brand.whatsappLink}
+                href={contentAny.brand.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-800 transition hover:-translate-y-0.5"
               >
-                {content.contact.whatsapp}
+                {contentAny.contact.whatsapp}
               </a>
             </div>
           </div>
@@ -871,13 +944,13 @@ export default function ChristinaMassageWebsite() {
 
       <footer className="border-t border-stone-200 bg-white/50 px-6 py-8 text-sm text-stone-500 lg:px-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p>{content.footer.copyright}</p>
+          <p>{contentAny.footer.copyright}</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-stone-800">
-              {content.footer.imprint}
+              {contentAny.footer.imprint}
             </a>
             <a href="#" className="hover:text-stone-800">
-              {content.footer.privacy}
+              {contentAny.footer.privacy}
             </a>
           </div>
         </div>
