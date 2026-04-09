@@ -863,11 +863,7 @@ export default function ChristinaMassageWebsite() {
             </h2>
           </div>
 
-          <div className="rounded-[2rem] bg-[#cfd5cb] px-8 py-10 text-center shadow-sm">
-            <h3 className="text-3xl font-semibold text-stone-800 md:text-5xl">
-              {contentAny.location.title}
-            </h3>
-          </div>
+        
 
           <div className="mx-auto -mt-6 max-w-6xl rounded-[2rem] bg-[#f8f1e6] px-4 pb-4 pt-10 shadow-sm">
             <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-sm">
