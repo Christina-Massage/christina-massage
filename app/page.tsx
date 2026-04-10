@@ -1,433 +1,331 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 type Language = "de" | "hu";
 
 type MassageItem = {
-  title: string;
-  description: string;
-  durations: string[];
+  key: string;
+  image: string;
+  title: {
+    de: string;
+    hu: string;
+  };
+  description: {
+    de: string;
+    hu: string;
+  };
+  durations: string;
 };
 
-export default function ChristinaMassageWebsite() {
+const massages: MassageItem[] = [
+  {
+    key: "swedish",
+    image: "/images/swedish.png",
+    title: {
+      de: "Schwedische Massage",
+      hu: "Svéd masszázs",
+    },
+    description: {
+      de: "Klassische Ganzkörpermassage zur Lockerung der Muskulatur und zur tiefen Entspannung.",
+      hu: "Klasszikus teljes testes masszázs az izmok lazítására és a mély relaxációért.",
+    },
+    durations: "60 / 90 / 120 Min",
+  },
+  {
+    key: "back-neck",
+    image: "/images/back-neck.png",
+    title: {
+      de: "Rücken / Nacken",
+      hu: "Hát / Nyak",
+    },
+    description: {
+      de: "Gezielte Behandlung für verspannte Schultern, Nacken und Rücken.",
+      hu: "Célzott kezelés a feszült váll, nyak és hát területére.",
+    },
+    durations: "45 / 60 / 75 Min",
+  },
+  {
+    key: "individual",
+    image: "/images/individual.png",
+    title: {
+      de: "Individuelle Massage",
+      hu: "Egyéni masszázs",
+    },
+    description: {
+      de: "Individuell auf Beschwerden, Regeneration und Wohlbefinden abgestimmt.",
+      hu: "Panaszokhoz, regenerációhoz és közérzethez igazított egyéni kezelés.",
+    },
+    durations: "60 / 90 / 120 Min",
+  },
+  {
+    key: "foot",
+    image: "/images/foot.png",
+    title: {
+      de: "Fußmassage",
+      hu: "Talpmasszázs",
+    },
+    description: {
+      de: "Wohltuende Fußbehandlung für Entspannung, Leichtigkeit und Ausgleich.",
+      hu: "Kellemes talpkezelés a relaxációért, könnyedségért és egyensúlyért.",
+    },
+    durations: "45 / 60 Min",
+  },
+  {
+    key: "lymph",
+    image: "/images/lymph.png",
+    title: {
+      de: "Lymphdrainage",
+      hu: "Nyirokdrenázs",
+    },
+    description: {
+      de: "Sanfte Technik zur Unterstützung des Lymphflusses und zur Entlastung des Gewebes.",
+      hu: "Gyengéd technika a nyirokkeringés támogatására és a szövetek tehermentesítésére.",
+    },
+    durations: "60 / 90 Min",
+  },
+  {
+    key: "vagus",
+    image: "/images/vagus.png",
+    title: {
+      de: "Vagus / Stressabbau",
+      hu: "Vagus / Stresszcsökkentés",
+    },
+    description: {
+      de: "Sanfte Behandlung für innere Ruhe, Entspannung und Nervensystem-Balance.",
+      hu: "Gyengéd kezelés a belső nyugalomért, relaxációért és az idegrendszer egyensúlyáért.",
+    },
+    durations: "45 / 60 Min",
+  },
+  {
+    key: "flossing",
+    image: "/images/flossing.png",
+    title: {
+      de: "Flossing",
+      hu: "Flossing",
+    },
+    description: {
+      de: "Spezielle Technik zur Mobilisierung und Unterstützung von Gelenken und Gewebe.",
+      hu: "Speciális technika az ízületek és a szövetek mobilizálására és támogatására.",
+    },
+    durations: "30 / 45 / 60 Min",
+  },
+  {
+    key: "fdm",
+    image: "/images/fdm.png",
+    title: {
+      de: "FDM Behandlung",
+      hu: "FDM kezelés",
+    },
+    description: {
+      de: "Gezielte manuelle Behandlung auf Basis des Faszien-Distorsionsmodells.",
+      hu: "Célzott manuális kezelés a Fascia Disztorziós Modell alapján.",
+    },
+    durations: "60 Min",
+  },
+  {
+    key: "cupping",
+    image: "/images/cupping.png",
+    title: {
+      de: "Schröpfen",
+      hu: "Köpölyözés",
+    },
+    description: {
+      de: "Traditionelle Technik zur Anregung des Gewebes und zur Lösung von Spannungen.",
+      hu: "Hagyományos technika a szövetek serkentésére és a feszültségek oldására.",
+    },
+    durations: "30 Min",
+  },
+];
+
+export default function HomePage() {
   const [language, setLanguage] = useState<Language>("de");
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const scrollServices = (direction: "left" | "right") => {
-    if (!sliderRef.current) return;
-    const amount = sliderRef.current.clientWidth * 0.88;
-    sliderRef.current.scrollBy({
-      left: direction === "right" ? amount : -amount,
-      behavior: "smooth",
-    });
-  };
+  const t = useMemo(() => {
+    return {
+      navAbout: language === "de" ? "Über mich" : "Rólam",
+      navMassages: language === "de" ? "Massagen" : "Masszázsok",
+      navHiemt: "HIEMT",
+      navExtras: language === "de" ? "Zusatzangebote" : "Kiegészítő kezelések",
+      navDirections: language === "de" ? "Anfahrt" : "Megközelítés",
+      navBooking: language === "de" ? "Termin buchen" : "Időpontfoglalás",
 
-  const content = useMemo(() => {
-    const de = {
-      brand: {
-        name: "Christina Massage",
-        city: "Hohenpeißenberg",
-        phoneDisplay: "+49 172 2664648",
-        phoneLink: "491722664648",
-        whatsappLink:
-          "https://wa.me/491722664648?text=Hallo%20ich%20möchte%20einen%20Termin%20vereinbaren",
-        address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
-        email: "dobozikriszta76@gmail.com",
-      },
-      nav: {
-        about: "Über mich",
-        services: "Massagen",
-        special: "HIEMT",
-        methods: "Zusatzangebote",
-        expectations: "Warum Christina Massage",
-        location: "Anfahrt",
-        booking: "Termin buchen",
-      },
-      hero: {
-        title: "Entspannung für Körper und Seele",
-        subtitle:
-          "Individuelle Behandlungen, ganzheitliche Begleitung und eine ruhige Atmosphäre für dein persönliches Wohlbefinden.",
-        primary: "Termin buchen",
-        secondary: "Anrufen oder WhatsApp",
-      },
-      about: {
-        eyebrow: "Über mich",
-        title: "Mit Erfahrung, Feingefühl und echter Aufmerksamkeit",
-        text: [
-          "Die Harmonie von Bewegung und Körper ist nicht nur mein Beruf, sondern meine Lebensphilosophie.",
-          "Die Liebe zu Sport und Bewegung prägt mein Leben seit meiner Kindheit. Meine berufliche Laufbahn begann ich 2007 als Trainerin, und seither bin ich fasziniert von der erstaunlichen Widerstandsfähigkeit des menschlichen Körpers.",
-          "Seit über 10 Jahren helfe ich meinen Gästen, dem Alltagsstress zu entfliehen. Bei jeder Behandlung stelle ich die individuellen Bedürfnisse in den Vordergrund, um ein persönliches Massageerlebnis zu schaffen.",
-          "Ob Muskelentspannung, Stressabbau, Regeneration oder Erholung – ich passe jede Behandlung individuell an.",
-          "Ich glaube, dass Massage mehr ist als nur eine körperliche Behandlung. Sie ist eine wertvolle Auszeit – ein Moment der Ruhe, in dem der Alltag von uns abfällt und wir inneren Frieden und Balance finden.",
-          "Auch in meinem Leben lege ich Wert auf die Harmonie von Körper, Seele und Geist und begegne meinen Gästen mit dieser Philosophie.",
-        ],
-      },
-      services: {
-        eyebrow: "Massagen",
-        title: "Massagen individuell auf dich abgestimmt",
-        text:
-          "Mit den Pfeilen kannst du durch die Behandlungen klicken. Auf dem Handy kannst du einfach wischen.",
-        button: "Termin buchen",
-        items: [
-          {
-            title: "Schwedische Massage",
-            description:
-              "Eine klassische Massage zur Lockerung der Muskulatur, zur Förderung der Durchblutung und für tiefgehende Entspannung.",
-            durations: ["60 Min · 60 €", "90 Min · 90 €", "120 Min · 120 €"],
-          },
-          {
-            title: "Rücken- & Nackenmassage",
-            description:
-              "Gezielte Behandlung bei Verspannungen im oberen Rücken-, Schulter- und Nackenbereich.",
-            durations: ["45 Min · 45 €", "60 Min · 60 €", "75 Min · 75 €"],
-          },
-          {
-            title: "Individuelle Massage",
-            description:
-              "Die Behandlung wird auf deine persönlichen Beschwerden, Wünsche und Bedürfnisse abgestimmt.",
-            durations: ["60 Min · 60 €", "90 Min · 90 €", "120 Min · 120 €"],
-          },
-          {
-            title: "Fußmassage",
-            description:
-              "Wohltuende Behandlung für beanspruchte Füße zur Entlastung und tiefen Entspannung.",
-            durations: ["45 Min · 45 €", "60 Min · 60 €"],
-          },
-          {
-            title: "Lymphdrainage",
-            description:
-              "Sanfte Behandlung zur Unterstützung des Lymphflusses und für ein leichteres Körpergefühl.",
-            durations: ["60 Min · 60 €", "90 Min · 90 €"],
-          },
-          {
-            title: "Vagus / Stressabbau",
-            description:
-              "Eine beruhigende Behandlung mit Fokus auf Regeneration, Nervensystem und Entspannung.",
-            durations: ["45 Min · 45 €", "60 Min · 60 €"],
-          },
-          {
-            title: "Champi – Indische Kopfmassage",
-            description:
-              "Sanfte und zugleich intensive Entspannung für Kopf, Nacken und Geist.",
-            durations: ["45 Min · 45 €", "60 Min · 60 €"],
-          },
-        ] as MassageItem[],
-      },
-      methods: {
-        eyebrow: "Zusatzangebote",
-        title: "Therapeutische und ergänzende Behandlungen",
-        cards: [
-          {
-            title: "FDM Behandlung",
-            text:
-              "Das Fasziendistorsionsmodell ist eine moderne und effektive Behandlungsmethode zur gezielten Linderung von Schmerzen im Bewegungsapparat. Durch spezifische manuelle Techniken werden Störungen und Verklebungen im Fasziengewebe gelöst, wodurch sich Beweglichkeit und Wohlbefinden deutlich verbessern können.",
-            price: "60 Min · 60 €",
-          },
-          {
-            title: "Flossing",
-            text:
-              "Flossing ist eine moderne physiotherapeutische Behandlung, die gezielt auf Faszien, Muskeln und Gelenke wirkt. Mithilfe eines speziellen Gummibandes wird das betroffene Körperareal kurzzeitig komprimiert und anschließend wieder entlastet. Dieser Prozess fördert die Durchblutung, löst Verklebungen im Gewebe und kann Schmerzen effektiv reduzieren. Die Behandlung unterstützt die Beweglichkeit, Regeneration und Schmerzlinderung – besonders bei Verspannungen, Bewegungseinschränkungen, Schwellungen oder Narbengewebe.",
-            price: "30 / 45 / 60 Min · 30 € / 45 € / 60 €",
-          },
-          {
-            title: "Schröpfen",
-            text:
-              "Schröpfen ist eine bewährte Methode zur Förderung der Durchblutung, zur Lösung von Verspannungen und zur Unterstützung des Stoffwechsels. Die Behandlung wirkt tief im Gewebe und kann besonders bei muskulären Beschwerden und hartnäckigen Spannungen sehr wohltuend sein.",
-            price: "30 Min · 30 €",
-          },
-        ],
-      },
-      special: {
-        eyebrow: "Sonderleistung",
-        title: "HIEMT Beckenboden-Training",
-        text:
-          "Eine besondere Zusatzleistung zur gezielten Unterstützung des Beckenbodens – diskret, modern und bequem in den Alltag integrierbar.",
-        bullets: [
-          "30 Minuten pro Sitzung",
-          "Anwendung nur in Kleidung",
-          "Nicht-invasive Behandlung",
-          "Gezielte Aktivierung und Stärkung des Beckenbodens",
-        ],
-        trialLabel: "Probesitzung",
-        trialPrice: "30 €",
-        packLabel: "10er Karte",
-        packPrice: "280 €",
-        note:
-          "Ideal für alle, die ihren Beckenboden gezielt stärken und ihr Körpergefühl nachhaltig verbessern möchten.",
-      },
-      booking: {
-        eyebrow: "Online Buchung",
-        title: "Termin bequem online anfragen",
-        text:
-          "Wähle deine Behandlung, die passende Dauer und deinen Wunschtermin. Vor der Buchung ist eine Registrierung erforderlich.",
-        button: "Zum Kalender",
-      },
-      expectations: {
-        eyebrow: "Was dich bei Christina Massage erwartet",
-        title: "Persönlich, ruhig und achtsam begleitet",
-        items: [
-          {
-            title: "Individuelle Betreuung",
-            text:
-              "Jede Behandlung wird auf deine persönlichen Beschwerden und Bedürfnisse abgestimmt.",
-          },
-          {
-            title: "Ganzheitlicher Blick",
-            text:
-              "Körper, Entspannung und Regeneration werden immer im Zusammenhang betrachtet.",
-          },
-          {
-            title: "Ruhige Atmosphäre",
-            text:
-              "Ein Ort, an dem du loslassen, durchatmen und neue Energie tanken kannst.",
-          },
-        ],
-      },
-      location: {
-        eyebrow: "Anfahrt",
-        title: "So findest du mich",
-      },
-      footer: {
-        text: "© 2026 Christina Massage",
-        imprint: "Impressum",
-        privacy: "Datenschutz",
-      },
+      heroBadge: language === "de" ? "Ganzheitlich · Individuell · Mit Ruhe" : "Holisztikus · Egyéni · Nyugodt",
+      heroTitle:
+        language === "de"
+          ? "Massage, Entspannung und Wohlbefinden in Hohenpeißenberg"
+          : "Masszázs, ellazulás és jó közérzet Hohenpeißenbergben",
+      heroText:
+        language === "de"
+          ? "Individuell abgestimmte Behandlungen für Regeneration, Stressabbau und ein besseres Körpergefühl – in ruhiger, persönlicher Atmosphäre."
+          : "Egyénre szabott kezelések a regenerációért, a stresszoldásért és a jobb testérzetért – nyugodt, személyes környezetben.",
+      heroPrimary: language === "de" ? "Jetzt Termin buchen" : "Időpont foglalása",
+      heroSecondary: language === "de" ? "Leistungen ansehen" : "Szolgáltatások megtekintése",
+
+      servicesTitle: language === "de" ? "Leistungen" : "Szolgáltatások",
+      servicesSubtitle:
+        language === "de"
+          ? "Wähle die Behandlung, die am besten zu deinen Bedürfnissen passt."
+          : "Válaszd ki azt a kezelést, amely a legjobban illik az igényeidhez.",
+
+      aboutTitle: language === "de" ? "Über mich" : "Rólam",
+      aboutHeadline:
+        language === "de"
+          ? "Die Harmonie von Bewegung und Körper ist nicht nur mein Beruf, sondern meine Lebensphilosophie."
+          : "A mozgás és a test harmóniája nemcsak a hivatásom, hanem az életfilozófiám is.",
+      aboutText1:
+        language === "de"
+          ? "Die Liebe zu Sport und Bewegung prägt mein Leben seit meiner Kindheit. Meine berufliche Laufbahn begann 2007 als Trainerin, und seither fasziniert mich die erstaunliche Widerstandsfähigkeit des menschlichen Körpers."
+          : "A sport és a mozgás iránti szeretet gyermekkorom óta meghatározza az életemet. Szakmai pályafutásomat 2007-ben edzőként kezdtem, és azóta is lenyűgöz az emberi test elképesztő ellenálló képessége.",
+      aboutText2:
+        language === "de"
+          ? "Seit über 10 Jahren helfe ich meinen Gästen, dem Alltagsstress zu entfliehen. Bei jeder Behandlung stehen die individuellen Bedürfnisse im Mittelpunkt, um ein persönliches und ganzheitliches Massageerlebnis zu schaffen."
+          : "Több mint 10 éve segítek vendégeimnek kiszakadni a mindennapi stresszből. Minden kezelés során az egyéni igények állnak a középpontban, hogy személyes és holisztikus masszázsélményt nyújtsak.",
+      aboutText3:
+        language === "de"
+          ? "Ob Muskelentspannung, Stressabbau, Regeneration oder Erholung – jede Behandlung wird individuell angepasst. Für mich ist Massage mehr als nur eine körperliche Behandlung: Sie ist eine wertvolle Auszeit für Körper, Geist und Seele."
+          : "Legyen szó izomlazításról, stresszcsökkentésről, regenerációról vagy pihenésről – minden kezelést egyénre szabok. Számomra a masszázs több mint testi kezelés: értékes énidő a test, a lélek és a szellem számára.",
+      aboutCareerTitle:
+        language === "de"
+          ? "Mein beruflicher Werdegang und meine Qualifikationen"
+          : "Szakmai pályafutásom és képesítéseim",
+      aboutCareerText1:
+        language === "de"
+          ? "Ich begann meine Karriere 2007 als Aerobic-Trainerin und erwarb dabei fundierte anatomische Kenntnisse. Meine Leidenschaft für Bewegung führte mich schnell zu Pilates, und 2016 wurde die Massage-Therapie zu meinem Beruf."
+          : "Pályafutásomat 2007-ben aerobic edzőként kezdtem, ahol alapos anatómiai ismeretekre tettem szert. A mozgás iránti szenvedélyem hamar a Pilates felé vezetett, majd 2016-ban a masszázsterápia lett a hivatásom.",
+      aboutCareerText2:
+        language === "de"
+          ? "Im Laufe meiner Laufbahn habe ich unter anderem die schwedische Massage, Wellness-Massagen, Tui-Na, Champi-Kopfmassage, Schröpftherapie, Flossing, Narbenbehandlung, Lymphdrainage, Vagus-Therapie, FDM, Viszeraltherapie und ganzheitliche naturheilkundliche Ansätze erlernt."
+          : "Szakmai pályafutásom során többek között elsajátítottam a svédmasszázst, wellness masszázsokat, a Tui-Na technikát, a Champi fejmasszázst, a köpölyözést, a flossingot, a hegkezelést, a nyirokdrenázst, a vagus-terápiát, az FDM-et, a viszcerális terápiát és a holisztikus természetgyógyászati megközelítéseket.",
+      aboutCareerText3:
+        language === "de"
+          ? "Ich bin überzeugt, dass wahre Heilung nicht nur Symptome unterdrückt, sondern Ursachen erkennt. Deshalb betrachte ich den Menschen immer als Ganzes – in der Einheit von Körper, Geist und Seele."
+          : "Meggyőződésem, hogy a valódi gyógyulás nem csupán a tünetek elnyomásáról szól, hanem az okok feltárásáról is. Ezért az embert mindig egészként szemlélem – a test, a lélek és a szellem egységében.",
+
+      hiemtTitle: "HIEMT",
+      hiemtSubtitle:
+        language === "de"
+          ? "Moderne Unterstützung für Beckenboden, Körpergefühl und gezielte Aktivierung."
+          : "Modern támogatás a medencefenékhez, a testérzethez és a célzott aktiváláshoz.",
+      hiemtFeature1: language === "de" ? "30 Minuten pro Sitzung" : "30 perc kezelésenként",
+      hiemtFeature2: language === "de" ? "Anwendung nur in Kleidung" : "Használat ruhában",
+      hiemtFeature3: language === "de" ? "Nicht-invasive Behandlung" : "Nem invazív kezelés",
+      hiemtFeature4:
+        language === "de"
+          ? "Gezielte Aktivierung und Stärkung des Beckenbodens"
+          : "A medencefenék célzott aktiválása és erősítése",
+      hiemtTrial: language === "de" ? "Probesitzung" : "Próbaalkalom",
+      hiemtCard: language === "de" ? "10er Karte" : "10 alkalmas bérlet",
+      hiemtDescription:
+        language === "de"
+          ? "Ideal für alle, die ihren Beckenboden gezielt stärken und ihr Körpergefühl nachhaltig verbessern möchten."
+          : "Ideális mindazoknak, akik célzottan szeretnék erősíteni a medencefeneket és tartósan javítani a testérzetüket.",
+      hiemtWhatsappText:
+        language === "de"
+          ? "Eine individuelle Beratung ist nur per WhatsApp möglich."
+          : "Egyéni tanácsadás kizárólag WhatsAppon lehetséges.",
+      hiemtWhatsappButton:
+        language === "de" ? "Beratung per WhatsApp" : "Tanácsadás WhatsAppon",
+
+      extrasTitle: language === "de" ? "Zusatzangebote" : "Kiegészítő kezelések",
+      extrasText:
+        language === "de"
+          ? "Ergänzend zu den Massagen biete ich weitere gezielte Anwendungen an – individuell abgestimmt auf deine Bedürfnisse."
+          : "A masszázsok mellett további célzott kezeléseket is kínálok – egyénre szabva az igényeid szerint.",
+
+      bookingTitle: language === "de" ? "Termin vereinbaren" : "Időpont egyeztetése",
+      bookingText:
+        language === "de"
+          ? "Buche deinen Termin bequem online und finde die Behandlung, die zu dir passt."
+          : "Foglalj időpontot kényelmesen online, és találd meg a hozzád illő kezelést.",
+      bookingButton: language === "de" ? "Zum Buchungssystem" : "Foglalási rendszerhez",
+
+      directionsTitle: language === "de" ? "Anfahrt" : "Megközelítés",
+      directionsText:
+        language === "de"
+          ? "Bahnhofstraße 21, 82383 Hohenpeißenberg"
+          : "Bahnhofstraße 21, 82383 Hohenpeißenberg",
+
+      footerImprint: language === "de" ? "Impressum" : "Impresszum",
+      footerPrivacy: language === "de" ? "Datenschutz" : "Adatvédelem",
+      footerBooking: language === "de" ? "Termin buchen" : "Időpontfoglalás",
     };
-
-    const hu = {
-      brand: {
-        name: "Christina Massage",
-        city: "Hohenpeißenberg",
-        phoneDisplay: "+49 172 2664648",
-        phoneLink: "491722664648",
-        whatsappLink:
-          "https://wa.me/491722664648?text=Szia%2C%20időpontot%20szeretnék%20foglalni",
-        address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
-        email: "dobozikriszta76@gmail.com",
-      },
-      nav: {
-        about: "Rólam",
-        services: "Masszázsok",
-        special: "HIEMT",
-        methods: "Kiegészítő kezelések",
-        expectations: "Miért Christina Massage",
-        location: "Megközelítés",
-        booking: "Időpontfoglalás",
-      },
-      hero: {
-        title: "Harmónia testnek és léleknek",
-        subtitle:
-          "Egyéni kezelések, figyelmes kísérés és nyugodt környezet a személyes jóllétedért.",
-        primary: "Időpontfoglalás",
-        secondary: "Hívás vagy WhatsApp",
-      },
-      about: {
-        eyebrow: "Rólam",
-        title: "Tapasztalattal, odafigyeléssel és valódi jelenléttel",
-        text: [
-          "A mozgás és a test harmóniája nemcsak a hivatásom, hanem az életszemléletem is.",
-          "A sport és a mozgás szeretete gyermekkorom óta végigkíséri az életemet. Pályafutásomat 2007-ben edzőként kezdtem, és azóta is lenyűgöz az emberi test csodálatos alkalmazkodóképessége.",
-          "Több mint 10 éve segítek vendégeimnek kiszakadni a mindennapi stresszből. Minden kezelés során az egyéni igények állnak a középpontban.",
-          "Legyen szó izomlazításról, stresszoldásról, regenerációról vagy feltöltődésről – minden kezelést személyre szabok.",
-          "Hiszem, hogy a masszázs több mint testi kezelés. Ez egy értékes énidő – a nyugalom pillanata, amikor a hétköznapok terhe lekerül rólunk, és megtalálhatjuk a belső egyensúlyt.",
-          "Saját életemben is fontos számomra a test, lélek és szellem harmóniája – és ugyanezzel a szemlélettel fordulok vendégeim felé is.",
-        ],
-      },
-      services: {
-        eyebrow: "Masszázsok",
-        title: "Masszázsok személyre szabva",
-        text:
-          "A nyilakkal válthatsz a kezelések között, telefonon pedig egyszerűen lapozhatsz.",
-        button: "Időpontfoglalás",
-        items: [
-          {
-            title: "Svédmasszázs",
-            description:
-              "Klasszikus masszázs az izmok lazítására, a vérkeringés támogatására és a mély ellazulásért.",
-            durations: ["60 perc · 60 €", "90 perc · 90 €", "120 perc · 120 €"],
-          },
-          {
-            title: "Hát- és nyakmasszázs",
-            description:
-              "Célzott kezelés a felső háti, vállövi és nyaki feszültségek oldására.",
-            durations: ["45 perc · 45 €", "60 perc · 60 €", "75 perc · 75 €"],
-          },
-          {
-            title: "Egyéni masszázs",
-            description:
-              "A kezelés a személyes panaszaidhoz és igényeidhez igazodik.",
-            durations: ["60 perc · 60 €", "90 perc · 90 €", "120 perc · 120 €"],
-          },
-          {
-            title: "Talpmasszázs",
-            description:
-              "Kellemes kezelés a terhelt lábak tehermentesítésére és ellazítására.",
-            durations: ["45 perc · 45 €", "60 perc · 60 €"],
-          },
-          {
-            title: "Nyirokmasszázs",
-            description:
-              "Gyengéd kezelés a nyirokáramlás támogatására és a könnyedebb testérzetért.",
-            durations: ["60 perc · 60 €", "90 perc · 90 €"],
-          },
-          {
-            title: "Vagus / stresszoldás",
-            description:
-              "Nyugodt kezelés a regeneráció, az idegrendszer és a belső egyensúly támogatására.",
-            durations: ["45 perc · 45 €", "60 perc · 60 €"],
-          },
-          {
-            title: "Champi – indiai fejmasszázs",
-            description:
-              "Gyengéd és mégis hatásos relaxáció fejre, nyakra és a belső nyugalomra.",
-            durations: ["45 perc · 45 €", "60 perc · 60 €"],
-          },
-        ] as MassageItem[],
-      },
-      methods: {
-        eyebrow: "Kiegészítő kezelések",
-        title: "Terápiás és kiegészítő kezelések",
-        cards: [
-          {
-            title: "FDM kezelés",
-            text:
-              "Az FDM egy modern manuális kezelési módszer, amely célzottan a fájdalmakra és a mozgáskorlátozottságokra hat a mozgásszervrendszerben. A fascia rendszer zavarainak kezelésével javítható a mozgékonyság és a közérzet.",
-            price: "60 perc · 60 €",
-          },
-          {
-            title: "Flossing",
-            text:
-              "A flossing egy modern fizioterápiás kezelés, amely célzottan hat a fasciákra, izmokra és ízületekre. Egy speciális gumiszalag segítségével a kezelt terület rövid ideig kompresszió alá kerül, majd tehermentesül. Ez javíthatja a keringést, oldhatja az összetapadásokat és csökkentheti a fájdalmat. Különösen hasznos mozgásbeszűkülés, feszültség, duzzanat vagy hegterület esetén.",
-            price: "30 / 45 / 60 perc · 30 € / 45 € / 60 €",
-          },
-          {
-            title: "Köpölyözés",
-            text:
-              "A köpölyözés egy bevált módszer a vérkeringés serkentésére, a feszültségek oldására és az anyagcsere támogatására. Mélyen a szövetekben fejti ki hatását, különösen izomfeszültségek esetén.",
-            price: "30 perc · 30 €",
-          },
-        ],
-      },
-      special: {
-        eyebrow: "Különleges kezelés",
-        title: "HIEMT medencefenék-tréning",
-        text:
-          "Különleges kiegészítő kezelés a medencefenék célzott támogatására – diszkréten, korszerűen és kényelmesen.",
-        bullets: [
-          "30 perc egy alkalom",
-          "Alkalmazás csak ruhában",
-          "Nem invazív kezelés",
-          "A medencefenék célzott aktiválása és erősítése",
-        ],
-        trialLabel: "Próbaalkalom",
-        trialPrice: "30 €",
-        packLabel: "10 alkalmas bérlet",
-        packPrice: "280 €",
-        note:
-          "Ideális mindazoknak, akik célzottan szeretnék erősíteni a medencefeneküket és javítani testérzetüket.",
-      },
-      booking: {
-        eyebrow: "Online foglalás",
-        title: "Kényelmes online időpontkérés",
-        text:
-          "Válaszd ki a kezelést, az időtartamot és a kívánt időpontot. A foglaláshoz regisztráció szükséges.",
-        button: "Naptár megnyitása",
-      },
-      expectations: {
-        eyebrow: "Amit a Christina Massage-nál megtapasztalhatsz",
-        title: "Személyes, nyugodt és figyelmes kísérés",
-        items: [
-          {
-            title: "Egyéni figyelem",
-            text:
-              "Minden kezelést a személyes panaszaidhoz és igényeidhez igazítok.",
-          },
-          {
-            title: "Holistikus szemlélet",
-            text:
-              "A test, a regeneráció és a nyugalom mindig összefüggésben kerülnek szemléletre.",
-          },
-          {
-            title: "Nyugodt légkör",
-            text:
-              "Egy hely, ahol elengedhetsz, megpihenhetsz és új energiát gyűjthetsz.",
-          },
-        ],
-      },
-      location: {
-        eyebrow: "Megközelítés",
-        title: "Így találsz meg",
-      },
-      footer: {
-        text: "© 2026 Christina Massage",
-        imprint: "Impresszum",
-        privacy: "Adatvédelem",
-      },
-    };
-
-    return language === "de" ? de : hu;
   }, [language]);
 
-  const c = content as any;
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % massages.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + massages.length) % massages.length);
+  };
+
+  const visibleMassages = [
+    massages[currentSlide],
+    massages[(currentSlide + 1) % massages.length],
+    massages[(currentSlide + 2) % massages.length],
+  ];
 
   return (
-    <div className="min-h-screen bg-[#f6efe5] text-stone-800">
-      <header className="sticky top-0 z-50 border-b border-[#d9cfbf] bg-[#f6efe5]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-          <nav className="hidden items-center gap-8 text-sm text-stone-700 lg:flex">
-            <a href="#ueber" className="hover:text-stone-900">
-              {c.nav.about}
-            </a>
-            <a href="#leistungen" className="hover:text-stone-900">
-              {c.nav.services}
-            </a>
-            <a href="#special" className="hover:text-stone-900">
-              {c.nav.special}
-            </a>
+    <main className="bg-[#f5efe3] text-[#2f3528]">
+      <header className="sticky top-0 z-50 border-b border-[#d5d0c2] bg-[#7d8b63]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 md:px-8">
+          <nav className="hidden items-center gap-8 text-sm text-[#f8f5ee] lg:flex">
+            <a href="#about" className="transition hover:opacity-80">{t.navAbout}</a>
+            <a href="#services" className="transition hover:opacity-80">{t.navMassages}</a>
+            <a href="#hiemt" className="transition hover:opacity-80">{t.navHiemt}</a>
           </nav>
 
-          <div className="flex flex-col items-center">
-            <img
-              src="/logo-christina-massage.png"
-              alt="Christina Massage Logo"
-              className="h-16 w-auto object-contain md:h-20"
-            />
-            <p className="mt-1 text-xs uppercase tracking-[0.3em] text-stone-500">
-              {c.brand.city}
-            </p>
+          <div className="flex flex-1 justify-center lg:flex-none">
+            <a href="#" className="flex flex-col items-center">
+              <Image
+                src="/images/logo-christina-massage.png"
+                alt="Christina Massage"
+                width={120}
+                height={70}
+                className="h-auto w-[90px] md:w-[120px]"
+              />
+              <span className="mt-1 text-[10px] uppercase tracking-[0.35em] text-[#f6f1e8] md:text-xs">
+                Hohenpeißenberg
+              </span>
+            </a>
           </div>
 
-          <div className="hidden items-center gap-8 text-sm text-stone-700 lg:flex">
-            <a href="#zusatzangebote" className="hover:text-stone-900">
-              {c.nav.methods}
+          <div className="hidden items-center gap-8 lg:flex">
+            <a href="#extras" className="text-sm text-[#f8f5ee] transition hover:opacity-80">
+              {t.navExtras}
             </a>
-            <a href="#anfahrt" className="hover:text-stone-900">
-              {c.nav.location}
+            <a href="#directions" className="text-sm text-[#f8f5ee] transition hover:opacity-80">
+              {t.navDirections}
             </a>
-            <a
+            <Link
               href="/booking"
-              className="rounded-full border border-[#405e3f] px-5 py-2.5 font-medium text-[#405e3f] hover:bg-[#405e3f] hover:text-white"
+              className="rounded-full border border-[#f3eee4] px-6 py-3 text-sm font-medium text-[#f8f5ee] transition hover:bg-[#f3eee4] hover:text-[#556246]"
             >
-              {c.nav.booking}
-            </a>
+              {t.navBooking}
+            </Link>
           </div>
-        </div>
 
-        <div className="mx-auto flex max-w-7xl justify-end px-6 pb-3 lg:px-10">
-          <div className="rounded-full border border-stone-300 bg-white/80 p-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setLanguage("de")}
-              className={`rounded-full px-3 py-1 text-xs font-medium ${
-                language === "de" ? "bg-stone-800 text-white" : "text-stone-700"
+              className={`rounded-full px-4 py-2 text-sm transition ${
+                language === "de"
+                  ? "bg-[#2f3528] text-white"
+                  : "bg-[#e7e0d3] text-[#4c5740]"
               }`}
             >
               DE
             </button>
             <button
               onClick={() => setLanguage("hu")}
-              className={`rounded-full px-3 py-1 text-xs font-medium ${
-                language === "hu" ? "bg-stone-800 text-white" : "text-stone-700"
+              className={`rounded-full px-4 py-2 text-sm transition ${
+                language === "hu"
+                  ? "bg-[#2f3528] text-white"
+                  : "bg-[#e7e0d3] text-[#4c5740]"
               }`}
             >
               HU
@@ -435,337 +333,438 @@ export default function ChristinaMassageWebsite() {
           </div>
         </div>
       </header>
+            <section className="border-b border-[#ddd5c7]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 md:px-8 md:py-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <div className="inline-flex rounded-full border border-[#c8c0ae] bg-[#ede6d8] px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#6d7857]">
+              {t.heroBadge}
+            </div>
 
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(64,94,63,0.22),rgba(64,94,63,0.18))]" />
-        <img
-          src="/massage-hero.png"
-          alt="Massage Hero"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+            <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-tight text-[#34402b] md:text-5xl">
+              {t.heroTitle}
+            </h1>
 
-        <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col items-center justify-center px-6 py-20 text-center lg:px-10">
-          <h1 className="max-w-5xl text-4xl font-light tracking-wide text-white md:text-7xl">
-            {c.hero.title}
-          </h1>
-          <div className="mt-8 h-px w-40 bg-white/50" />
-          <p className="mt-8 max-w-3xl text-lg leading-8 text-white/90 md:text-2xl">
-            {c.hero.subtitle}
-          </p>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-[#5d6651] md:text-lg">
+              {t.heroText}
+            </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="/booking"
-              className="rounded-none border border-[#d6b36a] bg-[#d6b36a] px-10 py-4 text-base font-medium text-stone-900 transition hover:opacity-90"
-            >
-              {c.hero.primary}
-            </a>
-            <a
-              href={c.brand.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-none border border-white/60 px-10 py-4 text-base font-medium text-white transition hover:bg-white/10"
-            >
-              {c.hero.secondary}
-            </a>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link
+                href="/booking"
+                className="rounded-full bg-[#6f7d58] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[#5f6c4a]"
+              >
+                {t.heroPrimary}
+              </Link>
+
+              <a
+                href="#services"
+                className="rounded-full border border-[#98a184] px-7 py-4 text-sm font-semibold text-[#566246] transition hover:bg-[#ebe4d8]"
+              >
+                {t.heroSecondary}
+              </a>
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden rounded-[2rem] border border-[#d6cebf] bg-[#e9e2d4] shadow-sm">
+            <Image
+              src="/images/massage-hero.png"
+              alt="Christina Massage Hero"
+              width={900}
+              height={900}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       </section>
 
-      <section id="ueber" className="bg-[#f8f2e9] py-20">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
-          <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
-            <img
-              src="/christina-about.jpg"
-              alt="Christina"
-              className="h-full min-h-[520px] w-full object-cover"
+      <section id="services" className="border-b border-[#ddd5c7]">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-[#7a8566]">
+                {t.servicesTitle}
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#34402b] md:text-4xl">
+                {t.servicesSubtitle}
+              </h2>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={prevSlide}
+                className="rounded-full border border-[#bfc5af] bg-white px-4 py-3 text-sm text-[#556246] transition hover:bg-[#eef1e8]"
+              >
+                ←
+              </button>
+              <button
+                onClick={nextSlide}
+                className="rounded-full border border-[#bfc5af] bg-white px-4 py-3 text-sm text-[#556246] transition hover:bg-[#eef1e8]"
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {visibleMassages.map((massage) => (
+              <article
+                key={massage.key}
+                className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-[#fbf8f2] shadow-sm"
+              >
+                <div className="relative h-[260px] w-full">
+                  <Image
+                    src={massage.image}
+                    alt={massage.title[language]}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold text-[#34402b]">
+                      {massage.title[language]}
+                    </h3>
+                    <span className="rounded-full bg-[#e8efdc] px-3 py-1 text-xs font-medium text-[#60704c]">
+                      {massage.durations}
+                    </span>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-7 text-[#5f6752]">
+                    {massage.description[language]}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="about" className="border-b border-[#ddd5c7] bg-[#f8f3ea]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:px-8 md:py-20 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+            <Image
+              src="/images/christina-about.jpg"
+              alt="Christina Dobozi"
+              width={900}
+              height={1200}
+              className="h-full w-full object-cover"
             />
           </div>
 
-          <div className="flex flex-col justify-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {c.about.eyebrow}
+          <div>
+            <p className="text-sm uppercase tracking-[0.22em] text-[#7a8566]">
+              {t.aboutTitle}
             </p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {c.about.title}
+
+            <h2 className="mt-3 text-3xl font-semibold leading-tight text-[#34402b] md:text-4xl">
+              {t.aboutHeadline}
             </h2>
 
-            <div className="mt-8 rounded-[2rem] bg-white/80 p-8 shadow-sm">
-              <div className="space-y-5 text-base leading-8 text-stone-700">
-                {c.about.text.map((paragraph: string) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+            <div className="mt-6 space-y-5 text-[15px] leading-8 text-[#59624d] md:text-base">
+              <p>{t.aboutText1}</p>
+              <p>{t.aboutText2}</p>
+              <p>{t.aboutText3}</p>
+            </div>
+
+            <div className="mt-10 rounded-[2rem] border border-[#d5cfbf] bg-[#efe8db] p-6 md:p-8">
+              <h3 className="text-xl font-semibold text-[#34402b]">
+                {t.aboutCareerTitle}
+              </h3>
+
+              <div className="mt-5 space-y-5 text-[15px] leading-8 text-[#59624d] md:text-base">
+                <p>{t.aboutCareerText1}</p>
+                <p>{t.aboutCareerText2}</p>
+                <p>{t.aboutCareerText3}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="special" className="py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="overflow-hidden rounded-[2.2rem] border border-stone-200 bg-white shadow-[0_30px_80px_rgba(120,100,80,0.12)]">
-            <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="bg-[#16212a]">
-                <img
-                  src="/hiemt-pad.jpg"
-                  alt="HIEMT Gerät"
-                  className="h-full min-h-[360px] w-full object-cover"
+      <section id="hiemt" className="border-b border-[#ddd5c7]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 md:px-8 md:py-20 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+            <Image
+              src="/images/hiemt-pad.jpg"
+              alt="HIEMT Pad"
+              width={1200}
+              height={900}
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm uppercase tracking-[0.22em] text-[#7a8566]">
+              {t.hiemtTitle}
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-[#34402b] md:text-4xl">
+              {t.hiemtSubtitle}
+            </h2>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.5rem] border border-[#d9d1c3] bg-white p-5 text-[#4e5842]">
+                {t.hiemtFeature1}
+              </div>
+              <div className="rounded-[1.5rem] border border-[#d9d1c3] bg-white p-5 text-[#4e5842]">
+                {t.hiemtFeature2}
+              </div>
+              <div className="rounded-[1.5rem] border border-[#d9d1c3] bg-white p-5 text-[#4e5842]">
+                {t.hiemtFeature3}
+              </div>
+              <div className="rounded-[1.5rem] border border-[#d9d1c3] bg-white p-5 text-[#4e5842]">
+                {t.hiemtFeature4}
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-[1.8rem] bg-[#667f59] p-7 text-white">
+                <div className="text-sm uppercase tracking-[0.24em] text-[#dfe8d0]">
+                  {t.hiemtTrial}
+                </div>
+                <div className="mt-3 text-5xl font-semibold">30 €</div>
+              </div>
+
+              <div className="rounded-[1.8rem] bg-[#aebb9a] p-7 text-[#1e2419]">
+                <div className="text-sm uppercase tracking-[0.24em] text-[#445036]">
+                  {t.hiemtCard}
+                </div>
+                <div className="mt-3 text-5xl font-semibold">280 €</div>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-[1.8rem] border border-dashed border-[#cec6b7] bg-[#f8f3ea] p-6 text-[15px] leading-8 text-[#59624d]">
+              {t.hiemtDescription}
+            </div>
+
+            <div className="mt-6 rounded-[1.8rem] border border-[#cfd8bf] bg-[#edf4e3] p-6">
+              <p className="text-sm font-medium text-[#4e5f3f]">
+                {t.hiemtWhatsappText}
+              </p>
+
+              <a
+                href="https://wa.me/491722664648?text=Hallo%20Christina,%20ich%20interessiere%20mich%20für%20eine%20individuelle%20Beratung%20zur%20HIEMT-Behandlung."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex rounded-full bg-[#6f7d58] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#5f6c4a]"
+              >
+                {t.hiemtWhatsappButton}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+            <section id="extras" className="border-b border-[#ddd5c7] bg-[#f8f3ea]">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.22em] text-[#7a8566]">
+              {t.extrasTitle}
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-[#34402b] md:text-4xl">
+              {t.extrasText}
+            </h2>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+              <div className="relative h-[220px] w-full">
+                <Image
+                  src="/images/flossing.png"
+                  alt="Flossing"
+                  fill
+                  className="object-cover"
                 />
               </div>
-
-              <div className="bg-[#f8f5ef] p-8 md:p-10">
-                <div className="inline-flex rounded-full bg-[#dfe6da] px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-stone-700">
-                  {c.special.eyebrow}
-                </div>
-
-                <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-                  {c.special.title}
-                </h2>
-
-                <p className="mt-5 text-lg leading-8 text-stone-600">
-                  {c.special.text}
+              <div className="p-5">
+                <h3 className="text-xl font-semibold text-[#34402b]">Flossing</h3>
+                <p className="mt-3 text-sm leading-7 text-[#5f6752]">
+                  {language === "de"
+                    ? "Gezielte Unterstützung für Mobilität, Gelenke und Gewebe."
+                    : "Célzott támogatás a mobilitáshoz, az ízületekhez és a szövetekhez."}
                 </p>
-
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  {c.special.bullets.map((bullet: string) => (
-                    <div
-                      key={bullet}
-                      className="rounded-2xl border border-stone-200 bg-white p-4 text-sm text-stone-700 shadow-sm"
-                    >
-                      {bullet}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[1.6rem] bg-[#567a57] p-6 text-white">
-                    <div className="text-sm uppercase tracking-[0.18em] text-white/70">
-                      {c.special.trialLabel}
-                    </div>
-                    <div className="mt-2 text-3xl font-semibold">
-                      {c.special.trialPrice}
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.6rem] bg-[#a8b79a] p-6 text-stone-900">
-                    <div className="text-sm uppercase tracking-[0.18em] text-stone-700">
-                      {c.special.packLabel}
-                    </div>
-                    <div className="mt-2 text-3xl font-semibold">
-                      {c.special.packPrice}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-2xl border border-dashed border-stone-300 p-5 text-sm leading-7 text-stone-600">
-                  {c.special.note}
-                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section id="leistungen" className="py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {c.services.eyebrow}
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {c.services.title}
-            </h2>
-            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
-              {c.services.text}
-            </p>
-          </div>
-
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => scrollServices("left")}
-              className="absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
-            >
-              <span className="text-2xl leading-none">‹</span>
-            </button>
-
-            <div
-              ref={sliderRef}
-              className="flex snap-x snap-mandatory gap-8 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {c.services.items.map((service: MassageItem) => (
-                <div
-                  key={service.title}
-                  className="min-w-[88%] snap-center md:min-w-[78%] lg:min-w-[86%]"
-                >
-                  <div className="relative mx-auto grid min-h-[540px] overflow-hidden rounded-[2.2rem] md:grid-cols-[0.95fr_1.25fr]">
-                    <div className="relative z-10 flex items-center justify-center px-8 py-10 md:px-10">
-                      <div className="absolute left-0 top-1/2 hidden h-[300px] w-[430px] -translate-y-1/2 rounded-[2rem] bg-[#cfd5cb] md:block" />
-                      <div className="relative z-10 w-full max-w-[380px] rounded-[2rem] bg-[#cfd5cb] p-10 text-center shadow-sm md:-mr-12">
-                        <h3 className="text-4xl font-medium leading-tight text-stone-800">
-                          {service.title}
-                        </h3>
-                        <p className="mt-6 leading-8 text-stone-700">
-                          {service.description}
-                        </p>
-
-                        <div className="mt-6 space-y-2 text-sm font-medium text-stone-700">
-                          {service.durations.map((duration) => (
-                            <div key={duration}>{duration}</div>
-                          ))}
-                        </div>
-
-                        <a
-                          href="/booking"
-                          className="mt-8 inline-block rounded-none bg-[#405e3f] px-8 py-4 text-base font-medium text-white transition hover:-translate-y-0.5"
-                        >
-                          {c.services.button}
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
-                      <img
-                        src="/massage-hero.png"
-                        alt={service.title}
-                        className="h-full min-h-[440px] w-full object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+              <div className="relative h-[220px] w-full">
+                <Image
+                  src="/images/fdm.png"
+                  alt="FDM"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-semibold text-[#34402b]">FDM</h3>
+                <p className="mt-3 text-sm leading-7 text-[#5f6752]">
+                  {language === "de"
+                    ? "Manuelle Behandlung mit Fokus auf fasziale Zusammenhänge."
+                    : "Manuális kezelés a fasciális összefüggésekre fókuszálva."}
+                </p>
+              </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => scrollServices("right")}
-              className="absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
-            >
-              <span className="text-2xl leading-none">›</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section id="zusatzangebote" className="bg-[#f8f2e9] py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {c.methods.eyebrow}
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {c.methods.title}
-            </h2>
-          </div>
-
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {c.methods.cards.map((card: any) => (
-              <div
-                key={card.title}
-                className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-sm"
-              >
-                <h3 className="text-2xl font-semibold text-stone-900">
-                  {card.title}
+            <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+              <div className="relative h-[220px] w-full">
+                <Image
+                  src="/images/cupping.png"
+                  alt="Schröpfen"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-semibold text-[#34402b]">
+                  {language === "de" ? "Schröpfen" : "Köpölyözés"}
                 </h3>
-                <p className="mt-5 leading-8 text-stone-600">{card.text}</p>
-                <div className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-[#405e3f]">
-                  {card.price}
-                </div>
+                <p className="mt-3 text-sm leading-7 text-[#5f6752]">
+                  {language === "de"
+                    ? "Traditionelle Technik zur Anregung und Entlastung des Gewebes."
+                    : "Hagyományos technika a szövetek serkentésére és tehermentesítésére."}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      <section id="booking" className="py-20">
-        <div className="mx-auto max-w-5xl px-6 text-center lg:px-10">
-          <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-            {c.booking.eyebrow}
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-            {c.booking.title}
-          </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
-            {c.booking.text}
-          </p>
-
-          <a
-            href="/booking"
-            className="mt-10 inline-block rounded-full bg-[#405e3f] px-8 py-4 text-base font-medium text-white hover:opacity-90"
-          >
-            {c.booking.button}
-          </a>
-        </div>
-      </section>
-
-      <section id="expectations" className="bg-[#f8f2e9] py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {c.expectations.eyebrow}
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {c.expectations.title}
-            </h2>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {c.expectations.items.map((item: any) => (
-              <div
-                key={item.title}
-                className="rounded-[1.8rem] border border-stone-200 bg-white/80 p-7 shadow-sm"
-              >
-                <h3 className="text-xl font-semibold text-stone-900">
-                  {item.title}
+            <div className="overflow-hidden rounded-[2rem] border border-[#d8d0c2] bg-white shadow-sm">
+              <div className="relative h-[220px] w-full">
+                <Image
+                  src="/images/foot.png"
+                  alt="Fußmassage"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="text-xl font-semibold text-[#34402b]">
+                  {language === "de" ? "Fußmassage" : "Talpmasszázs"}
                 </h3>
-                <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
+                <p className="mt-3 text-sm leading-7 text-[#5f6752]">
+                  {language === "de"
+                    ? "Wohltuende Behandlung für Entspannung und neue Leichtigkeit."
+                    : "Kellemes kezelés a relaxációért és a könnyedségért."}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="anfahrt" className="py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
-              {c.location.eyebrow}
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
-              {c.location.title}
-            </h2>
-          </div>
-
-          <div className="mx-auto max-w-6xl rounded-[2rem] bg-[#f8f1e6] px-4 pb-4 pt-4 shadow-sm">
-            <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-sm">
-              <iframe
-                src="https://www.google.com/maps?q=Bahnhofstraße%2021,%2082383%20Hohenpeißenberg&output=embed"
-                width="100%"
-                height="500"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Google Maps Standort Christina Massage"
-              />
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-stone-200 bg-white/50 px-6 py-8 text-sm text-stone-500 lg:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <p>{c.footer.text}</p>
-          <div className="flex gap-6">
-            <a href="/impressum" className="hover:text-stone-800">
-              {c.footer.imprint}
-            </a>
-            <a href="#" className="hover:text-stone-800">
-              {c.footer.privacy}
-            </a>
+      <section className="border-b border-[#d8cfbf] bg-[#eae4d7]">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+          <div className="overflow-hidden rounded-[2.25rem] border border-[#cfd4bf] bg-gradient-to-r from-[#637554] to-[#87956e] p-8 text-white md:p-12">
+            <div className="max-w-3xl">
+              <p className="text-sm uppercase tracking-[0.22em] text-[#e6edd8]">
+                Booking
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+                {t.bookingTitle}
+              </h2>
+              <p className="mt-5 text-base leading-8 text-[#eef3e6] md:text-lg">
+                {t.bookingText}
+              </p>
+
+              <Link
+                href="/booking"
+                className="mt-8 inline-flex rounded-full bg-[#f5efe3] px-7 py-4 text-sm font-semibold text-[#556246] transition hover:bg-white"
+              >
+                {t.bookingButton}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="directions" className="border-b border-[#ddd5c7]">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-[#7a8566]">
+                {t.directionsTitle}
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold text-[#34402b] md:text-4xl">
+                Christina Massage
+              </h2>
+              <p className="mt-5 text-base leading-8 text-[#5f6752]">
+                {t.directionsText}
+              </p>
+
+              <div className="mt-8 space-y-3 text-sm text-[#5f6752]">
+                <p>+49 172 2664648</p>
+                <p>dobozikriszta76@gmail.com</p>
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-[#d8d0c2] bg-[#f8f3ea] p-6 text-[#5f6752] shadow-sm">
+              <p className="leading-8">
+                {language === "de"
+                  ? "Die Anfahrt und Parkmöglichkeiten können zusätzlich im Footer oder später über eine eingebettete Karte ergänzt werden."
+                  : "A megközelítés és a parkolási lehetőségek később beágyazott térképpel is kiegészíthetők."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-[#2f3528] text-[#efe9db]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-3 md:px-8">
+          <div>
+            <Image
+              src="/images/logo-christina-massage.png"
+              alt="Christina Massage"
+              width={120}
+              height={70}
+              className="h-auto w-[110px]"
+            />
+            <p className="mt-4 max-w-sm text-sm leading-7 text-[#d9d3c6]">
+              {language === "de"
+                ? "Individuelle Behandlungen für Entspannung, Regeneration und ein besseres Körpergefühl."
+                : "Egyéni kezelések a relaxációért, a regenerációért és a jobb testérzetért."}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm uppercase tracking-[0.22em] text-[#b9c4a6]">
+              Navigation
+            </h3>
+            <div className="mt-4 flex flex-col gap-3 text-sm text-[#efe9db]">
+              <a href="#about">{t.navAbout}</a>
+              <a href="#services">{t.navMassages}</a>
+              <a href="#hiemt">{t.navHiemt}</a>
+              <a href="#extras">{t.navExtras}</a>
+              <Link href="/booking">{t.footerBooking}</Link>
+              <Link href="/impressum">{t.footerImprint}</Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm uppercase tracking-[0.22em] text-[#b9c4a6]">
+              Kontakt
+            </h3>
+            <div className="mt-4 space-y-3 text-sm leading-7 text-[#efe9db]">
+              <p>Christina Dobozi</p>
+              <p>Bahnhofstraße 21</p>
+              <p>82383 Hohenpeißenberg</p>
+              <p>+49 172 2664648</p>
+              <p>dobozikriszta76@gmail.com</p>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/impressum"
+                className="rounded-full border border-[#657254] px-4 py-2 text-sm transition hover:bg-[#3a4331]"
+              >
+                {t.footerImprint}
+              </Link>
+              <a
+                href="#"
+                className="rounded-full border border-[#657254] px-4 py-2 text-sm transition hover:bg-[#3a4331]"
+              >
+                {t.footerPrivacy}
+              </a>
+            </div>
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

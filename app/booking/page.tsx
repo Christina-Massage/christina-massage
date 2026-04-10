@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
 type DurationOption = {
@@ -93,37 +94,64 @@ const slotTemplate = [
   { time: "16:45" },
 ];
 
+type MessageType = "success" | "error" | "info";
+
 export default function BookingPage() {
+  const router = useRouter();
+
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [selectedSlotTime, setSelectedSlotTime] = useState<string | null>(null);
   const [bookingDate, setBookingDate] = useState("");
+  const [todayDate, setTodayDate] = useState("");
+
   const [showAuth, setShowAuth] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [sessionEmail, setSessionEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+
+  const [authLoading, setAuthLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<MessageType>("info");
+
+  const selectedService = services[selectedServiceIndex];
+  const selectedOption = selectedService.options[selectedOptionIndex];
+
+  const bookingReady = useMemo(() => {
+    return (
+      isLoggedIn &&
+      acceptedTerms &&
+      !!selectedSlotTime &&
+      !!bookingDate &&
+      !bookingLoading
+    );
+  }, [isLoggedIn, acceptedTerms, selectedSlotTime, bookingDate, bookingLoading]);
+
+  const setStatusMessage = (text: string, type: MessageType = "info") => {
+    setMessage(text);
+    setMessageType(type);
+  };
 
   useEffect(() => {
     const today = new Date();
     const y = today.getFullYear();
     const m = `${today.getMonth() + 1}`.padStart(2, "0");
     const d = `${today.getDate()}`.padStart(2, "0");
-    setBookingDate(`${y}-${m}-${d}`);
+    const isoDate = `${y}-${m}-${d}`;
+
+    setTodayDate(isoDate);
+    setBookingDate(isoDate);
   }, []);
-
-  const selectedService = services[selectedServiceIndex];
-  const selectedOption = selectedService.options[selectedOptionIndex];
-
-  const bookingReady = useMemo(() => {
-    return isLoggedIn && acceptedTerms && !!selectedSlotTime && !!bookingDate;
-  }, [isLoggedIn, acceptedTerms, selectedSlotTime, bookingDate]);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -135,9 +163,7 @@ export default function BookingPage() {
         setIsLoggedIn(true);
         setSessionEmail(session.user.email ?? "");
         setEmail(session.user.email ?? "");
-        if (session.user.user_metadata?.full_name) {
-          setFullName(session.user.user_metadata.full_name);
-        }
+        setFullName(session.user.user_metadata?.full_name ?? "");
       }
     };
 
@@ -150,6 +176,7 @@ export default function BookingPage() {
         setIsLoggedIn(true);
         setSessionEmail(session.user.email ?? "");
         setEmail(session.user.email ?? "");
+        setFullName(session.user.user_metadata?.full_name ?? "");
       } else {
         setIsLoggedIn(false);
         setSessionEmail("");
@@ -163,15 +190,25 @@ export default function BookingPage() {
     if (!bookingDate) return;
 
     const loadBookedSlots = async () => {
+      setSlotsLoading(true);
+
       const { data, error } = await supabase
         .from("bookings")
         .select("booking_time")
         .eq("booking_date", bookingDate)
         .in("status", ["requested", "confirmed"]);
 
-      if (!error && data) {
-        setBookedSlots(data.map((item) => item.booking_time));
+      if (error) {
+        setStatusMessage(
+          "Die belegten Termine konnten nicht geladen werden.",
+          "error"
+        );
+        setSlotsLoading(false);
+        return;
       }
+
+      setBookedSlots((data ?? []).map((item) => item.booking_time));
+      setSlotsLoading(false);
     };
 
     loadBookedSlots();
@@ -179,68 +216,88 @@ export default function BookingPage() {
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
-    setLoading(true);
+    setStatusMessage("");
+    setAuthLoading(true);
 
     try {
       if (!email.trim() || !password.trim()) {
-        setMessage("Bitte E-Mail und Passwort eingeben.");
+        setStatusMessage("Bitte E-Mail und Passwort eingeben.", "error");
         return;
       }
 
       if (isRegisterMode) {
         if (!fullName.trim()) {
-          setMessage("Bitte deinen Namen eingeben.");
+          setStatusMessage("Bitte deinen Namen eingeben.", "error");
           return;
         }
 
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: password.trim(),
           options: {
-            data: { full_name: fullName },
+            emailRedirectTo: `${window.location.origin}/auth/confirm`,
+            data: {
+              full_name: fullName.trim(),
+            },
           },
         });
 
         if (error) {
-          setMessage(error.message);
+          setStatusMessage(error.message, "error");
           return;
         }
 
+        if (data.user) {
+          await supabase.from("profiles").upsert({
+            id: data.user.id,
+            email: email.trim(),
+            full_name: fullName.trim(),
+            is_admin: false,
+          });
+        }
+
         setShowAuth(false);
-        setMessage(
-          "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
+        setStatusMessage(
+          "Registrierung erfolgreich. Bitte bestätige jetzt deine E-Mail-Adresse über den Link in deinem Postfach.",
+          "success"
         );
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          setMessage(error.message);
-          return;
-        }
-
-        setShowAuth(false);
-        setMessage("Erfolgreich eingeloggt.");
+        return;
       }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
+      });
+
+      if (error) {
+        setStatusMessage(error.message, "error");
+        return;
+      }
+
+      setShowAuth(false);
+      setStatusMessage("Erfolgreich eingeloggt.", "success");
     } finally {
-      setLoading(false);
+      setAuthLoading(false);
     }
   };
 
   const handleBookingSubmit = async () => {
-    setMessage("");
+    setStatusMessage("");
 
     if (!bookingReady) {
-      setMessage(
-        "Bitte einloggen, AGB bestätigen und einen freien Termin auswählen."
+      setStatusMessage(
+        "Bitte einloggen, die Bedingungen akzeptieren und einen freien Termin auswählen.",
+        "error"
       );
       return;
     }
 
-    setLoading(true);
+    if (!selectedSlotTime) {
+      setStatusMessage("Bitte wähle eine Uhrzeit aus.", "error");
+      return;
+    }
+
+    setBookingLoading(true);
 
     try {
       const {
@@ -248,79 +305,143 @@ export default function BookingPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setMessage("Bitte zuerst einloggen.");
+        setStatusMessage("Bitte zuerst einloggen.", "error");
         return;
       }
 
       const finalName =
-        fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
+        fullName.trim() || user.user_metadata?.full_name || "Unbekannter Kunde";
 
-      const { error } = await supabase.from("bookings").insert({
-        user_id: user.id,
-        full_name: finalName,
-        email: user.email ?? email,
-        service_name: selectedService.name,
-        duration_minutes: selectedOption.duration,
-        price_eur: selectedOption.price,
-        booking_date: bookingDate,
-        booking_time: selectedSlotTime,
-        accepted_terms: acceptedTerms,
-        status: "requested",
-      });
+      const { data: existingBooking, error: existingBookingError } =
+        await supabase
+          .from("bookings")
+          .select("id")
+          .eq("booking_date", bookingDate)
+          .eq("booking_time", selectedSlotTime)
+          .in("status", ["requested", "confirmed"])
+          .maybeSingle();
+
+      if (existingBookingError) {
+        setStatusMessage(
+          "Der Termin konnte nicht geprüft werden. Bitte versuche es erneut.",
+          "error"
+        );
+        return;
+      }
+
+      if (existingBooking) {
+        setBookedSlots((prev) =>
+          prev.includes(selectedSlotTime) ? prev : [...prev, selectedSlotTime]
+        );
+        setSelectedSlotTime(null);
+        setStatusMessage(
+          "Dieser Termin wurde gerade von jemand anderem gebucht. Bitte wähle eine andere Uhrzeit.",
+          "error"
+        );
+        return;
+      }
+
+      const { data: insertedBooking, error } = await supabase
+        .from("bookings")
+        .insert({
+          user_id: user.id,
+          full_name: finalName,
+          email: user.email ?? email.trim(),
+          service_name: selectedService.name,
+          duration_minutes: selectedOption.duration,
+          price_eur: selectedOption.price,
+          booking_date: bookingDate,
+          booking_time: selectedSlotTime,
+          accepted_terms: acceptedTerms,
+          status: "requested",
+        })
+        .select("id")
+        .single();
 
       if (error) {
-        if ((error as any).code === "23505") {
-          setMessage(
-            "Dieser Termin wurde gerade von jemand anderem gebucht. Bitte wähle eine andere Uhrzeit."
+        if ((error as { code?: string }).code === "23505") {
+          setBookedSlots((prev) =>
+            prev.includes(selectedSlotTime) ? prev : [...prev, selectedSlotTime]
+          );
+          setSelectedSlotTime(null);
+          setStatusMessage(
+            "Dieser Termin ist leider nicht mehr verfügbar. Bitte wähle eine andere Uhrzeit.",
+            "error"
           );
         } else {
-          setMessage(error.message);
+          setStatusMessage(error.message, "error");
         }
         return;
       }
 
-      setMessage("Termin erfolgreich angefragt.");
-      setBookedSlots((prev) => [...prev, selectedSlotTime!]);
+      setBookedSlots((prev) =>
+        prev.includes(selectedSlotTime) ? prev : [...prev, selectedSlotTime]
+      );
+
+      setStatusMessage(
+        "Dein Termin wurde erfolgreich gespeichert.",
+        "success"
+      );
+
       setSelectedSlotTime(null);
+      setAcceptedTerms(false);
+
+      setTimeout(() => {
+        router.push("/my-bookings?success=1");
+      }, 900);
+
+      // Später hier Buchungs-E-Mail auslösen:
+      // await fetch("/api/send-booking-email", { ... })
+      void insertedBooking;
     } finally {
-      setLoading(false);
+      setBookingLoading(false);
     }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setAcceptedTerms(false);
-    setMessage("Erfolgreich ausgeloggt.");
+    setStatusMessage("Erfolgreich ausgeloggt.", "success");
   };
+
+  const messageClassName =
+    messageType === "success"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+      : messageType === "error"
+      ? "border-red-200 bg-red-50 text-red-800"
+      : "border-green-200 bg-green-50 text-green-900";
 
   return (
     <div className="min-h-screen bg-[#f6efe5] p-6 md:p-10">
       <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5">
-          <div className="border-b border-neutral-200 px-6 py-5 md:px-8">
+        <section className="overflow-hidden rounded-3xl border border-green-100 bg-white shadow-sm">
+          <div className="border-b border-green-100 bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-5 md:px-8">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
+                <p className="text-sm font-medium uppercase tracking-[0.2em] text-green-700">
                   Online Buchung
                 </p>
                 <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-900">
                   Termin buchen
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-neutral-600 md:text-base">
-                  Wähle deine Behandlung, die passende Dauer und einen freien Termin.
+                  Wähle deine Behandlung, die passende Dauer und einen freien
+                  Termin.
                 </p>
               </div>
-              <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-                Live verbunden
+
+              <div className="rounded-2xl border border-green-200 bg-white px-4 py-3 text-sm font-medium text-green-700">
+                {slotsLoading ? "Lade Termine..." : "Live verbunden"}
               </div>
             </div>
           </div>
 
           <div className="grid gap-8 px-6 py-6 md:px-8 md:py-8">
-            <div>
+            <div className="rounded-3xl border border-green-200 bg-green-50/50 p-5">
               <h2 className="text-lg font-semibold text-neutral-900">
                 1. Behandlung wählen
               </h2>
+
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {services.map((service, index) => (
                   <button
@@ -331,15 +452,15 @@ export default function BookingPage() {
                     }}
                     className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                       index === selectedServiceIndex
-                        ? "border-neutral-900 bg-neutral-900 text-white"
-                        : "border-neutral-200 bg-white text-neutral-900"
+                        ? "border-green-700 bg-green-700 text-white"
+                        : "border-green-200 bg-white text-neutral-900 hover:border-green-400"
                     }`}
                   >
                     <div className="text-base font-semibold">{service.name}</div>
                     <div
                       className={`mt-2 text-sm ${
                         index === selectedServiceIndex
-                          ? "text-neutral-300"
+                          ? "text-green-100"
                           : "text-neutral-500"
                       }`}
                     >
@@ -350,10 +471,11 @@ export default function BookingPage() {
               </div>
             </div>
 
-            <div>
+            <div className="rounded-3xl border border-green-200 bg-green-50/50 p-5">
               <h2 className="text-lg font-semibold text-neutral-900">
                 2. Dauer auswählen
               </h2>
+
               <div className="mt-4 grid gap-4 md:grid-cols-3">
                 {selectedService.options.map((option, index) => (
                   <button
@@ -361,8 +483,8 @@ export default function BookingPage() {
                     onClick={() => setSelectedOptionIndex(index)}
                     className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                       index === selectedOptionIndex
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-900"
-                        : "border-neutral-200 bg-white text-neutral-900"
+                        ? "border-green-600 bg-green-100 text-green-900"
+                        : "border-green-200 bg-white text-neutral-900 hover:border-green-400"
                     }`}
                   >
                     <div className="text-base font-semibold">
@@ -376,7 +498,7 @@ export default function BookingPage() {
               </div>
             </div>
 
-            <div>
+            <div className="rounded-3xl border border-green-200 bg-green-50/50 p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold text-neutral-900">
                   3. Datum & Uhrzeit auswählen
@@ -385,8 +507,12 @@ export default function BookingPage() {
                 <input
                   type="date"
                   value={bookingDate}
-                  onChange={(e) => setBookingDate(e.target.value)}
-                  className="rounded-2xl border border-neutral-200 bg-neutral-100 px-4 py-2 text-sm text-neutral-600 outline-none"
+                  min={todayDate}
+                  onChange={(e) => {
+                    setBookingDate(e.target.value);
+                    setSelectedSlotTime(null);
+                  }}
+                  className="rounded-2xl border border-green-200 bg-white px-4 py-2 text-sm text-neutral-700 outline-none focus:border-green-500"
                 />
               </div>
 
@@ -397,22 +523,24 @@ export default function BookingPage() {
                   return (
                     <button
                       key={slot.time}
+                      type="button"
                       onClick={() => {
                         if (unavailable) return;
                         setSelectedSlotTime(slot.time);
                       }}
+                      disabled={unavailable}
                       className={`rounded-2xl border px-4 py-4 text-left transition ${
                         unavailable
                           ? "cursor-not-allowed border-neutral-200 bg-neutral-100 text-neutral-400"
                           : selectedSlotTime === slot.time
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm"
-                          : "border-neutral-200 bg-white text-neutral-900 hover:border-neutral-400"
+                          ? "border-green-600 bg-green-100 text-green-900 shadow-sm"
+                          : "border-green-200 bg-white text-neutral-900 hover:border-green-500 hover:bg-green-50"
                       }`}
                     >
                       <div className="text-lg font-semibold">{slot.time}</div>
                       <div className="mt-1 text-xs uppercase tracking-wide">
                         {unavailable
-                          ? "Nicht verfügbar"
+                          ? "Belegt"
                           : selectedSlotTime === slot.time
                           ? "Ausgewählt"
                           : "Frei"}
@@ -429,13 +557,13 @@ export default function BookingPage() {
               </h3>
               <p className="mt-1 text-sm leading-6 text-amber-800">
                 Termine können bis 24 Stunden vorher kostenfrei abgesagt werden.
-                Bei späterer Absage oder Nichterscheinen kann eine Ausfallpauschale
-                von 10 € berechnet werden.
+                Bei späterer Absage oder Nichterscheinen kann eine
+                Ausfallpauschale von 10 € berechnet werden.
               </p>
             </div>
 
             {!isLoggedIn ? (
-              <div className="rounded-3xl border border-neutral-200 bg-neutral-50 p-5">
+              <div className="rounded-3xl border border-green-200 bg-white p-5">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-neutral-900">
@@ -449,35 +577,35 @@ export default function BookingPage() {
                   <button
                     onClick={() => {
                       setShowAuth(true);
-                      setMessage("");
+                      setStatusMessage("");
                     }}
-                    className="rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                    className="rounded-2xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
                   >
                     Einloggen / Registrieren
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="rounded-3xl border border-green-200 bg-green-50 p-5">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-emerald-900">
+                    <h3 className="text-lg font-semibold text-green-900">
                       Eingeloggt als {sessionEmail}
                     </h3>
-                    <p className="mt-1 text-sm text-emerald-800">
+                    <p className="mt-1 text-sm text-green-800">
                       Du kannst jetzt deinen Termin verbindlich anfragen.
                     </p>
                   </div>
 
                   <button
                     onClick={handleLogout}
-                    className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-neutral-800"
+                    className="rounded-2xl border border-green-200 bg-white px-4 py-2 text-sm font-medium text-neutral-800"
                   >
                     Logout
                   </button>
                 </div>
 
-                <label className="mt-4 flex items-start gap-3 rounded-2xl bg-white p-4 text-sm text-neutral-700">
+                <label className="mt-4 flex items-start gap-3 rounded-2xl border border-green-100 bg-white p-4 text-sm text-neutral-700">
                   <input
                     type="checkbox"
                     checked={acceptedTerms}
@@ -487,15 +615,15 @@ export default function BookingPage() {
                   <span>
                     Ich akzeptiere die Buchungs- und Stornobedingungen. Eine
                     kostenfreie Absage ist bis 24 Stunden vorher möglich. Bei
-                    späterer Absage oder Nichterscheinen kann eine Ausfallpauschale
-                    von 10 € berechnet werden.
+                    späterer Absage oder Nichterscheinen kann eine
+                    Ausfallpauschale von 10 € berechnet werden.
                   </span>
                 </label>
               </div>
             )}
 
             {message && (
-              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+              <div className={`rounded-2xl border px-4 py-3 text-sm ${messageClassName}`}>
                 {message}
               </div>
             )}
@@ -503,31 +631,31 @@ export default function BookingPage() {
         </section>
 
         <aside className="space-y-6">
-          <div className="rounded-3xl bg-neutral-900 p-6 text-white shadow-sm">
-            <p className="text-sm uppercase tracking-[0.2em] text-neutral-400">
+          <div className="rounded-3xl border border-green-200 bg-gradient-to-b from-green-700 to-emerald-700 p-6 text-white shadow-sm">
+            <p className="text-sm uppercase tracking-[0.2em] text-green-100">
               Zusammenfassung
             </p>
 
             <div className="mt-5 space-y-4">
-              <div className="rounded-2xl bg-white/5 p-4">
-                <div className="text-sm text-neutral-400">Behandlung</div>
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
+                <div className="text-sm text-green-100">Behandlung</div>
                 <div className="mt-1 text-lg font-semibold">
                   {selectedService.name}
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-white/5 p-4">
-                <div className="text-sm text-neutral-400">Dauer & Preis</div>
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
+                <div className="text-sm text-green-100">Dauer & Preis</div>
                 <div className="mt-1 text-lg font-semibold">
                   {selectedOption.duration} Min
                 </div>
-                <div className="text-neutral-300">{selectedOption.price} €</div>
+                <div className="text-green-100">{selectedOption.price} €</div>
               </div>
 
-              <div className="rounded-2xl bg-white/5 p-4">
-                <div className="text-sm text-neutral-400">Termin</div>
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
+                <div className="text-sm text-green-100">Termin</div>
                 <div className="mt-1 text-lg font-semibold">{bookingDate || "-"}</div>
-                <div className="text-neutral-300">
+                <div className="text-green-100">
                   {selectedSlotTime ? `${selectedSlotTime} Uhr` : "Bitte wählen"}
                 </div>
               </div>
@@ -535,23 +663,24 @@ export default function BookingPage() {
 
             <button
               onClick={handleBookingSubmit}
-              disabled={!bookingReady || loading}
+              disabled={!bookingReady}
               className={`mt-6 w-full rounded-2xl px-5 py-3 text-sm font-semibold transition ${
-                bookingReady && !loading
-                  ? "bg-white text-neutral-900 hover:opacity-90"
+                bookingReady
+                  ? "bg-white text-green-900 hover:opacity-90"
                   : "cursor-not-allowed bg-white/20 text-white/60"
               }`}
             >
-              {loading ? "Wird gespeichert..." : "Termin jetzt anfragen"}
+              {bookingLoading ? "Wird gespeichert..." : "Termin jetzt anfragen"}
             </button>
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-3xl border border-green-200 bg-white p-6 shadow-sm">
             <h3 className="text-lg font-semibold text-neutral-900">
               Eigene Termine
             </h3>
             <p className="mt-3 text-sm leading-6 text-neutral-600">
-              Bereits gebuchte Termine kannst du später unter <strong>/my-bookings</strong> verwalten und stornieren.
+              Bereits gebuchte Termine kannst du später unter{" "}
+              <strong>/my-bookings</strong> verwalten und stornieren.
             </p>
           </div>
         </aside>
@@ -559,10 +688,10 @@ export default function BookingPage() {
 
       {showAuth && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-3xl border border-green-100 bg-white p-6 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-neutral-500">
+                <p className="text-sm uppercase tracking-[0.2em] text-green-700">
                   Konto
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-neutral-900">
@@ -572,7 +701,7 @@ export default function BookingPage() {
 
               <button
                 onClick={() => setShowAuth(false)}
-                className="rounded-xl bg-neutral-100 px-3 py-2 text-sm text-neutral-700"
+                className="rounded-xl bg-green-50 px-3 py-2 text-sm text-green-800"
               >
                 Schließen
               </button>
@@ -588,7 +717,7 @@ export default function BookingPage() {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-2xl border border-neutral-200 px-4 py-3 outline-none focus:border-neutral-400"
+                    className="w-full rounded-2xl border border-green-200 px-4 py-3 outline-none focus:border-green-500"
                     placeholder="Vor- und Nachname"
                   />
                 </div>
@@ -602,7 +731,7 @@ export default function BookingPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-2xl border border-neutral-200 px-4 py-3 outline-none focus:border-neutral-400"
+                  className="w-full rounded-2xl border border-green-200 px-4 py-3 outline-none focus:border-green-500"
                   placeholder="deine@email.de"
                 />
               </div>
@@ -615,17 +744,17 @@ export default function BookingPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-2xl border border-neutral-200 px-4 py-3 outline-none focus:border-neutral-400"
+                  className="w-full rounded-2xl border border-green-200 px-4 py-3 outline-none focus:border-green-500"
                   placeholder="Passwort"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
+                disabled={authLoading}
+                className="w-full rounded-2xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:opacity-60"
               >
-                {loading
+                {authLoading
                   ? "Bitte warten..."
                   : isRegisterMode
                   ? "Registrieren"
