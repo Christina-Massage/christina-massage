@@ -28,11 +28,12 @@ export default function ChristinaMassageWebsite() {
       brand: {
         name: "Christina Massage",
         city: "Hohenpeißenberg",
-        phoneDisplay: "0172 2664648",
-        phoneLink: "01722664648",
+        phoneDisplay: "+49 172 2664648",
+        phoneLink: "491722664648",
         whatsappLink:
           "https://wa.me/491722664648?text=Hallo%20ich%20möchte%20einen%20Termin%20vereinbaren",
         address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
+        email: "dobozikriszta76@gmail.com",
       },
       nav: {
         about: "Über mich",
@@ -189,10 +190,182 @@ export default function ChristinaMassageWebsite() {
       },
       footer: {
         text: "© 2026 Christina Massage",
+        imprint: "Impressum",
+        privacy: "Datenschutz",
       },
     };
 
-    const hu = de;
+    const hu = {
+      brand: {
+        name: "Christina Massage",
+        city: "Hohenpeißenberg",
+        phoneDisplay: "+49 172 2664648",
+        phoneLink: "491722664648",
+        whatsappLink:
+          "https://wa.me/491722664648?text=Szia%2C%20időpontot%20szeretnék%20foglalni",
+        address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
+        email: "dobozikriszta76@gmail.com",
+      },
+      nav: {
+        about: "Rólam",
+        services: "Masszázsok",
+        special: "HIEMT",
+        methods: "Kiegészítő kezelések",
+        expectations: "Miért Christina Massage",
+        location: "Megközelítés",
+        booking: "Időpontfoglalás",
+      },
+      hero: {
+        title: "Harmónia testnek és léleknek",
+        subtitle:
+          "Egyéni kezelések, figyelmes kísérés és nyugodt környezet a személyes jóllétedért.",
+        primary: "Időpontfoglalás",
+        secondary: "Hívás vagy WhatsApp",
+      },
+      about: {
+        eyebrow: "Rólam",
+        title: "Tapasztalattal, odafigyeléssel és valódi jelenléttel",
+        text: [
+          "A mozgás és a test harmóniája nemcsak a hivatásom, hanem az életszemléletem is.",
+          "A sport és a mozgás szeretete gyermekkorom óta végigkíséri az életemet. Pályafutásomat 2007-ben edzőként kezdtem, és azóta is lenyűgöz az emberi test csodálatos alkalmazkodóképessége.",
+          "Több mint 10 éve segítek vendégeimnek kiszakadni a mindennapi stresszből. Minden kezelés során az egyéni igények állnak a középpontban.",
+          "Legyen szó izomlazításról, stresszoldásról, regenerációról vagy feltöltődésről – minden kezelést személyre szabok.",
+          "Hiszem, hogy a masszázs több mint testi kezelés. Ez egy értékes énidő – a nyugalom pillanata, amikor a hétköznapok terhe lekerül rólunk, és megtalálhatjuk a belső egyensúlyt.",
+          "Saját életemben is fontos számomra a test, lélek és szellem harmóniája – és ugyanezzel a szemlélettel fordulok vendégeim felé is.",
+        ],
+      },
+      services: {
+        eyebrow: "Masszázsok",
+        title: "Masszázsok személyre szabva",
+        text:
+          "A nyilakkal válthatsz a kezelések között, telefonon pedig egyszerűen lapozhatsz.",
+        button: "Időpontfoglalás",
+        items: [
+          {
+            title: "Svédmasszázs",
+            description:
+              "Klasszikus masszázs az izmok lazítására, a vérkeringés támogatására és a mély ellazulásért.",
+            durations: ["60 perc · 60 €", "90 perc · 90 €", "120 perc · 120 €"],
+          },
+          {
+            title: "Hát- és nyakmasszázs",
+            description:
+              "Célzott kezelés a felső háti, vállövi és nyaki feszültségek oldására.",
+            durations: ["45 perc · 45 €", "60 perc · 60 €", "75 perc · 75 €"],
+          },
+          {
+            title: "Egyéni masszázs",
+            description:
+              "A kezelés a személyes panaszaidhoz és igényeidhez igazodik.",
+            durations: ["60 perc · 60 €", "90 perc · 90 €", "120 perc · 120 €"],
+          },
+          {
+            title: "Talpmasszázs",
+            description:
+              "Kellemes kezelés a terhelt lábak tehermentesítésére és ellazítására.",
+            durations: ["45 perc · 45 €", "60 perc · 60 €"],
+          },
+          {
+            title: "Nyirokmasszázs",
+            description:
+              "Gyengéd kezelés a nyirokáramlás támogatására és a könnyedebb testérzetért.",
+            durations: ["60 perc · 60 €", "90 perc · 90 €"],
+          },
+          {
+            title: "Vagus / stresszoldás",
+            description:
+              "Nyugodt kezelés a regeneráció, az idegrendszer és a belső egyensúly támogatására.",
+            durations: ["45 perc · 45 €", "60 perc · 60 €"],
+          },
+          {
+            title: "Champi – indiai fejmasszázs",
+            description:
+              "Gyengéd és mégis hatásos relaxáció fejre, nyakra és a belső nyugalomra.",
+            durations: ["45 perc · 45 €", "60 perc · 60 €"],
+          },
+        ] as MassageItem[],
+      },
+      methods: {
+        eyebrow: "Kiegészítő kezelések",
+        title: "Terápiás és kiegészítő kezelések",
+        cards: [
+          {
+            title: "FDM kezelés",
+            text:
+              "Az FDM egy modern manuális kezelési módszer, amely célzottan a fájdalmakra és a mozgáskorlátozottságokra hat a mozgásszervrendszerben. A fascia rendszer zavarainak kezelésével javítható a mozgékonyság és a közérzet.",
+            price: "60 perc · 60 €",
+          },
+          {
+            title: "Flossing",
+            text:
+              "A flossing egy modern fizioterápiás kezelés, amely célzottan hat a fasciákra, izmokra és ízületekre. Egy speciális gumiszalag segítségével a kezelt terület rövid ideig kompresszió alá kerül, majd tehermentesül. Ez javíthatja a keringést, oldhatja az összetapadásokat és csökkentheti a fájdalmat. Különösen hasznos mozgásbeszűkülés, feszültség, duzzanat vagy hegterület esetén.",
+            price: "30 / 45 / 60 perc · 30 € / 45 € / 60 €",
+          },
+          {
+            title: "Köpölyözés",
+            text:
+              "A köpölyözés egy bevált módszer a vérkeringés serkentésére, a feszültségek oldására és az anyagcsere támogatására. Mélyen a szövetekben fejti ki hatását, különösen izomfeszültségek esetén.",
+            price: "30 perc · 30 €",
+          },
+        ],
+      },
+      special: {
+        eyebrow: "Különleges kezelés",
+        title: "HIEMT medencefenék-tréning",
+        text:
+          "Különleges kiegészítő kezelés a medencefenék célzott támogatására – diszkréten, korszerűen és kényelmesen.",
+        bullets: [
+          "30 perc egy alkalom",
+          "Alkalmazás csak ruhában",
+          "Nem invazív kezelés",
+          "A medencefenék célzott aktiválása és erősítése",
+        ],
+        trialLabel: "Próbaalkalom",
+        trialPrice: "30 €",
+        packLabel: "10 alkalmas bérlet",
+        packPrice: "280 €",
+        note:
+          "Ideális mindazoknak, akik célzottan szeretnék erősíteni a medencefeneküket és javítani testérzetüket.",
+      },
+      booking: {
+        eyebrow: "Online foglalás",
+        title: "Kényelmes online időpontkérés",
+        text:
+          "Válaszd ki a kezelést, az időtartamot és a kívánt időpontot. A foglaláshoz regisztráció szükséges.",
+        button: "Naptár megnyitása",
+      },
+      expectations: {
+        eyebrow: "Amit a Christina Massage-nál megtapasztalhatsz",
+        title: "Személyes, nyugodt és figyelmes kísérés",
+        items: [
+          {
+            title: "Egyéni figyelem",
+            text:
+              "Minden kezelést a személyes panaszaidhoz és igényeidhez igazítok.",
+          },
+          {
+            title: "Holistikus szemlélet",
+            text:
+              "A test, a regeneráció és a nyugalom mindig összefüggésben kerülnek szemléletre.",
+          },
+          {
+            title: "Nyugodt légkör",
+            text:
+              "Egy hely, ahol elengedhetsz, megpihenhetsz és új energiát gyűjthetsz.",
+          },
+        ],
+      },
+      location: {
+        eyebrow: "Megközelítés",
+        title: "Így találsz meg",
+      },
+      footer: {
+        text: "© 2026 Christina Massage",
+        imprint: "Impresszum",
+        privacy: "Adatvédelem",
+      },
+    };
+
     return language === "de" ? de : hu;
   }, [language]);
 
@@ -203,9 +376,15 @@ export default function ChristinaMassageWebsite() {
       <header className="sticky top-0 z-50 border-b border-[#d9cfbf] bg-[#f6efe5]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <nav className="hidden items-center gap-8 text-sm text-stone-700 lg:flex">
-            <a href="#ueber" className="hover:text-stone-900">{c.nav.about}</a>
-            <a href="#leistungen" className="hover:text-stone-900">{c.nav.services}</a>
-            <a href="#special" className="hover:text-stone-900">{c.nav.special}</a>
+            <a href="#ueber" className="hover:text-stone-900">
+              {c.nav.about}
+            </a>
+            <a href="#leistungen" className="hover:text-stone-900">
+              {c.nav.services}
+            </a>
+            <a href="#special" className="hover:text-stone-900">
+              {c.nav.special}
+            </a>
           </nav>
 
           <div className="flex flex-col items-center">
@@ -220,9 +399,16 @@ export default function ChristinaMassageWebsite() {
           </div>
 
           <div className="hidden items-center gap-8 text-sm text-stone-700 lg:flex">
-            <a href="#zusatzangebote" className="hover:text-stone-900">{c.nav.methods}</a>
-            <a href="#anfahrt" className="hover:text-stone-900">{c.nav.location}</a>
-            <a href="/booking" className="rounded-full border border-[#405e3f] px-5 py-2.5 font-medium text-[#405e3f] hover:bg-[#405e3f] hover:text-white">
+            <a href="#zusatzangebote" className="hover:text-stone-900">
+              {c.nav.methods}
+            </a>
+            <a href="#anfahrt" className="hover:text-stone-900">
+              {c.nav.location}
+            </a>
+            <a
+              href="/booking"
+              className="rounded-full border border-[#405e3f] px-5 py-2.5 font-medium text-[#405e3f] hover:bg-[#405e3f] hover:text-white"
+            >
               {c.nav.booking}
             </a>
           </div>
@@ -571,8 +757,12 @@ export default function ChristinaMassageWebsite() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <p>{c.footer.text}</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-stone-800">Impressum</a>
-            <a href="#" className="hover:text-stone-800">Datenschutz</a>
+            <a href="/impressum" className="hover:text-stone-800">
+              {c.footer.imprint}
+            </a>
+            <a href="#" className="hover:text-stone-800">
+              {c.footer.privacy}
+            </a>
           </div>
         </div>
       </footer>

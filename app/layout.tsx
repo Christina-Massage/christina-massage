@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import CookieBanner from "./components/CookieBanner"; // relativer Import
 
 export const metadata: Metadata = {
   title: "Christina Massage",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieBanner />
+      </body>
     </html>
   );
 }
