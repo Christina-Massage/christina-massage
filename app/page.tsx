@@ -1684,7 +1684,7 @@ export default function ChristinaMassageWebsite() {
           <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-center">
             <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
               <img
-                src="/entrance.jpg"
+                src="/entrance.jpeg"
                 alt="Eingang Christina Massage"
                 className="h-full w-full object-cover"
               />
