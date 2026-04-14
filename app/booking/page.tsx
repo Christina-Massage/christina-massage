@@ -21,6 +21,18 @@ type Service = {
   options: DurationOption[];
 };
 
+type StatusType = "success" | "error" | "info";
+
+type BlockedTime = {
+  id: string;
+  block_date: string;
+  start_time: string;
+  end_time: string;
+  title: string;
+  block_type: string;
+  note?: string | null;
+};
+
 const services: Service[] = [
   {
     key: "swedish",
@@ -152,7 +164,20 @@ const slotTemplate = [
   { time: "16:45" },
 ];
 
-type StatusType = "success" | "error" | "info";
+function timeToMinutes(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function isSlotBlocked(slotTime: string, blockedTimes: BlockedTime[]) {
+  const slotMinutes = timeToMinutes(slotTime);
+
+  return blockedTimes.some((block) => {
+    const start = timeToMinutes(block.start_time);
+    const end = timeToMinutes(block.end_time);
+    return slotMinutes >= start && slotMinutes < end;
+  });
+}
 
 export default function BookingPage() {
   const router = useRouter();
@@ -171,6 +196,7 @@ export default function BookingPage() {
   const [password, setPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<StatusType>("info");
@@ -266,6 +292,7 @@ export default function BookingPage() {
         language === "de" ? "Nicht verfügbar" : "Nem elérhető",
       selected: language === "de" ? "Ausgewählt" : "Kiválasztva",
       free: language === "de" ? "Frei" : "Szabad",
+      blocked: language === "de" ? "Blockiert" : "Lezárva",
       authSuccessRegister:
         language === "de"
           ? "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
@@ -292,8 +319,7 @@ export default function BookingPage() {
           : "Ezt az időpontot éppen most más foglalta le. Kérjük válassz másik időpontot.",
     };
   }, [language]);
-
-  useEffect(() => {
+    useEffect(() => {
     const today = new Date();
     const y = today.getFullYear();
     const m = `${today.getMonth() + 1}`.padStart(2, "0");
@@ -312,15 +338,6 @@ export default function BookingPage() {
     setMessage(text);
     setMessageType(type);
   };
-
-  useEffect(() => {
-    console.log("bookingReady:", bookingReady, {
-      isLoggedIn,
-      acceptedTerms,
-      selectedSlotTime,
-      bookingDate,
-    });
-  }, [bookingReady, isLoggedIn, acceptedTerms, selectedSlotTime, bookingDate]);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -358,22 +375,38 @@ export default function BookingPage() {
 
     return () => subscription.unsubscribe();
   }, []);
-    useEffect(() => {
+
+  useEffect(() => {
     if (!bookingDate) return;
 
-    const loadBookedSlots = async () => {
-      const { data, error } = await supabase
+    const loadUnavailableTimes = async () => {
+      const { data: bookingsData, error: bookingsError } = await supabase
         .from("bookings")
         .select("booking_time")
         .eq("booking_date", bookingDate)
         .in("status", ["requested", "confirmed"]);
 
-      if (!error && data) {
-        setBookedSlots(data.map((item) => item.booking_time));
+      if (!bookingsError && bookingsData) {
+        setBookedSlots(bookingsData.map((item) => item.booking_time));
+      } else {
+        setBookedSlots([]);
       }
+
+      const { data: blockedData, error: blockedError } = await supabase
+        .from("blocked_times")
+        .select("id, block_date, start_time, end_time, title, block_type, note")
+        .eq("block_date", bookingDate);
+
+      if (!blockedError && blockedData) {
+        setBlockedTimes(blockedData as BlockedTime[]);
+      } else {
+        setBlockedTimes([]);
+      }
+
+      setSelectedSlotTime(null);
     };
 
-    loadBookedSlots();
+    loadUnavailableTimes();
   }, [bookingDate]);
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -438,7 +471,6 @@ export default function BookingPage() {
   };
 
   const handleBookingSubmit = async () => {
-    console.log("handleBookingSubmit wurde gestartet");
     setStatusMessage("", "info");
 
     if (!bookingReady) {
@@ -446,6 +478,16 @@ export default function BookingPage() {
         language === "de"
           ? "Bitte einloggen, AGB bestätigen und einen freien Termin auswählen."
           : "Kérjük jelentkezz be, fogadd el a feltételeket és válassz szabad időpontot.",
+        "error"
+      );
+      return;
+    }
+
+    if (selectedSlotTime && isSlotBlocked(selectedSlotTime, blockedTimes)) {
+      setStatusMessage(
+        language === "de"
+          ? "Dieser Zeitraum ist blockiert. Bitte wähle eine andere Uhrzeit."
+          : "Ez az időszak le van zárva. Kérjük válassz másik időpontot.",
         "error"
       );
       return;
@@ -468,18 +510,6 @@ export default function BookingPage() {
 
       const serviceName = selectedService.name[language];
 
-      console.log("Sende Anfrage an /api/bookings", {
-        user_id: user.id,
-        name: finalName,
-        email: user.email ?? email.trim(),
-        service: serviceName,
-        date: bookingDate,
-        time: selectedSlotTime,
-        duration: selectedOption.duration,
-        price: selectedOption.price,
-        accepted_terms: acceptedTerms,
-      });
-
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: {
@@ -500,9 +530,6 @@ export default function BookingPage() {
 
       const result = await response.json();
 
-      console.log("Antwort von /api/bookings:", result);
-      console.log("response.ok:", response.ok);
-
       if (!response.ok) {
         if (
           result?.message?.includes("duplicate key") ||
@@ -520,7 +547,6 @@ export default function BookingPage() {
       );
 
       setStatusMessage(t.bookingSuccess, "success");
-
       setSelectedSlotTime(null);
       setAcceptedTerms(false);
 
@@ -555,8 +581,7 @@ export default function BookingPage() {
       : messageType === "error"
       ? "border-red-200 bg-red-50 text-red-800"
       : "border-stone-200 bg-stone-50 text-stone-700";
-
-  return (
+        return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
@@ -685,7 +710,8 @@ export default function BookingPage() {
                   ))}
                 </div>
               </div>
-                            <div>
+
+              <div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h2 className="text-lg font-semibold text-stone-900">
                     {t.step3}
@@ -701,7 +727,9 @@ export default function BookingPage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {slotTemplate.map((slot) => {
-                    const unavailable = bookedSlots.includes(slot.time);
+                    const booked = bookedSlots.includes(slot.time);
+                    const blocked = isSlotBlocked(slot.time, blockedTimes);
+                    const unavailable = booked || blocked;
 
                     return (
                       <button
@@ -720,8 +748,10 @@ export default function BookingPage() {
                       >
                         <div className="text-lg font-semibold">{slot.time}</div>
                         <div className="mt-1 text-xs uppercase tracking-wide">
-                          {unavailable
+                          {booked
                             ? t.unavailable
+                            : blocked
+                            ? t.blocked
                             : selectedSlotTime === slot.time
                             ? t.selected
                             : t.free}
