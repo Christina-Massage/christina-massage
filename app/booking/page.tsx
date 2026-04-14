@@ -314,6 +314,15 @@ export default function BookingPage() {
   };
 
   useEffect(() => {
+    console.log("bookingReady:", bookingReady, {
+      isLoggedIn,
+      acceptedTerms,
+      selectedSlotTime,
+      bookingDate,
+    });
+  }, [bookingReady, isLoggedIn, acceptedTerms, selectedSlotTime, bookingDate]);
+
+  useEffect(() => {
     const loadSession = async () => {
       const {
         data: { session },
@@ -429,6 +438,7 @@ export default function BookingPage() {
   };
 
   const handleBookingSubmit = async () => {
+    console.log("handleBookingSubmit wurde gestartet");
     setStatusMessage("", "info");
 
     if (!bookingReady) {
@@ -458,6 +468,18 @@ export default function BookingPage() {
 
       const serviceName = selectedService.name[language];
 
+      console.log("Sende Anfrage an /api/bookings", {
+        user_id: user.id,
+        name: finalName,
+        email: user.email ?? email.trim(),
+        service: serviceName,
+        date: bookingDate,
+        time: selectedSlotTime,
+        duration: selectedOption.duration,
+        price: selectedOption.price,
+        accepted_terms: acceptedTerms,
+      });
+
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: {
@@ -477,6 +499,9 @@ export default function BookingPage() {
       });
 
       const result = await response.json();
+
+      console.log("Antwort von /api/bookings:", result);
+      console.log("response.ok:", response.ok);
 
       if (!response.ok) {
         if (
@@ -502,6 +527,14 @@ export default function BookingPage() {
       setTimeout(() => {
         router.push("/my-bookings");
       }, 900);
+    } catch (error) {
+      console.error("Fehler in handleBookingSubmit:", error);
+      setStatusMessage(
+        language === "de"
+          ? "Es ist ein unerwarteter Fehler aufgetreten."
+          : "Váratlan hiba történt.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -618,7 +651,9 @@ export default function BookingPage() {
                             : "text-stone-500"
                         }`}
                       >
-                        {service.options.map((o) => `${o.duration} Min`).join(" / ")}
+                        {service.options
+                          .map((o) => `${o.duration} Min`)
+                          .join(" / ")}
                       </div>
                     </button>
                   ))}
@@ -762,7 +797,9 @@ export default function BookingPage() {
               )}
 
               {message && (
-                <div className={`rounded-2xl border px-4 py-3 text-sm ${messageStyles}`}>
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${messageStyles}`}
+                >
                   {message}
                 </div>
               )}
