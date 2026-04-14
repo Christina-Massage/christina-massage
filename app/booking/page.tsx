@@ -49,7 +49,7 @@ const services: Service[] = [
   {
     key: "individual",
     name: {
-      de: "Individualmassage",
+      de: "Individuelle Massage",
       hu: "Egyéni masszázs",
     },
     options: [
@@ -73,7 +73,7 @@ const services: Service[] = [
     key: "lymph",
     name: {
       de: "Lymphdrainage",
-      hu: "Nyirokmasszázs",
+      hu: "Nyirokelvezetés",
     },
     options: [
       { duration: 60, price: 60 },
@@ -129,6 +129,17 @@ const services: Service[] = [
       hu: "Köpölyözés",
     },
     options: [{ duration: 30, price: 30 }],
+  },
+  {
+    key: "scar-treatment",
+    name: {
+      de: "Narbenbehandlung",
+      hu: "Hegkezelés",
+    },
+    options: [
+      { duration: 30, price: 30 },
+      { duration: 60, price: 60 },
+    ],
   },
 ];
 
@@ -255,6 +266,30 @@ export default function BookingPage() {
         language === "de" ? "Nicht verfügbar" : "Nem elérhető",
       selected: language === "de" ? "Ausgewählt" : "Kiválasztva",
       free: language === "de" ? "Frei" : "Szabad",
+      authSuccessRegister:
+        language === "de"
+          ? "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
+          : "Sikeres regisztráció. Ha aktív az e-mail megerősítés, kérjük ellenőrizd a postaládádat.",
+      authSuccessLogin:
+        language === "de"
+          ? "Erfolgreich eingeloggt."
+          : "Sikeres bejelentkezés.",
+      pleaseLoginFirst:
+        language === "de"
+          ? "Bitte zuerst einloggen."
+          : "Kérjük először jelentkezz be.",
+      bookingSuccess:
+        language === "de"
+          ? "Dein Termin wurde erfolgreich angefragt."
+          : "Az időpontkérés sikeresen elküldve.",
+      bookingError:
+        language === "de"
+          ? "Fehler bei der Buchung."
+          : "Hiba történt a foglalás során.",
+      duplicateError:
+        language === "de"
+          ? "Dieser Termin wurde gerade von jemand anderem gebucht. Bitte wähle eine andere Uhrzeit."
+          : "Ezt az időpontot éppen most más foglalta le. Kérjük válassz másik időpontot.",
     };
   }, [language]);
 
@@ -373,12 +408,7 @@ export default function BookingPage() {
         }
 
         setShowAuth(false);
-        setStatusMessage(
-          language === "de"
-            ? "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
-            : "Sikeres regisztráció. Ha az email megerősítés aktív, kérjük ellenőrizd a postaládádat.",
-          "success"
-        );
+        setStatusMessage(t.authSuccessRegister, "success");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
@@ -391,12 +421,7 @@ export default function BookingPage() {
         }
 
         setShowAuth(false);
-        setStatusMessage(
-          language === "de"
-            ? "Erfolgreich eingeloggt."
-            : "Sikeres bejelentkezés.",
-          "success"
-        );
+        setStatusMessage(t.authSuccessLogin, "success");
       }
     } finally {
       setLoading(false);
@@ -424,12 +449,7 @@ export default function BookingPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setStatusMessage(
-          language === "de"
-            ? "Bitte zuerst einloggen."
-            : "Kérjük először jelentkezz be.",
-          "error"
-        );
+        setStatusMessage(t.pleaseLoginFirst, "error");
         return;
       }
 
@@ -438,29 +458,34 @@ export default function BookingPage() {
 
       const serviceName = selectedService.name[language];
 
-      const { error } = await supabase.from("bookings").insert({
-        user_id: user.id,
-        full_name: finalName,
-        email: user.email ?? email.trim(),
-        service_name: serviceName,
-        duration_minutes: selectedOption.duration,
-        price_eur: selectedOption.price,
-        booking_date: bookingDate,
-        booking_time: selectedSlotTime,
-        accepted_terms: acceptedTerms,
-        status: "requested",
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          name: finalName,
+          email: user.email ?? email.trim(),
+          service: serviceName,
+          date: bookingDate,
+          time: selectedSlotTime,
+          duration: selectedOption.duration,
+          price: selectedOption.price,
+          accepted_terms: acceptedTerms,
+        }),
       });
 
-      if (error) {
-        if ((error as any).code === "23505") {
-          setStatusMessage(
-            language === "de"
-              ? "Dieser Termin wurde gerade von jemand anderem gebucht. Bitte wähle eine andere Uhrzeit."
-              : "Ezt az időpontot éppen most más foglalta le. Kérjük válassz másik időpontot.",
-            "error"
-          );
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (
+          result?.message?.includes("duplicate key") ||
+          result?.message?.includes("23505")
+        ) {
+          setStatusMessage(t.duplicateError, "error");
         } else {
-          setStatusMessage(error.message, "error");
+          setStatusMessage(result?.message || t.bookingError, "error");
         }
         return;
       }
@@ -469,33 +494,7 @@ export default function BookingPage() {
         prev.includes(selectedSlotTime!) ? prev : [...prev, selectedSlotTime!]
       );
 
-      try {
-        await fetch("/api/send-booking-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: user.email ?? email.trim(),
-            fullName: finalName,
-            serviceName,
-            duration: selectedOption.duration,
-            price: selectedOption.price,
-            bookingDate,
-            bookingTime: selectedSlotTime,
-            language,
-          }),
-        });
-      } catch {
-        // Mailversand ist optional und soll die Buchung nicht blockieren
-      }
-
-      setStatusMessage(
-        language === "de"
-          ? "Dein Termin wurde erfolgreich angefragt."
-          : "Az időpontkérés sikeresen elküldve.",
-        "success"
-      );
+      setStatusMessage(t.bookingSuccess, "success");
 
       setSelectedSlotTime(null);
       setAcceptedTerms(false);
@@ -527,7 +526,7 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
           <Link
             href="/"
             className="text-sm font-medium text-white hover:text-[#f5efe3]"
@@ -539,7 +538,7 @@ export default function BookingPage() {
             <img
               src="/logo-christina-massage.png"
               alt="Christina Massage Logo"
-              className="h-16 w-auto object-contain md:h-20"
+              className="h-14 w-auto object-contain sm:h-16 md:h-20"
             />
           </div>
 
@@ -568,11 +567,11 @@ export default function BookingPage() {
         </div>
       </header>
 
-      <div className="min-h-[calc(100vh-88px)] p-6 md:p-10">
+      <div className="min-h-[calc(100vh-88px)] p-4 sm:p-6 md:p-10">
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5">
-            <div className="border-b border-stone-200 px-6 py-5 md:px-8">
-              <div className="flex items-start justify-between gap-4">
+            <div className="border-b border-stone-200 px-5 py-5 sm:px-6 md:px-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-sm font-medium uppercase tracking-[0.2em] text-stone-500">
                     {t.onlineBooking}
@@ -584,13 +583,13 @@ export default function BookingPage() {
                     {t.subtitle}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-[#eef3e6] px-4 py-3 text-sm font-medium text-[#556246]">
+                <div className="w-fit rounded-2xl bg-[#eef3e6] px-4 py-3 text-sm font-medium text-[#556246]">
                   {t.liveConnected}
                 </div>
               </div>
             </div>
 
-            <div className="grid gap-8 px-6 py-6 md:px-8 md:py-8">
+            <div className="grid gap-8 px-5 py-6 sm:px-6 md:px-8 md:py-8">
               <div>
                 <h2 className="text-lg font-semibold text-stone-900">
                   {t.step1}
@@ -630,7 +629,7 @@ export default function BookingPage() {
                 <h2 className="text-lg font-semibold text-stone-900">
                   {t.step2}
                 </h2>
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                   {selectedService.options.map((option, index) => (
                     <button
                       key={`${selectedService.key}-${option.duration}`}
@@ -652,7 +651,7 @@ export default function BookingPage() {
                 </div>
               </div>
                             <div>
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h2 className="text-lg font-semibold text-stone-900">
                     {t.step3}
                   </h2>
