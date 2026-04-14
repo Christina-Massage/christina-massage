@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { supabase } from "../lib/supabase";
+
+type BookingStatus = "requested" | "confirmed" | "cancelled";
 
 type Booking = {
   id: string;
@@ -12,158 +15,530 @@ type Booking = {
   price_eur: number;
   booking_date: string;
   booking_time: string;
-  status: string;
-  cancellation_note: string | null;
+  status: BookingStatus;
+  created_at?: string;
 };
 
-const statusOptions = [
-  "requested",
-  "confirmed",
-  "completed",
-  "cancelled",
-  "no_show",
-];
+type BlockedTime = {
+  id: string;
+  block_date: string;
+  start_time: string;
+  end_time: string;
+  title: string;
+  block_type: string;
+  note: string | null;
+  created_at?: string;
+};
 
-export default function AdminBookingsPage() {
+function todayString() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = `${today.getMonth() + 1}`.padStart(2, "0");
+  const d = `${today.getDate()}`.padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sessionEmail, setSessionEmail] = useState("");
+  const [selectedDate, setSelectedDate] = useState(todayString());
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "info">(
+    "info"
+  );
 
-  const loadBookings = async () => {
-    const { data, error } = await supabase
+  const [blockDate, setBlockDate] = useState(todayString());
+  const [startTime, setStartTime] = useState("13:00");
+  const [endTime, setEndTime] = useState("14:15");
+  const [title, setTitle] = useState("Mittagspause");
+  const [blockType, setBlockType] = useState("pause");
+  const [note, setNote] = useState("");
+
+  const setStatusMessage = (
+    text: string,
+    type: "success" | "error" | "info" = "info"
+  ) => {
+    setMessage(text);
+    setMessageType(type);
+  };
+
+  const messageStyles =
+    messageType === "success"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+      : messageType === "error"
+      ? "border-red-200 bg-red-50 text-red-800"
+      : "border-stone-200 bg-stone-50 text-stone-700";
+
+  const sortedBookings = useMemo(() => {
+    return [...bookings].sort((a, b) => a.booking_time.localeCompare(b.booking_time));
+  }, [bookings]);
+
+  const sortedBlockedTimes = useMemo(() => {
+    return [...blockedTimes].sort((a, b) => a.start_time.localeCompare(b.start_time));
+  }, [blockedTimes]);
+
+  const loadAdminData = async (date: string) => {
+    const { data: bookingsData, error: bookingsError } = await supabase
       .from("bookings")
-      .select("*")
-      .order("booking_date", { ascending: true })
+      .select(
+        "id, full_name, email, service_name, duration_minutes, price_eur, booking_date, booking_time, status, created_at"
+      )
+      .eq("booking_date", date)
       .order("booking_time", { ascending: true });
 
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setBookings(data ?? []);
+    if (bookingsError) {
+      setStatusMessage(bookingsError.message, "error");
+      return;
     }
+
+    const { data: blocksData, error: blocksError } = await supabase
+      .from("blocked_times")
+      .select(
+        "id, block_date, start_time, end_time, title, block_type, note, created_at"
+      )
+      .eq("block_date", date)
+      .order("start_time", { ascending: true });
+
+    if (blocksError) {
+      setStatusMessage(blocksError.message, "error");
+      return;
+    }
+
+    setBookings((bookingsData ?? []) as Booking[]);
+    setBlockedTimes((blocksData ?? []) as BlockedTime[]);
   };
 
   useEffect(() => {
-    const loadAdminData = async () => {
+    const bootstrap = async () => {
       setLoading(true);
 
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (!user) {
-        setMessage("Bitte zuerst einloggen.");
-        setLoading(false);
+      if (!session?.user) {
+        window.location.href = "/booking";
         return;
       }
 
-      const { data: profile } = await supabase
+      setSessionEmail(session.user.email ?? "");
+
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("is_admin")
-        .eq("id", user.id)
+        .eq("id", session.user.id)
         .single();
 
-      if (!profile?.is_admin) {
-        setMessage("Kein Zugriff. Du bist kein Admin.");
+      if (error || !profile?.is_admin) {
+        setIsAdmin(false);
         setLoading(false);
         return;
       }
 
       setIsAdmin(true);
-      await loadBookings();
+      await loadAdminData(selectedDate);
       setLoading(false);
     };
 
-    loadAdminData();
+    bootstrap();
   }, []);
 
-  const updateStatus = async (bookingId: string, status: string) => {
+  useEffect(() => {
+    if (!isAdmin) return;
+    loadAdminData(selectedDate);
+  }, [selectedDate, isAdmin]);
+    const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/booking";
+  };
+
+  const updateBookingStatus = async (bookingId: string, status: BookingStatus) => {
     const { error } = await supabase
       .from("bookings")
       .update({ status })
       .eq("id", bookingId);
 
     if (error) {
-      setMessage(error.message);
+      setStatusMessage(error.message, "error");
       return;
     }
 
-    setMessage("Status aktualisiert.");
-    loadBookings();
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.id === bookingId ? { ...booking, status } : booking
+      )
+    );
+
+    setStatusMessage("Buchungsstatus erfolgreich aktualisiert.", "success");
+  };
+
+  const createBlockedTime = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatusMessage("", "info");
+
+    if (!blockDate || !startTime || !endTime || !title.trim()) {
+      setStatusMessage("Bitte alle Pflichtfelder ausfüllen.", "error");
+      return;
+    }
+
+    if (startTime >= endTime) {
+      setStatusMessage("Die Endzeit muss nach der Startzeit liegen.", "error");
+      return;
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { error } = await supabase.from("blocked_times").insert([
+      {
+        block_date: blockDate,
+        start_time: startTime,
+        end_time: endTime,
+        title: title.trim(),
+        block_type: blockType,
+        note: note.trim() || null,
+        created_by: user?.id ?? null,
+      },
+    ]);
+
+    if (error) {
+      setStatusMessage(error.message, "error");
+      return;
+    }
+
+    setStatusMessage("Sperrzeit erfolgreich angelegt.", "success");
+
+    if (blockDate === selectedDate) {
+      await loadAdminData(selectedDate);
+    }
+
+    setTitle("Mittagspause");
+    setBlockType("pause");
+    setNote("");
+  };
+
+  const deleteBlockedTime = async (blockId: string) => {
+    const { error } = await supabase
+      .from("blocked_times")
+      .delete()
+      .eq("id", blockId);
+
+    if (error) {
+      setStatusMessage(error.message, "error");
+      return;
+    }
+
+    setBlockedTimes((prev) => prev.filter((item) => item.id !== blockId));
+    setStatusMessage("Sperrzeit gelöscht.", "success");
   };
 
   if (loading) {
-    return <div className="p-8">Lade Admin-Daten...</div>;
+    return (
+      <div className="min-h-screen bg-[#f6efe5] px-6 py-16 text-stone-800">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
+          Admin-Bereich wird geladen...
+        </div>
+      </div>
+    );
   }
 
   if (!isAdmin) {
-    return <div className="p-8">{message}</div>;
+    return (
+      <div className="min-h-screen bg-[#f6efe5] px-6 py-16 text-stone-800">
+        <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
+          <h1 className="text-2xl font-semibold text-stone-900">
+            Kein Zugriff
+          </h1>
+          <p className="mt-3 text-stone-600">
+            Du bist nicht als Admin freigeschaltet.
+          </p>
+          <Link
+            href="/"
+            className="mt-6 inline-block rounded-2xl bg-[#405e3f] px-5 py-3 text-sm font-semibold text-white"
+          >
+            Zur Startseite
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#f6efe5] p-6 md:p-10">
-      <div className="mx-auto max-w-7xl rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <h1 className="text-3xl font-semibold text-neutral-900">
-          Admin Buchungen
-        </h1>
+    <div className="min-h-screen bg-[#f6efe5] text-stone-800">
+      <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
+          <Link
+            href="/"
+            className="text-sm font-medium text-white hover:text-[#f5efe3]"
+          >
+            ← Zurück zur Startseite
+          </Link>
 
-        {message && (
-          <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-            {message}
+          <div className="flex flex-col items-center">
+            <img
+              src="/logo-christina-massage.png"
+              alt="Christina Massage Logo"
+              className="h-14 w-auto object-contain sm:h-16 md:h-20"
+            />
           </div>
-        )}
 
-        {bookings.length === 0 ? (
-          <p className="mt-6 text-neutral-600">Noch keine Buchungen vorhanden.</p>
-        ) : (
-          <div className="mt-6 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 text-neutral-500">
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">E-Mail</th>
-                  <th className="px-4 py-3">Leistung</th>
-                  <th className="px-4 py-3">Dauer</th>
-                  <th className="px-4 py-3">Preis</th>
-                  <th className="px-4 py-3">Datum</th>
-                  <th className="px-4 py-3">Uhrzeit</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Storno-Hinweis</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking.id} className="border-b border-neutral-100">
-                    <td className="px-4 py-3">{booking.full_name}</td>
-                    <td className="px-4 py-3">{booking.email}</td>
-                    <td className="px-4 py-3">{booking.service_name}</td>
-                    <td className="px-4 py-3">{booking.duration_minutes} Min</td>
-                    <td className="px-4 py-3">{booking.price_eur} €</td>
-                    <td className="px-4 py-3">{booking.booking_date}</td>
-                    <td className="px-4 py-3">{booking.booking_time}</td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={booking.status}
-                        onChange={(e) => updateStatus(booking.id, e.target.value)}
-                        className="rounded-xl border border-neutral-200 px-3 py-2"
+          <button
+            onClick={handleLogout}
+            className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-stone-800"
+          >
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <div className="px-4 py-6 sm:px-6 md:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+              Admin Dashboard
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold text-stone-900">
+              Termine & Pausen verwalten
+            </h1>
+            <p className="mt-2 text-sm text-stone-600">
+              Eingeloggt als: <strong>{sessionEmail}</strong>
+            </p>
+
+            <div className="mt-5">
+              <label className="mb-2 block text-sm font-medium text-stone-700">
+                Datum auswählen
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 outline-none focus:border-[#567a57]"
+              />
+            </div>
+
+            {message && (
+              <div
+                className={`mt-5 rounded-2xl border px-4 py-3 text-sm ${messageStyles}`}
+              >
+                {message}
+              </div>
+            )}
+          </div>
+                    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h2 className="text-2xl font-semibold text-stone-900">
+                Buchungen am {selectedDate}
+              </h2>
+
+              <div className="mt-5 space-y-4">
+                {sortedBookings.length === 0 ? (
+                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+                    Für dieses Datum liegen noch keine Buchungen vor.
+                  </div>
+                ) : (
+                  sortedBookings.map((booking) => (
+                    <div
+                      key={booking.id}
+                      className="rounded-2xl border border-stone-200 p-4"
+                    >
+                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <div className="text-lg font-semibold text-stone-900">
+                            {booking.booking_time} · {booking.full_name}
+                          </div>
+                          <div className="mt-1 text-sm text-stone-600">
+                            {booking.service_name}
+                          </div>
+                          <div className="mt-1 text-sm text-stone-600">
+                            {booking.duration_minutes} Min · {booking.price_eur} €
+                          </div>
+                          <div className="mt-1 text-sm text-stone-600">
+                            {booking.email}
+                          </div>
+                          <div className="mt-2 text-xs uppercase tracking-wide text-stone-500">
+                            Status: {booking.status}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "confirmed")
+                            }
+                            className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-medium text-white"
+                          >
+                            Bestätigen
+                          </button>
+                          <button
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "cancelled")
+                            }
+                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white"
+                          >
+                            Stornieren
+                          </button>
+                          <button
+                            onClick={() =>
+                              updateBookingStatus(booking.id, "requested")
+                            }
+                            className="rounded-xl bg-stone-700 px-3 py-2 text-sm font-medium text-white"
+                          >
+                            Offen
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+
+            <section className="space-y-6">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+                <h2 className="text-2xl font-semibold text-stone-900">
+                  Pause / Sperrzeit anlegen
+                </h2>
+
+                <form onSubmit={createBlockedTime} className="mt-5 space-y-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-stone-700">
+                      Datum
+                    </label>
+                    <input
+                      type="date"
+                      value={blockDate}
+                      onChange={(e) => setBlockDate(e.target.value)}
+                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-stone-700">
+                        Startzeit
+                      </label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-stone-700">
+                        Endzeit
+                      </label>
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-stone-700">
+                      Titel
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      placeholder="z. B. Mittagspause"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-stone-700">
+                      Typ
+                    </label>
+                    <select
+                      value={blockType}
+                      onChange={(e) => setBlockType(e.target.value)}
+                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                    >
+                      <option value="pause">Pause</option>
+                      <option value="closed">Geschlossen</option>
+                      <option value="vacation">Urlaub</option>
+                      <option value="other">Sonstiges</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-stone-700">
+                      Notiz
+                    </label>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      rows={4}
+                      placeholder="Optional"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full rounded-2xl bg-[#405e3f] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                  >
+                    Sperrzeit speichern
+                  </button>
+                </form>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+                <h2 className="text-2xl font-semibold text-stone-900">
+                  Sperrzeiten am {selectedDate}
+                </h2>
+
+                <div className="mt-5 space-y-4">
+                  {sortedBlockedTimes.length === 0 ? (
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+                      Für dieses Datum sind keine Sperrzeiten eingetragen.
+                    </div>
+                  ) : (
+                    sortedBlockedTimes.map((block) => (
+                      <div
+                        key={block.id}
+                        className="rounded-2xl border border-stone-200 p-4"
                       >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-3 text-neutral-500">
-                      {booking.cancellation_note || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <div className="text-lg font-semibold text-stone-900">
+                              {block.start_time} – {block.end_time}
+                            </div>
+                            <div className="mt-1 text-sm text-stone-600">
+                              {block.title} · {block.block_type}
+                            </div>
+                            {block.note && (
+                              <div className="mt-1 text-sm text-stone-600">
+                                {block.note}
+                              </div>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => deleteBlockedTime(block.id)}
+                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white"
+                          >
+                            Löschen
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </section>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
