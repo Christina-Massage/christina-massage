@@ -135,7 +135,7 @@ export default function AdminPage() {
         .from("profiles")
         .select("is_admin")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error || !profile?.is_admin) {
         setIsAdmin(false);
@@ -150,7 +150,8 @@ export default function AdminPage() {
 
     bootstrap();
   }, []);
-    useEffect(() => {
+
+  useEffect(() => {
     if (!isAdmin) return;
     loadAdminData(selectedDate);
   }, [selectedDate, isAdmin]);
@@ -372,7 +373,8 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-                    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
             <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
               <h2 className="text-2xl font-semibold text-stone-900">
                 Buchungen am {selectedDate}

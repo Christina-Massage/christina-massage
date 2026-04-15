@@ -27,7 +27,10 @@ export async function POST(req: Request) {
 
     if (!bookingId || !status) {
       return NextResponse.json(
-        { success: false, message: "Fehlende Daten." },
+        {
+          success: false,
+          message: "Fehlende Daten.",
+        },
         { status: 400 }
       );
     }
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
         "id, full_name, email, service_name, booking_date, booking_time, duration_minutes, status"
       )
       .eq("id", bookingId)
-      .single();
+      .maybeSingle();
 
     if (fetchError || !booking) {
       return NextResponse.json(
