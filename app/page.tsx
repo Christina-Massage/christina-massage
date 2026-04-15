@@ -1081,8 +1081,8 @@ export default function ChristinaMassageWebsite() {
     return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-10">
-          <nav className="hidden items-center gap-8 text-sm text-white lg:flex">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 lg:px-10">
+          <nav className="hidden items-center gap-8 text-base text-white lg:flex">
             <a href="#ueber" className="hover:text-[#f5efe3]">{c.nav.about}</a>
             <a href="#leistungen" className="hover:text-[#f5efe3]">{c.nav.services}</a>
             <a href="#special" className="hover:text-[#f5efe3]">{c.nav.special}</a>
@@ -1092,26 +1092,26 @@ export default function ChristinaMassageWebsite() {
             <img
               src="/logo-christina-massage.png"
               alt="Christina Massage Logo"
-              className="h-16 w-auto object-contain md:h-20"
+              className="h-18 w-auto object-contain md:h-22"
             />
-            <p className="mt-1 text-xs uppercase tracking-[0.3em] text-[#f2ecdf]">
+            <p className="mt-1 text-sm uppercase tracking-[0.3em] text-[#f2ecdf]">
               {c.brand.city}
             </p>
           </div>
 
-          <div className="hidden items-center gap-8 text-sm text-white lg:flex">
+          <div className="hidden items-center gap-8 text-base text-white lg:flex">
             <a href="#zusatzangebote" className="hover:text-[#f5efe3]">{c.nav.methods}</a>
             <a href="#anfahrt" className="hover:text-[#f5efe3]">{c.nav.location}</a>
             <a
               href="/booking"
-              className="rounded-full border border-[#f5efe3] px-5 py-2.5 font-medium text-[#f5efe3] hover:bg-[#f5efe3] hover:text-[#556246]"
+              className="rounded-full border border-[#f5efe3] px-5 py-2 font-medium text-[#f5efe3] hover:bg-[#f5efe3] hover:text-[#556246]"
             >
               {c.nav.booking}
             </a>
           </div>
         </div>
 
-        <div className="mx-auto flex max-w-7xl justify-end px-4 pb-3 lg:px-10">
+        <div className="mx-auto flex max-w-7xl justify-end px-4 pb-2 lg:px-10">
           <div className="rounded-full border border-[#d8d0c2] bg-white/90 p-1">
             <button
               onClick={() => setLanguage("de")}
@@ -1250,7 +1250,7 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="leistungen" className="py-20">
+      <section id="leistungen" className="pt-20 pb-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.services.eyebrow}</p>
@@ -1289,7 +1289,15 @@ export default function ChristinaMassageWebsite() {
                     </div>
 
                     <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
-                      <img src={service.image} alt={service.title} className="h-full min-h-[440px] w-full object-cover" />
+                      <img
+                        src={service.image}
+                        alt={service.title}
+                        className={`h-full min-h-[440px] w-full ${
+                          service.key === "individual" || service.key === "champi"
+                            ? "object-cover object-center"
+                            : "object-cover"
+                        }`}
+                      />
                     </div>
                   </div>
                 </div>
@@ -1303,7 +1311,7 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="zusatzangebote" className="bg-[#f8f2e9] py-20">
+      <section id="zusatzangebote" className="bg-[#f8f2e9] py-14">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.methods.eyebrow}</p>
