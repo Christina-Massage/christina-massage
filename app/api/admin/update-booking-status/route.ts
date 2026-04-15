@@ -17,6 +17,17 @@ const supabaseServer = createClient(supabaseUrl, anonKey, {
 
 type BookingStatus = "requested" | "confirmed" | "cancelled";
 
+type UpdatedBookingRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  service_name: string;
+  booking_date: string;
+  booking_time: string;
+  duration_minutes: number;
+  status: string;
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -35,36 +46,38 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: booking, error: fetchError } = await supabaseServer
-      .from("bookings")
-      .select(
-        "id, full_name, email, service_name, booking_date, booking_time, duration_minutes, status"
-      )
-      .eq("id", bookingId)
-      .maybeSingle();
+    const { data, error } = await supabaseServer.rpc(
+      "admin_update_booking_status",
+      {
+        p_booking_id: bookingId,
+        p_status: status,
+      }
+    );
 
-    if (fetchError || !booking) {
+    if (error) {
+      console.error("admin_update_booking_status rpc error:", error);
+
       return NextResponse.json(
         {
           success: false,
-          message: fetchError?.message || "Buchung nicht gefunden.",
+          message: error.message || "Status konnte nicht geändert werden.",
+          code: (error as any)?.code ?? null,
+          details: (error as any)?.details ?? null,
+          hint: (error as any)?.hint ?? null,
         },
-        { status: 404 }
+        { status: 500 }
       );
     }
 
-    const { error: updateError } = await supabaseServer
-      .from("bookings")
-      .update({ status })
-      .eq("id", bookingId);
+    const booking = Array.isArray(data) ? (data[0] as UpdatedBookingRow | undefined) : undefined;
 
-    if (updateError) {
+    if (!booking) {
       return NextResponse.json(
         {
           success: false,
-          message: updateError.message || "Status konnte nicht geändert werden.",
+          message: "Buchung nicht gefunden.",
         },
-        { status: 500 }
+        { status: 404 }
       );
     }
 
@@ -96,6 +109,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
+      booking,
       message: "Status erfolgreich aktualisiert.",
     });
   } catch (err: any) {
