@@ -51,23 +51,17 @@ export default function ChristinaMassageWebsite() {
   const content = useMemo(() => {
     const de = {
       brand: {
-        name: "Christina Massage",
         city: "Hohenpeißenberg",
-        phoneDisplay: "+49 172 2664648",
-        phoneLink: "491722664648",
         whatsappLink:
           "https://wa.me/491722664648?text=Hallo%20ich%20möchte%20einen%20Termin%20vereinbaren",
         hiemtWhatsappLink:
           "https://wa.me/491722664648?text=Hallo%20Christina,%20ich%20interessiere%20mich%20für%20eine%20individuelle%20Beratung%20zur%20HIEMT-Behandlung.",
-        address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
-        email: "christina.massage.fdm@gmail.com",
       },
       nav: {
         about: "Über mich",
         services: "Massagen",
         special: "HIEMT",
         methods: "Ergänzende Leistungen",
-        expectations: "Warum Christina Massage",
         location: "Anfahrt",
         booking: "Termin buchen",
       },
@@ -228,27 +222,6 @@ export default function ChristinaMassageWebsite() {
           "Wähle deine Behandlung, die passende Dauer und deinen Wunschtermin. Vor der Buchung ist eine Registrierung erforderlich.",
         button: "Zum Kalender",
       },
-      expectations: {
-        eyebrow: "Was dich bei Christina Massage erwartet",
-        title: "Persönlich, ruhig und achtsam begleitet",
-        items: [
-          {
-            title: "Individuelle Betreuung",
-            text:
-              "Jede Behandlung wird auf deine persönlichen Beschwerden und Bedürfnisse abgestimmt.",
-          },
-          {
-            title: "Ganzheitlicher Blick",
-            text:
-              "Körper, Entspannung und Regeneration werden immer im Zusammenhang betrachtet.",
-          },
-          {
-            title: "Ruhige Atmosphäre",
-            text:
-              "Ein Ort, an dem du loslassen, durchatmen und neue Energie tanken kannst.",
-          },
-        ],
-      },
       location: {
         eyebrow: "Anfahrt",
         title: "So findest du mich",
@@ -277,23 +250,17 @@ export default function ChristinaMassageWebsite() {
 
     const hu = {
       brand: {
-        name: "Christina Massage",
         city: "Hohenpeißenberg",
-        phoneDisplay: "+49 172 2664648",
-        phoneLink: "491722664648",
         whatsappLink:
           "https://wa.me/491722664648?text=Szia%2C%20időpontot%20szeretnék%20foglalni",
         hiemtWhatsappLink:
           "https://wa.me/491722664648?text=Szia%2C%20érdeklődni%20szeretnék%20a%20HIEMT%20kezelésről.",
-        address: "Bahnhofstraße 21, 82383 Hohenpeißenberg",
-        email: "christina.massage.fdm@gmail.com",
       },
       nav: {
         about: "Rólam",
         services: "Masszázsok",
         special: "HIEMT",
         methods: "Kiegészítő kezelések",
-        expectations: "Miért Christina Massage",
         location: "Megközelítés",
         booking: "Időpontfoglalás",
       },
@@ -452,27 +419,6 @@ export default function ChristinaMassageWebsite() {
           "Válaszd ki a kezelést, az időtartamot és a kívánt időpontot. A foglaláshoz regisztráció szükséges.",
         button: "Naptár megnyitása",
       },
-      expectations: {
-        eyebrow: "Amit a Christina Massage-nál megtapasztalhatsz",
-        title: "Személyes, nyugodt és figyelmes kísérés",
-        items: [
-          {
-            title: "Egyéni figyelem",
-            text:
-              "Minden kezelést a személyes panaszaidhoz és igényeidhez igazítok.",
-          },
-          {
-            title: "Holisztikus szemlélet",
-            text:
-              "A test, a regeneráció és a nyugalom mindig összefüggésben kerül szemléletre.",
-          },
-          {
-            title: "Nyugodt légkör",
-            text:
-              "Egy hely, ahol elengedhetsz, megpihenhetsz és új energiát gyűjthetsz.",
-          },
-        ],
-      },
       location: {
         eyebrow: "Megközelítés",
         title: "Így találsz meg",
@@ -608,37 +554,6 @@ export default function ChristinaMassageWebsite() {
                 "Je nach Befund und Bedarf können ergänzend auch FDM, Schröpfen oder Flossing in die Behandlung integriert werden. Diese Techniken gehören damit bei Bedarf zur individuellen Massage und werden vor Ort passend entschieden.",
               ],
             },
-            {
-              heading: "Ziele der Individualmassage",
-              bullets: [
-                "Individuelle Linderung von Muskelverspannungen",
-                "Schmerzlinderung bei spezifischen Beschwerden",
-                "Förderung der Durchblutung und des Stoffwechsels",
-                "Verbesserung der Beweglichkeit",
-                "Stressabbau und mentale Entspannung",
-                "Unterstützung der Regeneration nach körperlicher Belastung",
-                "Steigerung des allgemeinen Wohlbefindens",
-              ],
-            },
-            {
-              heading: "Typische Techniken",
-              bullets: [
-                "Streichungen",
-                "Knetungen",
-                "Reibungen",
-                "Triggerpunkt-Therapie",
-                "Dehnungen und Mobilisationen",
-                "Fasziale Techniken",
-              ],
-            },
-            {
-              heading: "Dauer der Behandlung",
-              bullets: [
-                "60 Minuten – gezielte Behandlung einzelner Problemzonen",
-                "90 Minuten – umfassende, individuell angepasste Massage",
-                "120 Minuten – intensive Ganzkörperbehandlung mit Fokus auf mehrere Beschwerdebereiche",
-              ],
-            },
           ],
         },
         hu: {
@@ -650,37 +565,6 @@ export default function ChristinaMassageWebsite() {
                 "Az egyéni masszázs egy személyre szabott kezelés, amelyet kifejezetten a kliens személyes igényeihez, betegségeihez és kívánságaihoz igazítanak.",
                 "A standardizált masszázstechnikákkal ellentétben különféle manuális technikákat kombinál az optimális terápiás és relaxációs eredmények elérése érdekében.",
                 "Szükség esetén az FDM, a köpölyözés vagy a flossing is beépíthető a kezelésbe, attól függően, hogy mire van szükség.",
-              ],
-            },
-            {
-              heading: "Az egyéni masszázs céljai",
-              bullets: [
-                "Az izomfeszültség egyénre szabott enyhítése",
-                "Fájdalomcsillapítás specifikus betegségek esetén",
-                "A vérkeringés és az anyagcsere elősegítése",
-                "A mobilitás javítása",
-                "Stresszcsökkentés és mentális relaxáció",
-                "A regeneráció támogatása fizikai megterhelés után",
-                "Az általános jólét növelése",
-              ],
-            },
-            {
-              heading: "Tipikus technikák",
-              bullets: [
-                "Simítás",
-                "Gyúrás",
-                "Dörzsölés",
-                "Triggerpont terápia",
-                "Nyújtások és mobilizációk",
-                "Fasciális technikák",
-              ],
-            },
-            {
-              heading: "A kezelés időtartama",
-              bullets: [
-                "60 perc – az egyes problémás területek célzott kezelése",
-                "90 perc – átfogó, személyre szabott masszázs",
-                "120 perc – intenzív teljes testes kezelés, amely a kellemetlenségek több területére összpontosít",
               ],
             },
           ],
@@ -699,59 +583,6 @@ export default function ChristinaMassageWebsite() {
                 "Diese Massageform dient dazu, Schmerzen zu lindern, Verspannungen zu lösen und das allgemeine Wohlbefinden zu steigern.",
               ],
             },
-            {
-              heading: "Ziele der Rücken- und Nackenmassage",
-              bullets: [
-                "Lösung von Muskelverspannungen im Nacken- und Rückenbereich",
-                "Schmerzlinderung bei Verspannungen und Fehlhaltungen",
-                "Förderung der Durchblutung und Sauerstoffversorgung der Muskulatur",
-                "Verbesserung der Beweglichkeit von Nacken und Schultern",
-                "Stressabbau und mentale Entspannung",
-                "Vorbeugung von Kopf- und Spannungskopfschmerzen",
-                "Unterstützung einer gesunden Körperhaltung",
-              ],
-            },
-            {
-              heading: "Typische Massagetechniken",
-              bullets: [
-                "Streichungen",
-                "Knetungen",
-                "Reibungen",
-                "Triggerpunkt-Therapie",
-                "Dehnungen und Mobilisationen",
-              ],
-            },
-            {
-              heading: "Dauer der Behandlung",
-              bullets: [
-                "45 Minuten – kurze, gezielte Behandlung bei akuten Verspannungen",
-                "60 Minuten – intensivere Behandlung mit Fokus auf Problembereiche",
-                "75 Minuten – umfassende und besonders entspannende Therapie",
-              ],
-            },
-            {
-              heading: "Positive Wirkungen",
-              bullets: [
-                "Reduzierung von Muskelhärte und Schmerzen",
-                "Verbesserung der Körperhaltung",
-                "Steigerung des Bewegungsumfangs",
-                "Aktivierung des parasympathischen Nervensystems",
-                "Förderung von Entspannung und innerer Ruhe",
-                "Verbesserung der Schlafqualität",
-              ],
-            },
-            {
-              heading: "Kontraindikationen",
-              bullets: [
-                "Akute Entzündungen oder Infektionen",
-                "Fieber",
-                "Frische Verletzungen oder Operationen",
-                "Akute Bandscheibenvorfälle",
-                "Thrombose oder schwere Gefäßerkrankungen",
-                "Offene Wunden oder Hauterkrankungen",
-                "Schwere neurologische Erkrankungen",
-              ],
-            },
           ],
         },
         hu: {
@@ -763,59 +594,6 @@ export default function ChristinaMassageWebsite() {
                 "A nyak- és hátmasszázs egy célzott részleges testmasszázs, amely kifejezetten a feszültség által leggyakrabban érintett testrészekre összpontosít.",
                 "A hosszan tartó ülés, a stressz, az ismétlődő megterhelés vagy a fizikai túlterhelés gyakran izomfeszültséghez vezet a nyakban, a vállakban és a hátban.",
                 "Ez a fajta masszázs célja a fájdalom enyhítése, a feszültség oldása és az általános közérzet javítása.",
-              ],
-            },
-            {
-              heading: "Nyak- és hátmasszázs céljai",
-              bullets: [
-                "A nyak és a hát izomfeszültségének enyhítése",
-                "A feszültség és a rossz testtartás okozta fájdalom csillapítása",
-                "Az izmok vérkeringésének és oxigénellátásának elősegítése",
-                "A nyak és a vállak mozgékonyságának javítása",
-                "Stresszcsökkentés és mentális relaxáció",
-                "Fejfájás és feszültség okozta fejfájás megelőzése",
-                "Az egészséges testtartás támogatása",
-              ],
-            },
-            {
-              heading: "Tipikus masszázstechnikák",
-              bullets: [
-                "Simítás",
-                "Gyúrás",
-                "Dörzsölés",
-                "Triggerpont terápia",
-                "Nyújtások és mobilizációk",
-              ],
-            },
-            {
-              heading: "A kezelés időtartama",
-              bullets: [
-                "45 perc – rövid, célzott kezelés akut feszültség esetén",
-                "60 perc – intenzívebb kezelés, amely a problémás területekre összpontosít",
-                "75 perc – átfogó és különösen pihentető terápia",
-              ],
-            },
-            {
-              heading: "Pozitív hatások",
-              bullets: [
-                "Izommerevség és fájdalom csökkentése",
-                "Javuló testtartás",
-                "Mozgástartomány növelése",
-                "A paraszimpatikus idegrendszer aktiválása",
-                "Ellazulás és belső béke elősegítése",
-                "Javuló alvásminőség",
-              ],
-            },
-            {
-              heading: "Ellenjavallatok",
-              bullets: [
-                "Akut gyulladás vagy fertőzés",
-                "Láz",
-                "Friss vagy műtét utáni sérülések vagy műtétek",
-                "Akut porckorongsérv",
-                "Trombózis vagy súlyos érbetegség",
-                "Nyílt sebek vagy bőrsérülések",
-                "Súlyos neurológiai rendellenességek",
               ],
             },
           ],
@@ -830,17 +608,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Die Vagus-Massage ist eine sanfte und tief entspannende Behandlung, die darauf abzielt, den Vagusnerv zu stimulieren.",
-                "Durch gezielte, ruhige Berührungen im Bereich von Nacken, Hals, Kopf und Gesicht wird das parasympathische Nervensystem aktiviert.",
-              ],
-            },
-            {
-              heading: "Ziele",
-              bullets: [
-                "Reduktion von Stress und Anspannung",
-                "Aktivierung des parasympathischen Nervensystems",
-                "Förderung von innerer Ruhe",
-                "Verbesserung der Schlafqualität",
-                "Linderung von Spannungskopfschmerzen",
               ],
             },
           ],
@@ -852,17 +619,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A vagus masszázs egy gyengéd és mélyen ellazító kezelés, amelynek célja a vagus ideg stimulálása.",
-                "A nyak, a torok, a fej és az arc célzott, nyugtató érintésein keresztül aktiválódik a paraszimpatikus idegrendszer.",
-              ],
-            },
-            {
-              heading: "Célok",
-              bullets: [
-                "A stressz és a feszültség csökkentése",
-                "A paraszimpatikus idegrendszer aktiválása",
-                "A belső béke és nyugalom elősegítése",
-                "Az alvásminőség javítása",
-                "A feszültség okozta fejfájás enyhítése",
               ],
             },
           ],
@@ -877,17 +633,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda.",
-                "Diese Massage konzentriert sich auf Kopf, Nacken, Schultern und Gesicht und zielt darauf ab, Körper und Geist in Einklang zu bringen.",
-              ],
-            },
-            {
-              heading: "Ziele",
-              bullets: [
-                "Tiefe Entspannung von Körper und Geist",
-                "Stressabbau",
-                "Förderung der Durchblutung der Kopfhaut",
-                "Linderung von Spannungskopfschmerzen",
-                "Förderung eines erholsamen Schlafs",
               ],
             },
           ],
@@ -899,17 +644,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A Champi fejmasszázs, más néven indiai fejmasszázs, egy hagyományos kezelés, amely az indiai ájurvéda gyógyító művészetéből ered.",
-                "Ez a masszázs a fejre, a nyakra, a vállakra és az arcra összpontosít, célja a test és az elme harmonizálása.",
-              ],
-            },
-            {
-              heading: "Célok",
-              bullets: [
-                "A test és az elme mély ellazulása",
-                "A stressz csökkentése",
-                "A vérkeringés fokozása a fejbőrben",
-                "A feszültség okozta fejfájás enyhítése",
-                "A pihentető alvás elősegítése",
               ],
             },
           ],
@@ -924,16 +658,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Das Fascial Distortion Model (FDM) ist ein innovatives und wirkungsvolles Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparates.",
-                "Im Mittelpunkt steht die Annahme, dass viele Schmerzen und Funktionsstörungen auf Verformungen der Faszien zurückzuführen sind.",
-              ],
-            },
-            {
-              heading: "Ziele",
-              bullets: [
-                "Schnelle Schmerzlinderung",
-                "Verbesserung der Beweglichkeit",
-                "Wiederherstellung der Faszienfunktion",
-                "Unterstützung der Regeneration",
               ],
             },
           ],
@@ -945,16 +669,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A Fasciális Distorció Modell (FDM) egy innovatív és hatékony kezelési koncepció a mozgásszervi rendszer fájdalmának és mozgáskorlátozottságának terápiájára.",
-                "Azon a feltételezésen alapul, hogy számos fájdalom és funkcionális rendellenesség a fascia torzulásainak köszönhető.",
-              ],
-            },
-            {
-              heading: "Célok",
-              bullets: [
-                "Gyors fájdalomcsillapítás",
-                "Javított mobilitás",
-                "A fasciális funkció helyreállítása",
-                "A regeneráció támogatása",
               ],
             },
           ],
@@ -969,16 +683,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Flossing ist eine komplexe physiotherapeutische Behandlung, die vor allem das Bindegewebe, die Muskeln und die Gelenke beeinflusst.",
-                "Die Behandlung erfolgt mit einem speziellen elastischen Band und wird je nach Bedarf gezielt eingesetzt.",
-              ],
-            },
-            {
-              heading: "Hauptanwendungsgebiete",
-              bullets: [
-                "Verbesserung der Gelenkbeweglichkeit",
-                "Schmerzlinderung",
-                "Ödemreduktion",
-                "Mobilisation von Narbengewebe",
               ],
             },
           ],
@@ -990,16 +694,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A flossing egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
-                "A kezelés egy speciális rugalmas szalag használatával történik.",
-              ],
-            },
-            {
-              heading: "Főbb alkalmazások",
-              bullets: [
-                "Ízületi mobilitás javítása",
-                "Fájdalomcsillapítás",
-                "Ödéma és duzzanat csökkentése",
-                "Hegszövet mobilizálása",
               ],
             },
           ],
@@ -1016,15 +710,6 @@ export default function ChristinaMassageWebsite() {
                 "Schröpfen ist eine traditionelle Therapieform, bei der durch Unterdruck die Durchblutung angeregt, Verspannungen gelöst und der Stoffwechsel aktiviert werden.",
               ],
             },
-            {
-              heading: "Wirkungen",
-              bullets: [
-                "Förderung der Durchblutung",
-                "Lösung von Muskelverspannungen",
-                "Schmerzlinderung",
-                "Unterstützung der Regeneration",
-              ],
-            },
           ],
         },
         hu: {
@@ -1034,15 +719,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során vákuumot hoznak létre a bőr felszínén.",
-              ],
-            },
-            {
-              heading: "Hatások",
-              bullets: [
-                "A vérkeringés fokozása",
-                "Izomfeszültség oldása",
-                "Fájdalomcsillapítás",
-                "A regeneráció támogatása",
               ],
             },
           ],
@@ -1057,7 +733,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Die Narbenbehandlung umfasst Maßnahmen zur ästhetischen und funktionellen Verbesserung des Narbengewebes.",
-                "Ziel ist es, Spannungen zu lösen, Verklebungen zu beseitigen, die Durchblutung zu fördern und die Beweglichkeit betroffener Gewebe zu verbessern.",
               ],
             },
           ],
@@ -1069,7 +744,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége.",
-                "Célja a feszülés oldása, a letapadások megszüntetése, a vérkeringés fokozása és a mozgás javítása.",
               ],
             },
           ],
@@ -1081,7 +755,7 @@ export default function ChristinaMassageWebsite() {
     return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 lg:px-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 lg:px-10">
           <nav className="hidden items-center gap-8 text-base text-white lg:flex">
             <a href="#ueber" className="hover:text-[#f5efe3]">{c.nav.about}</a>
             <a href="#leistungen" className="hover:text-[#f5efe3]">{c.nav.services}</a>
@@ -1092,7 +766,7 @@ export default function ChristinaMassageWebsite() {
             <img
               src="/logo-christina-massage.png"
               alt="Christina Massage Logo"
-              className="h-18 w-auto object-contain md:h-22"
+              className="h-16 w-auto object-contain md:h-20"
             />
             <p className="mt-1 text-sm uppercase tracking-[0.3em] text-[#f2ecdf]">
               {c.brand.city}
@@ -1104,7 +778,7 @@ export default function ChristinaMassageWebsite() {
             <a href="#anfahrt" className="hover:text-[#f5efe3]">{c.nav.location}</a>
             <a
               href="/booking"
-              className="rounded-full border border-[#f5efe3] px-5 py-2 font-medium text-[#f5efe3] hover:bg-[#f5efe3] hover:text-[#556246]"
+              className="rounded-full border border-[#f5efe3] px-5 py-2 text-base font-medium text-[#f5efe3] hover:bg-[#f5efe3] hover:text-[#556246]"
             >
               {c.nav.booking}
             </a>
@@ -1250,7 +924,7 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="leistungen" className="pt-20 pb-10">
+      <section id="leistungen" className="pt-20 pb-2">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.services.eyebrow}</p>
@@ -1293,8 +967,10 @@ export default function ChristinaMassageWebsite() {
                         src={service.image}
                         alt={service.title}
                         className={`h-full min-h-[440px] w-full ${
-                          service.key === "individual" || service.key === "champi"
-                            ? "object-cover object-center"
+                          service.key === "champi"
+                            ? "object-contain bg-[#f3eee6] p-6"
+                            : service.key === "individual"
+                            ? "object-contain bg-white p-4"
                             : "object-cover"
                         }`}
                       />
@@ -1311,7 +987,7 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="zusatzangebote" className="bg-[#f8f2e9] py-14">
+      <section id="zusatzangebote" className="bg-[#f8f2e9] pt-6 pb-14">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.methods.eyebrow}</p>
@@ -1362,23 +1038,6 @@ export default function ChristinaMassageWebsite() {
         </div>
       </section>
 
-      <section id="expectations" className="bg-[#f8f2e9] py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.expectations.eyebrow}</p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.expectations.title}</h2>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {c.expectations.items.map((item: any) => (
-              <div key={item.title} className="rounded-[1.8rem] border border-stone-200 bg-white/80 p-7 shadow-sm">
-                <h3 className="text-xl font-semibold text-stone-900">{item.title}</h3>
-                <p className="mt-4 leading-7 text-stone-600">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="anfahrt" className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
@@ -1395,7 +1054,7 @@ export default function ChristinaMassageWebsite() {
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+                referrerPolicy="no-referrer-when-cross-origin"
                 title="Google Maps Standort Christina Massage"
               />
             </div>
