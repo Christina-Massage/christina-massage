@@ -115,34 +115,6 @@ const services: Service[] = [
     ],
   },
   {
-    key: "fdm",
-    name: {
-      de: "FDM Behandlung",
-      hu: "FDM kezelés",
-    },
-    options: [{ duration: 60, price: 60 }],
-  },
-  {
-    key: "flossing",
-    name: {
-      de: "Flossing",
-      hu: "Flossing",
-    },
-    options: [
-      { duration: 30, price: 30 },
-      { duration: 45, price: 45 },
-      { duration: 60, price: 60 },
-    ],
-  },
-  {
-    key: "cupping",
-    name: {
-      de: "Schröpfen",
-      hu: "Köpölyözés",
-    },
-    options: [{ duration: 30, price: 30 }],
-  },
-  {
     key: "scar-treatment",
     name: {
       de: "Narbenbehandlung",
