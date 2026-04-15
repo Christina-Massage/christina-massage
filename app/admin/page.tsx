@@ -16,7 +16,6 @@ type Booking = {
   booking_date: string;
   booking_time: string;
   status: BookingStatus;
-  created_at?: string;
 };
 
 type BlockedTime = {
@@ -27,589 +26,162 @@ type BlockedTime = {
   title: string;
   block_type: string;
   note: string | null;
-  created_at?: string;
 };
 
 function todayString() {
-  const today = new Date();
-  const y = today.getFullYear();
-  const m = `${today.getMonth() + 1}`.padStart(2, "0");
-  const d = `${today.getDate()}`.padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  return new Date().toISOString().split("T")[0];
 }
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [sessionEmail, setSessionEmail] = useState("");
-  const [selectedDate, setSelectedDate] = useState(todayString());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
+  const [selectedDate, setSelectedDate] = useState(todayString());
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<"success" | "error" | "info">(
-    "info"
-  );
 
-  const [blockDate, setBlockDate] = useState(todayString());
-  const [startTime, setStartTime] = useState("13:00");
-  const [endTime, setEndTime] = useState("14:15");
-  const [title, setTitle] = useState("Mittagspause");
-  const [blockType, setBlockType] = useState("pause");
-  const [note, setNote] = useState("");
-
-  const setStatusMessage = (
-    text: string,
-    type: "success" | "error" | "info" = "info"
-  ) => {
-    setMessage(text);
-    setMessageType(type);
-  };
-
-  const messageStyles =
-    messageType === "success"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-      : messageType === "error"
-      ? "border-red-200 bg-red-50 text-red-800"
-      : "border-stone-200 bg-stone-50 text-stone-700";
-
-  const sortedBookings = useMemo(() => {
-    return [...bookings].sort((a, b) =>
-      a.booking_time.localeCompare(b.booking_time)
-    );
-  }, [bookings]);
-
-  const sortedBlockedTimes = useMemo(() => {
-    return [...blockedTimes].sort((a, b) =>
-      a.start_time.localeCompare(b.start_time)
-    );
-  }, [blockedTimes]);
-
-  const loadAdminData = async (date: string) => {
-    const { data: bookingsData, error: bookingsError } = await supabase
+  const loadData = async (date: string) => {
+    const { data: bookingsData } = await supabase
       .from("bookings")
-      .select(
-        "id, full_name, email, service_name, duration_minutes, price_eur, booking_date, booking_time, status, created_at"
-      )
+      .select("*")
       .eq("booking_date", date)
-      .order("booking_time", { ascending: true });
+      .order("booking_time");
 
-    if (bookingsError) {
-      setStatusMessage(bookingsError.message, "error");
-      return;
-    }
-
-    const { data: blocksData, error: blocksError } = await supabase
+    const { data: blocksData } = await supabase
       .from("blocked_times")
-      .select(
-        "id, block_date, start_time, end_time, title, block_type, note, created_at"
-      )
+      .select("*")
       .eq("block_date", date)
-      .order("start_time", { ascending: true });
-
-    if (blocksError) {
-      setStatusMessage(blocksError.message, "error");
-      return;
-    }
+      .order("start_time");
 
     setBookings((bookingsData ?? []) as Booking[]);
     setBlockedTimes((blocksData ?? []) as BlockedTime[]);
   };
 
   useEffect(() => {
-    const bootstrap = async () => {
-      setLoading(true);
-
+    const init = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        window.location.href = "/booking";
+        window.location.href = "/";
         return;
       }
 
-      setSessionEmail(session.user.email ?? "");
-
-      const { data: profile, error } = await supabase
+      const { data: profile } = await supabase
         .from("profiles")
         .select("is_admin")
         .eq("id", session.user.id)
         .maybeSingle();
 
-      if (error || !profile?.is_admin) {
+      if (!profile?.is_admin) {
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
       setIsAdmin(true);
-      await loadAdminData(selectedDate);
+      await loadData(selectedDate);
       setLoading(false);
     };
 
-    bootstrap();
+    init();
   }, []);
 
   useEffect(() => {
-    if (!isAdmin) return;
-    loadAdminData(selectedDate);
-  }, [selectedDate, isAdmin]);
+    if (isAdmin) loadData(selectedDate);
+  }, [selectedDate]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/booking";
-  };
-
-  const updateBookingStatus = async (
-    bookingId: string,
-    status: BookingStatus
-  ) => {
-    setSaving(true);
-
-    try {
-      const response = await fetch("/api/admin/update-booking-status", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bookingId, status }),
-      });
-
-      const result = await response.json();
-      setSaving(false);
-
-      if (!response.ok) {
-        setStatusMessage(
-          result?.message || "Status konnte nicht aktualisiert werden.",
-          "error"
-        );
-        return;
-      }
-
-      setBookings((prev) =>
-        prev.map((booking) =>
-          booking.id === bookingId ? { ...booking, status } : booking
-        )
-      );
-
-      if (status === "confirmed") {
-        setStatusMessage(
-          "Buchung bestätigt und Bestätigungs-E-Mail gesendet.",
-          "success"
-        );
-      } else if (status === "cancelled") {
-        setStatusMessage(
-          "Buchung storniert und Stornierungs-E-Mail gesendet.",
-          "success"
-        );
-      } else {
-        setStatusMessage("Buchungsstatus erfolgreich aktualisiert.", "success");
-      }
-    } catch (error) {
-      setSaving(false);
-      setStatusMessage("Es ist ein unerwarteter Fehler aufgetreten.", "error");
-    }
-  };
-
-  const createBlockedTime = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatusMessage("", "info");
-
-    if (!blockDate || !startTime || !endTime || !title.trim()) {
-      setStatusMessage("Bitte alle Pflichtfelder ausfüllen.", "error");
-      return;
-    }
-
-    if (startTime >= endTime) {
-      setStatusMessage("Die Endzeit muss nach der Startzeit liegen.", "error");
-      return;
-    }
-
-    setSaving(true);
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    const { error } = await supabase.from("blocked_times").insert([
-      {
-        block_date: blockDate,
-        start_time: startTime,
-        end_time: endTime,
-        title: title.trim(),
-        block_type: blockType,
-        note: note.trim() || null,
-        created_by: user?.id ?? null,
+  const updateStatus = async (bookingId: string, status: BookingStatus) => {
+    const response = await fetch("/api/admin/update-booking-status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    ]);
+      body: JSON.stringify({ bookingId, status }),
+    });
 
-    setSaving(false);
+    const result = await response.json();
 
-    if (error) {
-      setStatusMessage(error.message, "error");
+    if (!response.ok) {
+      setMessage(result.message || "Fehler beim Aktualisieren.");
       return;
     }
 
-    setStatusMessage("Sperrzeit erfolgreich angelegt.", "success");
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId ? { ...b, status } : b
+      )
+    );
 
-    if (blockDate === selectedDate) {
-      await loadAdminData(selectedDate);
-    }
-
-    setTitle("Mittagspause");
-    setBlockType("pause");
-    setNote("");
+    setMessage("Status erfolgreich aktualisiert.");
   };
 
-  const deleteBlockedTime = async (blockId: string) => {
-    setSaving(true);
-
-    const { error } = await supabase
-      .from("blocked_times")
-      .delete()
-      .eq("id", blockId);
-
-    setSaving(false);
-
-    if (error) {
-      setStatusMessage(error.message, "error");
-      return;
-    }
-
-    setBlockedTimes((prev) => prev.filter((item) => item.id !== blockId));
-    setStatusMessage("Sperrzeit gelöscht.", "success");
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#f6efe5] px-6 py-16 text-stone-800">
-        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
-          Admin-Bereich wird geladen...
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-[#f6efe5] px-6 py-16 text-stone-800">
-        <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
-          <h1 className="text-2xl font-semibold text-stone-900">
-            Kein Zugriff
-          </h1>
-          <p className="mt-3 text-stone-600">
-            Du bist nicht als Admin freigeschaltet.
-          </p>
-          <Link
-            href="/"
-            className="mt-6 inline-block rounded-2xl bg-[#405e3f] px-5 py-3 text-sm font-semibold text-white"
-          >
-            Zur Startseite
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="p-10">Lade...</div>;
+  if (!isAdmin) return <div className="p-10">Kein Zugriff.</div>;
 
   return (
-    <div className="min-h-screen bg-[#f6efe5] text-stone-800">
-      <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
-          <Link
-            href="/"
-            className="text-sm font-medium text-white hover:text-[#f5efe3]"
-          >
-            ← Zurück zur Startseite
-          </Link>
+    <div className="min-h-screen bg-[#f6efe5] p-6 text-stone-800">
+      <div className="mx-auto max-w-6xl">
+        <Link href="/" className="text-sm underline">
+          ← Zurück zur Startseite
+        </Link>
 
-          <div className="flex flex-col items-center">
-            <img
-              src="/logo-christina-massage.png"
-              alt="Christina Massage Logo"
-              className="h-14 w-auto object-contain sm:h-16 md:h-20"
-            />
-          </div>
+        <h1 className="mt-4 text-3xl font-semibold">
+          Admin – Terminverwaltung
+        </h1>
 
-          <button
-            onClick={handleLogout}
-            className="rounded-2xl bg-white px-4 py-2 text-sm font-medium text-stone-800"
-          >
-            Logout
-          </button>
+        <div className="mt-4">
+          <label className="block text-sm font-medium">Datum:</label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="mt-1 rounded border px-3 py-2"
+          />
         </div>
-      </header>
 
-      <div className="px-4 py-6 sm:px-6 md:px-10">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
-              Admin Dashboard
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold text-stone-900">
-              Termine & Pausen verwalten
-            </h1>
-            <p className="mt-2 text-sm text-stone-600">
-              Eingeloggt als: <strong>{sessionEmail}</strong>
-            </p>
+        {message && (
+          <div className="mt-4 rounded bg-emerald-100 p-3 text-sm">
+            {message}
+          </div>
+        )}
 
-            <div className="mt-5">
-              <label className="mb-2 block text-sm font-medium text-stone-700">
-                Datum auswählen
-              </label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 outline-none focus:border-[#567a57]"
-              />
+        <div className="mt-6 space-y-4">
+          {bookings.map((booking) => (
+            <div
+              key={booking.id}
+              className="rounded-2xl border bg-white p-4 shadow-sm"
+            >
+              <p className="font-semibold">
+                {booking.booking_time} – {booking.full_name}
+              </p>
+              <p className="text-sm">{booking.service_name}</p>
+              <p className="text-sm">{booking.email}</p>
+              <p className="text-xs mt-1">
+                Status: <strong>{booking.status}</strong>
+              </p>
+
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() =>
+                    updateStatus(booking.id, "confirmed")
+                  }
+                  className="rounded bg-emerald-600 px-3 py-2 text-white text-sm"
+                >
+                  Bestätigen
+                </button>
+                <button
+                  onClick={() =>
+                    updateStatus(booking.id, "cancelled")
+                  }
+                  className="rounded bg-red-600 px-3 py-2 text-white text-sm"
+                >
+                  Stornieren
+                </button>
+              </div>
             </div>
-
-            {message && (
-              <div
-                className={`mt-5 rounded-2xl border px-4 py-3 text-sm ${messageStyles}`}
-              >
-                {message}
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-2xl font-semibold text-stone-900">
-                Buchungen am {selectedDate}
-              </h2>
-
-              <div className="mt-5 space-y-4">
-                {sortedBookings.length === 0 ? (
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
-                    Für dieses Datum liegen noch keine Buchungen vor.
-                  </div>
-                ) : (
-                  sortedBookings.map((booking) => {
-                    const statusClass =
-                      booking.status === "confirmed"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : booking.status === "cancelled"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-amber-100 text-amber-800";
-
-                    const statusLabel =
-                      booking.status === "confirmed"
-                        ? "Bestätigt"
-                        : booking.status === "cancelled"
-                        ? "Storniert"
-                        : "Offen";
-
-                    return (
-                      <div
-                        key={booking.id}
-                        className="rounded-2xl border border-stone-200 p-4"
-                      >
-                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                          <div>
-                            <div className="text-lg font-semibold text-stone-900">
-                              {booking.booking_time} · {booking.full_name}
-                            </div>
-                            <div className="mt-1 text-sm text-stone-600">
-                              {booking.service_name}
-                            </div>
-                            <div className="mt-1 text-sm text-stone-600">
-                              {booking.duration_minutes} Min · {booking.price_eur} €
-                            </div>
-                            <div className="mt-1 text-sm text-stone-600">
-                              {booking.email}
-                            </div>
-
-                            <div className="mt-3">
-                              <span
-                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
-                              >
-                                {statusLabel}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() =>
-                                updateBookingStatus(booking.id, "confirmed")
-                              }
-                              disabled={saving}
-                              className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                            >
-                              Bestätigen
-                            </button>
-                            <button
-                              onClick={() =>
-                                updateBookingStatus(booking.id, "cancelled")
-                              }
-                              disabled={saving}
-                              className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                            >
-                              Stornieren
-                            </button>
-                            <button
-                              onClick={() =>
-                                updateBookingStatus(booking.id, "requested")
-                              }
-                              disabled={saving}
-                              className="rounded-xl bg-stone-700 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                            >
-                              Offen
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </section>
-
-            <section className="space-y-6">
-              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h2 className="text-2xl font-semibold text-stone-900">
-                  Pause / Sperrzeit anlegen
-                </h2>
-
-                <form onSubmit={createBlockedTime} className="mt-5 space-y-4">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-stone-700">
-                      Datum
-                    </label>
-                    <input
-                      type="date"
-                      value={blockDate}
-                      onChange={(e) => setBlockDate(e.target.value)}
-                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                    />
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-stone-700">
-                        Startzeit
-                      </label>
-                      <input
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-stone-700">
-                        Endzeit
-                      </label>
-                      <input
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-stone-700">
-                      Titel
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                      placeholder="z. B. Mittagspause"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-stone-700">
-                      Typ
-                    </label>
-                    <select
-                      value={blockType}
-                      onChange={(e) => setBlockType(e.target.value)}
-                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                    >
-                      <option value="pause">Pause</option>
-                      <option value="closed">Geschlossen</option>
-                      <option value="vacation">Urlaub</option>
-                      <option value="other">Sonstiges</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-stone-700">
-                      Notiz
-                    </label>
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                      rows={4}
-                      placeholder="Optional"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-full rounded-2xl bg-[#405e3f] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60"
-                  >
-                    Sperrzeit speichern
-                  </button>
-                </form>
-              </div>
-
-              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h2 className="text-2xl font-semibold text-stone-900">
-                  Sperrzeiten am {selectedDate}
-                </h2>
-
-                <div className="mt-5 space-y-4">
-                  {sortedBlockedTimes.length === 0 ? (
-                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
-                      Für dieses Datum sind keine Sperrzeiten eingetragen.
-                    </div>
-                  ) : (
-                    sortedBlockedTimes.map((block) => (
-                      <div
-                        key={block.id}
-                        className="rounded-2xl border border-stone-200 p-4"
-                      >
-                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                          <div>
-                            <div className="text-lg font-semibold text-stone-900">
-                              {block.start_time} – {block.end_time}
-                            </div>
-                            <div className="mt-1 text-sm text-stone-600">
-                              {block.title} · {block.block_type}
-                            </div>
-                            {block.note && (
-                              <div className="mt-1 text-sm text-stone-600">
-                                {block.note}
-                              </div>
-                            )}
-                          </div>
-
-                          <button
-                            onClick={() => deleteBlockedTime(block.id)}
-                            disabled={saving}
-                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                          >
-                            Löschen
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </section>
-          </div>
+          ))}
         </div>
       </div>
     </div>
