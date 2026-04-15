@@ -2,57 +2,108 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-interface BookingEmailProps {
+const ADMIN_EMAIL = "christina.massage.fdm@gmail.com";
+
+type BookingMailData = {
   name: string;
   email: string;
   service: string;
   date: string;
   time: string;
   duration: number;
-}
+};
 
-export async function sendAdminNotification(data: BookingEmailProps) {
-  await resend.emails.send({
-    from: "Christina Massage <onboarding@resend.dev>", // später: buchung@christina-massage.com
-    to: ["christina.massage.fdm@gmail.com"],
-    subject: "Neue Terminbuchung",
+export async function sendAdminNotification(data: BookingMailData) {
+  const { name, email, service, date, time, duration } = data;
+
+  return resend.emails.send({
+    from: "Christina Massage <onboarding@resend.dev>",
+    to: ADMIN_EMAIL,
+    subject: `Neue Buchung: ${service} am ${date} um ${time}`,
     html: `
-      <h2>Neue Terminbuchung</h2>
-      <p><strong>Name:</strong> ${data.name}</p>
-      <p><strong>E-Mail:</strong> ${data.email}</p>
-      <p><strong>Leistung:</strong> ${data.service}</p>
-      <p><strong>Datum:</strong> ${data.date}</p>
-      <p><strong>Uhrzeit:</strong> ${data.time}</p>
-      <p><strong>Dauer:</strong> ${data.duration} Minuten</p>
-      <p>
-        <a href="https://christina-massage.com/admin">Zum Admin-Bereich</a>
-      </p>
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+        <h2>Neue Terminbuchung</h2>
+        <p>Es wurde ein neuer Termin über die Website angefragt.</p>
+
+        <table style="border-collapse: collapse; margin-top: 16px;">
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Name:</td>
+            <td style="padding: 6px 12px;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">E-Mail:</td>
+            <td style="padding: 6px 12px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Behandlung:</td>
+            <td style="padding: 6px 12px;">${service}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Datum:</td>
+            <td style="padding: 6px 12px;">${date}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Uhrzeit:</td>
+            <td style="padding: 6px 12px;">${time}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Dauer:</td>
+            <td style="padding: 6px 12px;">${duration} Minuten</td>
+          </tr>
+        </table>
+
+        <p style="margin-top: 20px;">
+          Bitte prüfe die Buchung im Admin-Bereich.
+        </p>
+      </div>
     `,
   });
 }
 
-export async function sendCustomerConfirmation(data: BookingEmailProps) {
-  await resend.emails.send({
+export async function sendCustomerConfirmation(data: BookingMailData) {
+  const { name, email, service, date, time, duration } = data;
+
+  return resend.emails.send({
     from: "Christina Massage <onboarding@resend.dev>",
-    to: [data.email],
-    subject: "Terminbestätigung – Christina Massage",
+    to: email,
+    subject: `Deine Terminbestätigung – ${service}`,
     html: `
-      <h2>Terminbestätigung</h2>
-      <p>Liebe/r ${data.name},</p>
-      <p>vielen Dank für Ihre Buchung. Ihr Termin wurde erfolgreich reserviert.</p>
-      <p><strong>Leistung:</strong> ${data.service}</p>
-      <p><strong>Datum:</strong> ${data.date}</p>
-      <p><strong>Uhrzeit:</strong> ${data.time}</p>
-      <p><strong>Dauer:</strong> ${data.duration} Minuten</p>
-      <p><strong>Adresse:</strong> Bahnhofstraße 21, 82383 Hohenpeißenberg</p>
-      <p>Bitte beachten Sie, dass Terminabsagen mindestens 24 Stunden im Voraus erfolgen müssen.</p>
-      <p>Bei Fragen erreichen Sie uns unter 
-        <a href="mailto:christina.massage.fdm@gmail.com">
-          christina.massage.fdm@gmail.com
-        </a>.
-      </p>
-      <p>Wir freuen uns auf Ihren Besuch!</p>
-      <p><strong>Christina Massage</strong></p>
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+        <h2>Vielen Dank für deine Buchung</h2>
+        <p>Hallo ${name},</p>
+        <p>
+          deine Terminanfrage bei <strong>Christina Massage</strong> ist erfolgreich eingegangen.
+        </p>
+
+        <table style="border-collapse: collapse; margin-top: 16px;">
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Behandlung:</td>
+            <td style="padding: 6px 12px;">${service}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Datum:</td>
+            <td style="padding: 6px 12px;">${date}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Uhrzeit:</td>
+            <td style="padding: 6px 12px;">${time}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 12px; font-weight: bold;">Dauer:</td>
+            <td style="padding: 6px 12px;">${duration} Minuten</td>
+          </tr>
+        </table>
+
+        <p style="margin-top: 20px;">
+          Falls du deinen Termin absagen musst, ist dies bis 24 Stunden vorher kostenfrei möglich.
+          Bei späterer Absage oder Nichterscheinen kann eine Ausfallpauschale von 10 € berechnet werden.
+        </p>
+
+        <p>
+          Liebe Grüße<br />
+          <strong>Christina Massage</strong>
+        </p>
+      </div>
     `,
   });
 }

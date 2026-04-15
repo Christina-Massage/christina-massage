@@ -160,7 +160,7 @@ export default function ChristinaMassageWebsite() {
             description:
               "Traditionelle ayurvedische Kopfmassage für tiefe Entspannung, mentale Ruhe und neue Energie.",
             durations: ["45 Min · 45 €", "60 Min · 60 €"],
-            image: "/massage-hero.png",
+            image: "/champi.png",
           },
         ] as ServiceCard[],
       },
@@ -227,36 +227,6 @@ export default function ChristinaMassageWebsite() {
         whatsappButton: "Beratung per WhatsApp",
         infoButton: "Mehr Informationen",
         infoTitle: "Mehr Informationen zur HIEMT-Behandlung",
-        infoSections: [
-          {
-            heading:
-              "Revolutionäre Lösung für die Gesundheit des Beckenbodens",
-            paragraphs: [
-              "Die Gesundheit der Beckenbodenmuskulatur ist von großer Bedeutung für die Funktion der Beckenorgane. Eine Schwächung kann nicht nur unangenehm sein, sondern auch die Lebensqualität deutlich beeinträchtigen.",
-              "Die moderne HIEMT-Technologie bietet eine komfortable, effektive und nicht-invasive Lösung – geeignet für Frauen und Männer. Die Behandlung erfolgt bequem in Alltagskleidung und ohne direkten Körperkontakt.",
-            ],
-          },
-          {
-            heading: "Vorteile der Behandlung",
-            bullets: [
-              "Sicher, schmerzfrei und nicht invasiv",
-              "Für Frauen und Männer geeignet",
-              "Diskret und ohne Entkleiden möglich",
-              "30 Minuten pro Sitzung",
-              "Keine Ausfallzeit",
-              "Gezielte Aktivierung und Stärkung der Beckenbodenmuskulatur",
-            ],
-          },
-          {
-            heading: "Ablauf und Empfehlung",
-            bullets: [
-              "Empfohlen werden 2 bis 3 Sitzungen pro Woche",
-              "Ein Behandlungszyklus umfasst meist 6 bis 8 Sitzungen",
-              "Erste Veränderungen sind oft schon nach 1 bis 2 Sitzungen spürbar",
-              "Die Wahrnehmung kann individuell unterschiedlich sein",
-            ],
-          },
-        ] as InfoSection[],
       },
       booking: {
         eyebrow: "Online Buchung",
@@ -292,7 +262,7 @@ export default function ChristinaMassageWebsite() {
         intro:
           "Ich freue mich darauf, Sie in meinem Studio begrüßen zu dürfen, wo Ihre Entspannung im Mittelpunkt steht. Informationen zu Anfahrt und Parken finden Sie hier:",
         seoText:
-          "Christina Massage befindet sich in Hohenpeißenberg und ist auch aus dem Umkreis sehr gut erreichbar.",
+          "Christina Massage befindet sich in Hohenpeißenberg und ist auch im Umkreis sehr gut erreichbar.",
         addressLabel: "Adresse:",
         entranceLabel: "Eingang:",
         parkingLabel: "Parken:",
@@ -309,6 +279,7 @@ export default function ChristinaMassageWebsite() {
         imprint: "Impressum",
         privacy: "Datenschutz",
       },
+      close: "Schließen",
     };
 
     const hu = {
@@ -419,7 +390,7 @@ export default function ChristinaMassageWebsite() {
             description:
               "Hagyományos ájurvédikus fejmasszázs a mély relaxációért, mentális nyugalomért és új energiáért.",
             durations: ["45 perc · 45 €", "60 perc · 60 €"],
-            image: "/massage-hero.png",
+            image: "/champi.png",
           },
         ] as ServiceCard[],
       },
@@ -485,35 +456,6 @@ export default function ChristinaMassageWebsite() {
         whatsappButton: "Tanácsadás WhatsAppon",
         infoButton: "További információ",
         infoTitle: "További információk a HIEMT kezelésről",
-        infoSections: [
-          {
-            heading: "Forradalmi megoldás a medencefenék egészségéért",
-            paragraphs: [
-              "A medencefenék izomzatának egészsége kulcsfontosságú a kismedencei szervek megfelelő működéséhez. Ennek gyengülése nemcsak kellemetlenséget okozhat, hanem az életminőséget is jelentősen befolyásolhatja.",
-              "A modern HIEMT technológia kényelmes, hatékony és nem invazív megoldást kínál nőknek és férfiaknak egyaránt. A kezelés kényelmesen, utcai ruhában történik.",
-            ],
-          },
-          {
-            heading: "A kezelés előnyei",
-            bullets: [
-              "Biztonságos, fájdalommentes és nem invazív",
-              "Nők és férfiak számára egyaránt alkalmazható",
-              "Diszkrét és levetkőzés nélkül történik",
-              "30 perc egy alkalom",
-              "Nincs felépülési idő",
-              "A medencefenék izmainak célzott aktiválása és erősítése",
-            ],
-          },
-          {
-            heading: "Ajánlás és folyamat",
-            bullets: [
-              "Ajánlott: heti 2–3 alkalom",
-              "Egy ciklus általában 6–8 alkalomból áll",
-              "Az első változások gyakran már 1–2 alkalom után érezhetők",
-              "Az érzékelés egyénenként eltérő lehet",
-            ],
-          },
-        ] as InfoSection[],
       },
       booking: {
         eyebrow: "Online foglalás",
@@ -566,13 +508,286 @@ export default function ChristinaMassageWebsite() {
         imprint: "Impresszum",
         privacy: "Adatvédelem",
       },
+      close: "Bezárás",
     };
 
     return language === "de" ? de : hu;
   }, [language]);
 
   const c = content as any;
-    const infoContent = useMemo<Record<string, { de: InfoEntry; hu: InfoEntry }>>(
+    const hiemtInfo = useMemo<{ de: InfoEntry; hu: InfoEntry }>(
+    () => ({
+      de: {
+        title: "HIEMT Beckenboden-Training",
+        sections: [
+          {
+            heading:
+              "Revolutionäre Lösung für die Gesundheit des Beckenbodens – schmerzfreie Rehabilitation in nur 30 Minuten",
+            paragraphs: [
+              "Die Gesundheit der Beckenbodenmuskulatur ist für die Funktion unserer Beckenorgane von zentraler Bedeutung. Eine Schwächung dieser Muskulatur kann nicht nur unangenehm sein, sondern die Lebensqualität erheblich beeinträchtigen.",
+              "Vergessen Sie komplizierte Übungen: Unser modernes HIEMT-System bietet eine komfortable, äußerst effektive und nicht-invasive Lösung für Frauen und Männer. Die Behandlung erfolgt bequem in Alltagskleidung, ohne Entkleiden und ohne direkten Körperkontakt.",
+            ],
+          },
+          {
+            heading: "Warum elektromagnetische Behandlung?",
+            bullets: [
+              "Sicher: schmerzfrei, nicht invasiv und ohne Nebenwirkungen",
+              "Für Frauen und Männer geeignet",
+              "Maximale Effizienz: ein Behandlungszyklus kann intensiver sein als Tausende klassische Beckenbodenübungen",
+              "Völlig diskret: Behandlung in normaler Kleidung, ohne körperlichen Kontakt",
+              "Nur 30 Minuten pro Sitzung",
+              "Keine Narkose, keine Operation, keine Ausfallzeit",
+              "Nach der Behandlung kann der Alltag sofort fortgesetzt werden",
+              "Nur ein leichtes Kribbeln oder Vibrationsgefühl statt Schmerzen",
+              "Gezielte Aktivierung und Kräftigung der Beckenbodenmuskulatur",
+              "Fortschrittliche nicht invasive Technologie ohne Gewebeschädigung",
+              "FDA- und CE-zertifizierte, klinisch geprüfte Technologie",
+              "Ergonomisches Design für angenehmes Sitzen während der Anwendung",
+            ],
+          },
+          {
+            heading: "Mögliche Ergebnisse",
+            bullets: [
+              "Vorbeugung oder Verbesserung von Blasen-, Gebärmutter- oder Enddarmabsenkung",
+              "Reduktion von Urinverlust beim Husten, Niesen oder Lachen",
+              "Aktivierung und Kräftigung des Beckenbodengewebes",
+              "Wiederherstellung von Muskelspannung und Elastizität",
+              "Verbesserung der Durchblutung und Nervenfunktion im Beckenboden",
+              "Kräftigung des PC-Muskels zur Unterstützung von Sensibilität und Sexualfunktion",
+            ],
+          },
+          {
+            heading: "Für wen kann die HIEMT-Behandlung sinnvoll sein?",
+            bullets: [
+              "Bei Harnfunktionsstörungen wie Belastungsinkontinenz, Dranginkontinenz oder häufigem Wasserlassen",
+              "Bei Stuhlentleerungsstörungen wie Verstopfung oder Stuhlinkontinenz",
+              "Zur Rehabilitation nach der Geburt oder bei körperlichen Veränderungen",
+              "Nach gynäkologischen Eingriffen zur Wiederherstellung des Beckenbodens",
+              "Für Frauen mit Kinderwunsch als unterstützende Maßnahme",
+              "Bei sexuellen Funktionsstörungen, z. B. bei Erektionsproblemen oder verminderter Empfindung",
+              "Für Männer, die ihre Vitalität steigern und den Beckenboden stärken möchten",
+              "Bei chronischen Beckenbeschwerden oder begleitenden Unterleibsbeschwerden",
+            ],
+          },
+          {
+            heading: "Wie funktioniert die Behandlung?",
+            paragraphs: [
+              "Das Gerät arbeitet mit HIEMT-Technologie, also einem hochintensiven fokussierten elektromagnetischen Feld. Dabei werden motorische Nervenzellen stimuliert, sodass es zu sehr intensiven Muskelkontraktionen kommt.",
+              "Diese Muskelkontraktionen trainieren die gesamte Beckenbodenmuskulatur tiefgehend, kräftigen das Gewebe und fördern die natürliche Spannkraft und Elastizität. Die Technologie erreicht die Muskulatur bis in eine Tiefe von etwa 10 cm.",
+              "Die Behandlung aktiviert gezielt den Beckenboden, verbessert dessen bewusste Kontrolle und fördert Koordination, Kraft und Regeneration des Gewebes.",
+            ],
+          },
+          {
+            heading: "Wofür ist die HIEMT-IntimPad-Behandlung gedacht?",
+            paragraphs: [
+              "Die HIEMT-Behandlung unterstützt insbesondere die Kräftigung einer geschwächten oder gelockerten Beckenbodenmuskulatur, zum Beispiel nach Schwangerschaft oder Geburt.",
+              "Ziel ist die Verbesserung des Muskelzustands, die Wiederherstellung von Kontrolle und Spannkraft sowie die Unterstützung der physiologischen Funktionen.",
+            ],
+          },
+          {
+            heading: "Dauer und Behandlungszyklus",
+            bullets: [
+              "Eine Sitzung dauert 30 Minuten",
+              "Empfohlen sind 2 bis 3 Sitzungen pro Woche",
+              "Ein Behandlungszyklus umfasst in der Regel 6 bis 8 Sitzungen",
+              "Die genaue Anzahl kann je nach Beschwerdebild individuell variieren",
+            ],
+          },
+          {
+            heading: "Wann zeigt sich die Wirkung?",
+            bullets: [
+              "Viele Menschen bemerken bereits nach 1 bis 2 Sitzungen erste Veränderungen",
+              "Die Verbesserung setzt sich in den folgenden Wochen fort",
+              "Empfohlen wird die vollständige Durchführung des Zyklus für ein stabileres Ergebnis",
+              "Ein kompletter Zyklus wird meist innerhalb von 3 bis 4 Wochen abgeschlossen",
+              "Bei Harninkontinenz kann sich die Lebensqualität deutlich verbessern",
+            ],
+          },
+          {
+            heading: "Wie lange hält die Wirkung an?",
+            paragraphs: [
+              "Klinische Beobachtungen zeigen, dass auch Monate nach einer vollständigen Behandlungsserie häufig noch positive Effekte vorhanden sind.",
+              "Wie jeder Muskel kann auch die Beckenbodenmuskulatur mit der Zeit wieder schwächer werden, wenn sie nicht weiter aktiviert wird. Deshalb kann die Behandlung auch präventiv oder als regelmäßige Erhaltung sinnvoll sein.",
+            ],
+          },
+          {
+            heading: "Wie fühlt sich die Behandlung an?",
+            bullets: [
+              "Bequem und schmerzfrei",
+              "Leichtes Pulsieren oder sanfte Vibration im Beckenbodenbereich",
+              "Spürbare Muskelaktivität und Kontraktionen",
+              "Das Empfinden kann individuell unterschiedlich sein und hängt auch von körperlichem und mentalem Zustand ab",
+            ],
+          },
+          {
+            heading: "Gibt es Strahlenbelastung?",
+            paragraphs: [
+              "Die HIEMT-Technologie ist keine Strahlentherapie. Elektromagnetische Felder begegnen uns auch im Alltag, etwa bei Mobiltelefonen oder Haushaltsgeräten.",
+            ],
+          },
+          {
+            heading: "Was ist bei IUD / Spirale zu beachten?",
+            paragraphs: [
+              "Bei metallhaltigen intrauterinen Verhütungsmitteln sollte vor einer Behandlung unbedingt ärztlich abgeklärt werden, ob die Anwendung geeignet ist.",
+              "Aus Sicherheitsgründen wird in solchen Fällen empfohlen, vor der Behandlung Rücksprache zu halten, da Erwärmung oder Lageveränderungen theoretisch nicht ausgeschlossen werden können.",
+            ],
+          },
+          {
+            heading: "Kontraindikationen",
+            bullets: [
+              "Schwangerschaft",
+              "Menstruation oder abnormale Gebärmutterblutungen",
+              "Offene Wunden, Entzündungen oder starke Hämorrhoiden",
+              "Thrombosen, Embolien oder schwere Lungen- und Gefäßerkrankungen",
+              "Blutgerinnungsstörungen oder Antikoagulantientherapie",
+              "Krebserkrankungen, unbehandelte Herzkrankheiten oder unbehandelter Bluthochdruck",
+              "Demenz, Epilepsie oder schwere neurologische Erkrankungen",
+              "Elektronische Implantate wie Pacemaker, Defibrillator, Neurostimulator oder Medikamentenpumpe",
+              "Metallische Implantate oder Metallspiralen im Behandlungsbereich",
+              "Frisch erfolgte Operationen im Beckenbereich",
+              "Nach Schwangerschaftsabbruch erst nach ärztlicher Rücksprache und stabiler Heilungsphase",
+            ],
+          },
+        ],
+      },
+      hu: {
+        title: "HIEMT medencefenék-tréning",
+        sections: [
+          {
+            heading:
+              "Forradalmi megoldás a medencefenék egészségéért – fájdalommentes rehabilitáció 30 perc alatt",
+            paragraphs: [
+              "A medencefenék izomzatának egészsége kulcsfontosságú a kismedencei szervek megfelelő működéséhez. Az izmok gyengülése nemcsak kellemetlenséget okozhat, hanem az életminőséget is jelentősen befolyásolhatja.",
+              "Felejtse el a bonyolult gyakorlatokat: modern HIEMT rendszerünk kényelmes, rendkívül hatékony és nem invazív megoldást kínál nőknek és férfiaknak egyaránt. A kezelés utcai ruhában történik, vetkőzés és fizikai kontaktus nélkül.",
+            ],
+          },
+          {
+            heading: "Miért válassza az elektromágneses kezelést?",
+            bullets: [
+              "Biztonságos, fájdalommentes és nem invazív",
+              "Nők és férfiak számára egyaránt alkalmas",
+              "Maximális hatékonyság a medencefenék célzott aktiválására",
+              "Teljesen diszkrét, ruhában végezhető",
+              "Csak 30 perc egy kezelés",
+              "Nincs érzéstelenítés, műtét vagy felépülési idő",
+              "A kezelés után azonnal folytathatók a napi teendők",
+              "Csak enyhe bizsergő vagy vibrációs érzés tapasztalható",
+              "A medencefenék izmainak célzott erősítése",
+              "Fejlett, nem invazív technológia károsodás nélkül",
+              "FDA- és CE-minősítéssel rendelkező, klinikailag igazolt technológia",
+              "Ergonomikus kialakítás a kényelmes testtartás érdekében",
+            ],
+          },
+          {
+            heading: "Lehetséges eredmények",
+            bullets: [
+              "A hólyag, a méh vagy a végbél süllyedésének megelőzése vagy javítása",
+              "A köhögés, tüsszentés vagy nevetés okozta vizeletszivárgás csökkentése",
+              "A medencefenék szöveteinek aktiválása és erősítése",
+              "Az izomfeszesség és rugalmasság helyreállítása",
+              "A medencefenék vérkeringésének és idegműködésének javítása",
+              "A PC-izom erősítése az érzékenység és a szexuális funkció támogatására",
+            ],
+          },
+          {
+            heading: "Kinek ajánlott?",
+            bullets: [
+              "Vizeletfunkciós zavarok esetén",
+              "Székletürítési zavarok esetén",
+              "Szülés utáni rehabilitációhoz",
+              "Nőgyógyászati műtétek után",
+              "Teherbe esni próbáló nők számára támogatásként",
+              "Szexuális diszfunkciók esetén",
+              "Férfiak számára vitalitásuk fokozására és a medencefenék erősítésére",
+              "Krónikus kismedencei panaszok esetén",
+            ],
+          },
+          {
+            heading: "Hogyan működik?",
+            paragraphs: [
+              "A készülék HIEMT technológiával, azaz nagy intenzitású fókuszált elektromágneses mezővel dolgozik. Ennek során a motoros idegsejtek stimulálódnak, és intenzív izomösszehúzódások jönnek létre.",
+              "Ezek az összehúzódások mélyen átdolgozzák a teljes medencefenék izomzatát, erősítik a szöveteket, valamint javítják a természetes tartást és rugalmasságot. A technológia kb. 10 cm mélységig hat.",
+              "A kezelés célzottan aktiválja a medencefenék izmait, javítja azok tudatos irányítását, valamint támogatja a koordinációt, az erőt és a regenerációt.",
+            ],
+          },
+          {
+            heading: "Mire való a HIEMT kezelés?",
+            paragraphs: [
+              "A HIEMT kezelés különösen hasznos a terhesség vagy szülés után meggyengült, meglazult medencefenék izmok megerősítésére.",
+              "Célja az izmok állapotának javítása, a kontroll és az izomfeszülés visszanyerése, valamint az élettani funkciók támogatása.",
+            ],
+          },
+          {
+            heading: "Kezelési idő és kúra",
+            bullets: [
+              "Egy alkalom 30 percet vesz igénybe",
+              "Heti 2–3 alkalom javasolt",
+              "Egy kezelési ciklus általában 6–8 alkalomból áll",
+              "A pontos alkalomszám egyénileg eltérhet",
+            ],
+          },
+          {
+            heading: "Mikor jelentkezik a hatás?",
+            bullets: [
+              "Sokan már 1–2 kezelés után éreznek változást",
+              "A javulás a következő hetekben fokozódhat",
+              "Ajánlott a teljes ciklus elvégzése a stabilabb eredményért",
+              "A teljes kúra általában 3–4 hét alatt befejezhető",
+              "Vizeletinkontinencia esetén az életminőség jelentősen javulhat",
+            ],
+          },
+          {
+            heading: "Meddig tart a hatása?",
+            paragraphs: [
+              "Klinikai tapasztalatok alapján a teljes kezelési ciklus után hónapokkal is fennmaradhatnak a pozitív eredmények.",
+              "A medencefenék izomzata ugyanúgy gyengülhet, mint bármely más izom, ha nem kap rendszeres ingerlést. Ezért a kezelés fenntartó céllal is alkalmazható.",
+            ],
+          },
+          {
+            heading: "Milyen érzés a kezelés?",
+            bullets: [
+              "Kényelmes és fájdalommentes",
+              "Enyhe lüktetés vagy vibráció a medencefenék területén",
+              "Érezhető izommunka és összehúzódások",
+              "Az érzet egyénenként eltérő lehet",
+            ],
+          },
+          {
+            heading: "Van sugárzási kár?",
+            paragraphs: [
+              "A HIEMT technológia nem sugárterápia. Elektromágneses mezőkkel a mindennapokban is találkozunk, például telefonok vagy háztartási eszközök esetén.",
+            ],
+          },
+          {
+            heading: "Mire kell figyelni spirál esetén?",
+            paragraphs: [
+              "Fém tartalmú méhen belüli eszköz esetén a kezelés előtt mindenképpen orvosi egyeztetés javasolt.",
+              "Biztonsági okból ilyen helyzetekben mindig előzetes szakmai konzultáció szükséges.",
+            ],
+          },
+          {
+            heading: "Ellenjavallatok",
+            bullets: [
+              "Terhesség",
+              "Menstruáció vagy rendellenes méhvérzés",
+              "Nyílt seb, gyulladás vagy súlyos aranyér",
+              "Trombózis, embólia, súlyos ér- vagy tüdőbetegség",
+              "Vérzékenység vagy véralvadásgátló kezelés",
+              "Daganatos betegségek, kezeletlen szívbetegség vagy magas vérnyomás",
+              "Demencia, epilepszia vagy súlyos neurológiai állapot",
+              "Pacemaker, defibrillátor, idegstimulátor, gyógyszerpumpa vagy más elektronikus implantátum",
+              "Fém implantátumok vagy fém spirál a kezelési területen",
+              "Friss kismedencei műtét",
+              "Terhességmegszakítás után csak orvosi jóváhagyással",
+            ],
+          },
+        ],
+      },
+    }),
+    []
+  );
+
+  const infoContent = useMemo<Record<string, { de: InfoEntry; hu: InfoEntry }>>(
     () => ({
       swedish: {
         de: {
@@ -581,18 +796,18 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die schwedische Massage ist eine der bekanntesten und am weitesten verbreiteten Massageformen weltweit. Sie bildet die Grundlage vieler moderner Massagetechniken und dient in erster Linie der Entspannung, der Lockerung der Muskulatur und der Förderung des allgemeinen Wohlbefindens.",
-                "Durch die Kombination aus sanften und kräftigeren Grifftechniken wird der gesamte Körper harmonisiert und revitalisiert. Diese Massage eignet sich besonders für Menschen mit Stress und Verspannungen sowie für alle, die sich eine wohltuende Auszeit vom Alltag gönnen möchten.",
+                "Die Schwedische Massage ist eine der bekanntesten und am weitesten verbreiteten Massageformen weltweit. Sie bildet die Grundlage vieler moderner Massagetechniken und dient in erster Linie der Entspannung, Lockerung der Muskulatur und Förderung des allgemeinen Wohlbefindens. Durch eine Kombination aus sanften und kräftigeren Grifftechniken wird der gesamte Körper harmonisiert und revitalisiert.",
+                "Diese Massage eignet sich sowohl für Menschen mit Stress und Verspannungen als auch für diejenigen, die sich einfach eine wohltuende Auszeit vom Alltag gönnen möchten.",
               ],
             },
             {
-              heading: "Ziele der schwedischen Massage",
+              heading: "Ziele der Schwedischen Massage",
               bullets: [
                 "Förderung der Durchblutung",
-                "Linderung von Muskelverspannungen",
+                "Lösung von Muskelverspannungen",
                 "Stressabbau und mentale Entspannung",
                 "Verbesserung der Sauerstoffversorgung des Gewebes",
-                "Unterstützung der Lymphzirkulation",
+                "Unterstützung des Lymphflusses",
                 "Steigerung des allgemeinen Wohlbefindens",
                 "Förderung eines erholsamen Schlafs",
               ],
@@ -604,15 +819,15 @@ export default function ChristinaMassageWebsite() {
                 "Petrissage (Knetungen)",
                 "Friktionen (Reibungen)",
                 "Tapotement (Klopfungen)",
-                "Vibrationen",
+                "Vibrationen (Erschütterungen)",
               ],
             },
             {
-              heading: "Ablauf der Behandlung",
+              heading: "Ablauf einer Behandlung",
               bullets: [
                 "Vorgespräch zur Klärung individueller Beschwerden und Wünsche",
                 "Vorbereitung mit warmem Massageöl und entspannter Lagerung",
-                "Beginn mit sanften Streichungen, anschließend intensivere Techniken",
+                "Beginn mit sanften Streichungen, dann intensivere Techniken",
                 "Individuelle Anpassung von Druck und Tempo",
                 "Kurze Ruhephase nach der Massage",
               ],
@@ -620,19 +835,18 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Dauer der Behandlung",
               bullets: [
-                "60 Minuten – Teilkörpermassage",
-                "90 Minuten – klassische Ganzkörpermassage",
-                "120 Minuten – intensive und besonders entspannende Behandlung",
+                "60 Minuten: Teilkörpermassage",
+                "90 Minuten: klassische Ganzkörpermassage",
+                "120 Minuten: intensivere und besonders entspannende Behandlung",
               ],
             },
             {
-              heading: "Für wen geeignet",
+              heading: "Für wen geeignet?",
               bullets: [
                 "Menschen mit Stress und Alltagsbelastungen",
                 "Personen mit Muskelverspannungen",
                 "Büroangestellte mit Nacken- und Rückenschmerzen",
                 "Sportler zur Regeneration",
-                "Menschen mit rheumatischen Beschwerden",
                 "Alle, die Entspannung und Wohlbefinden suchen",
               ],
             },
@@ -640,10 +854,9 @@ export default function ChristinaMassageWebsite() {
               heading: "Positive Wirkungen",
               bullets: [
                 "Senkung des Stresshormons Cortisol",
-                "Förderung der Endorphinausschüttung",
+                "Förderung der Endorphin-Ausschüttung",
                 "Verbesserung der Beweglichkeit",
                 "Stärkung des Immunsystems",
-                "Verbesserung der Hautelastizität",
                 "Harmonisierung von Körper und Geist",
               ],
             },
@@ -666,8 +879,8 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A svédmasszázs a masszázs egyik legismertebb és legelterjedtebb formája. Számos modern masszázstechnika alapját képezi, és elsősorban a relaxációt, az izmok ellazítását, valamint az általános jó közérzet elősegítését szolgálja.",
-                "A gyengéd és erőteljes masszázstechnikák kombinációjával az egész test harmonizálódik és revitalizálódik. Ez a masszázs különösen ajánlott stressztől és feszültségtől szenvedők számára, valamint mindazoknak, akik szeretnének egy pihentető szünetet tartani a mindennapi rohanásban.",
+                "A svédmasszázs a masszázs egyik legismertebb és legelterjedtebb formája. Számos modern masszázstechnika alapját képezi, elsősorban a relaxációt, az izmok ellazítását és az általános jó közérzet elősegítését szolgálja.",
+                "A gyengéd és erősebb masszázstechnikák kombinációjával az egész test harmonizálódik és revitalizálódik. Ez a masszázs alkalmas stressztől és feszültségtől szenvedők számára, valamint azoknak, akik egyszerűen csak szeretnének egy pihentető szünetet élvezni és kiszakadni a mindennapi rohanó életükből.",
               ],
             },
             {
@@ -675,16 +888,76 @@ export default function ChristinaMassageWebsite() {
               bullets: [
                 "A vérkeringés elősegítése",
                 "Az izomfeszültség enyhítése",
-                "A stressz csökkentése és a lelki ellazulás elősegítése",
+                "A stressz csökkentése és a lelki ellazulás",
                 "A szövetek oxigénellátásának javítása",
                 "A nyirokkeringés támogatása",
-                "Az általános jólét fokozása",
+                "Fokozott általános jólét",
                 "A pihentető alvás elősegítése",
+              ],
+            },
+            {
+              heading: "Tipikus fogási technikák",
+              bullets: [
+                "Effleurage (simogatás)",
+                "Petrissage (gyúrás)",
+                "Súrlódás (dörzsölés)",
+                "Tapotement (kopogtatás)",
+                "Rezgések",
+              ],
+            },
+            {
+              heading: "Kezelési folyamat",
+              bullets: [
+                "Előzetes konzultáció az egyéni panaszok és kívánságok tisztázása érdekében",
+                "Előkészítés meleg masszázsolajjal és kényelmes elhelyezkedéssel",
+                "Kezdés gyengéd mozdulatokkal, majd intenzívebb technikákkal",
+                "A nyomás és a tempó egyéni beállítása",
+                "Rövid pihenőidő a masszázs után",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "60 perc – részleges testmasszázs",
+                "90 perc – klasszikus teljes testes masszázs",
+                "120 perc – intenzívebb és különösen pihentető kezelés",
+              ],
+            },
+            {
+              heading: "Kinek ajánlott?",
+              bullets: [
+                "Stresszel és mindennapi terhekkel küzdő emberek",
+                "Izomfeszültséggel küzdő emberek",
+                "Nyak- és hátfájással küzdő irodai dolgozók",
+                "Sportolók regenerációra",
+                "Bárki, aki pihenésre és jólétre vágyik",
+              ],
+            },
+            {
+              heading: "Pozitív hatások",
+              bullets: [
+                "A stresszhormon kortizol szintjének csökkentése",
+                "Az endorfin felszabadulásának elősegítése",
+                "A mobilitás javítása",
+                "Az immunrendszer erősítése",
+                "A test és lélek harmonizálása",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Akut gyulladás vagy fertőzés",
+                "Láz",
+                "Friss sérülések vagy műtétek",
+                "Trombózis vagy súlyos érrendszeri betegségek",
+                "Nyílt sebek vagy bőrbetegségek",
+                "Bizonyos szív- és érrendszeri betegségek",
               ],
             },
           ],
         },
       },
+
       backNeck: {
         de: {
           title: "Rücken- und Nackenmassage",
@@ -692,24 +965,24 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Rücken- und Nackenmassage ist eine gezielte Teilkörpermassage, die speziell auf die am häufigsten von Verspannungen betroffenen Bereiche des Körpers ausgerichtet ist.",
-                "Sie dient dazu, Schmerzen zu lindern, Verspannungen zu lösen und das allgemeine Wohlbefinden zu steigern.",
+                "Die Nacken- und Rückenmassage ist eine gezielte Teilkörpermassage, die speziell auf die am häufigsten von Verspannungen betroffenen Bereiche des Körpers ausgerichtet ist. Durch langes Sitzen, Stress, einseitige Belastungen oder körperliche Überanstrengung entstehen häufig Muskelverhärtungen im Nacken-, Schulter- und Rückenbereich.",
+                "Diese Massageform dient dazu, Schmerzen zu lindern, Verspannungen zu lösen und das allgemeine Wohlbefinden zu steigern. Sie kombiniert klassische Massagetechniken mit individuell angepasstem Druck und eignet sich sowohl zur akuten Behandlung von Beschwerden als auch zur präventiven Entspannung.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der Nacken- und Rückenmassage",
               bullets: [
                 "Lösung von Muskelverspannungen im Nacken- und Rückenbereich",
                 "Schmerzlinderung bei Verspannungen und Fehlhaltungen",
-                "Förderung der Durchblutung der Muskulatur",
+                "Förderung der Durchblutung und Sauerstoffversorgung der Muskulatur",
                 "Verbesserung der Beweglichkeit von Nacken und Schultern",
                 "Stressabbau und mentale Entspannung",
-                "Vorbeugung von Kopfschmerzen",
+                "Vorbeugung von Kopfschmerzen und Spannungskopfschmerzen",
                 "Unterstützung einer gesunden Körperhaltung",
               ],
             },
             {
-              heading: "Typische Techniken",
+              heading: "Typische Grifftechniken",
               bullets: [
                 "Effleurage (Streichungen)",
                 "Petrissage (Knetungen)",
@@ -719,11 +992,32 @@ export default function ChristinaMassageWebsite() {
               ],
             },
             {
-              heading: "Dauer",
+              heading: "Ablauf einer Behandlung",
               bullets: [
-                "45 Minuten – kurze, gezielte Behandlung",
-                "60 Minuten – intensivere Behandlung",
-                "75 Minuten – umfassende und entspannende Therapie",
+                "Vorgespräch zur Klärung individueller Beschwerden, Schmerzpunkte und Wünsche",
+                "Vorbereitung in bequemer Bauchlage auf der Liege",
+                "Verwendung von warmem Massageöl",
+                "Fokus auf Nacken, Schultern sowie oberen und mittleren Rücken",
+                "Kurze Ruhephase nach der Behandlung",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "45 Minuten: kurze, gezielte Behandlung bei akuten Verspannungen",
+                "60 Minuten: intensivere Behandlung mit Fokus auf Problembereiche",
+                "75 Minuten: umfassende und besonders entspannende Therapie",
+              ],
+            },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit sitzender Tätigkeit",
+                "Personen mit Stress und Alltagsbelastungen",
+                "Menschen mit Nackensteife oder Rückenschmerzen",
+                "Personen mit Spannungskopfschmerzen",
+                "Sportler zur Regeneration",
+                "Alle, die gezielte Entspannung suchen",
               ],
             },
             {
@@ -732,8 +1026,21 @@ export default function ChristinaMassageWebsite() {
                 "Reduzierung von Muskelhärte und Schmerzen",
                 "Verbesserung der Körperhaltung",
                 "Steigerung des Bewegungsumfangs",
+                "Aktivierung des parasympathischen Nervensystems",
                 "Förderung von Entspannung und innerer Ruhe",
                 "Verbesserung der Schlafqualität",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Akute Entzündungen oder Infektionen",
+                "Fieber",
+                "Frische Verletzungen oder Operationen",
+                "Bandscheibenvorfälle im akuten Stadium",
+                "Thrombose oder schwere Gefäßerkrankungen",
+                "Offene Wunden oder Hauterkrankungen",
+                "Schwere neurologische Erkrankungen",
               ],
             },
           ],
@@ -744,13 +1051,88 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A hát- és nyakmasszázs egy célzott résztestmasszázs, amely a leggyakrabban feszült területekre összpontosít.",
-                "Segít az izomfeszültség oldásában, a fájdalom csökkentésében és az általános közérzet javításában.",
+                "A hát- és nyakmasszázs egy célzott résztestmasszázs, amely kifejezetten a test leggyakrabban feszült területeire összpontosít. Hosszú ülés, stressz, egyoldalú terhelés vagy fizikai túlterhelés következtében gyakran alakul ki izomkeményedés a nyak, váll és hát területén.",
+                "Ez a kezelési forma a fájdalom enyhítését, a feszültség oldását és az általános közérzet javítását szolgálja. Klasszikus masszázstechnikákat kombinál egyénileg igazított nyomással, így akut panaszok esetén és megelőzésként is ideális.",
+              ],
+            },
+            {
+              heading: "A hát- és nyakmasszázs céljai",
+              bullets: [
+                "A nyak- és hátizmok feszültségének oldása",
+                "Fájdalomcsillapítás feszesség és helytelen tartás esetén",
+                "A vérkeringés és az oxigénellátás javítása",
+                "A nyak és váll mobilitásának javítása",
+                "Stresszcsökkentés és mentális ellazulás",
+                "A fejfájás és feszültségből eredő fejfájás megelőzése",
+                "Az egészséges testtartás támogatása",
+              ],
+            },
+            {
+              heading: "Tipikus fogások",
+              bullets: [
+                "Effleurage (simítások)",
+                "Petrissage (gyúrás)",
+                "Frikciók (dörzsölések)",
+                "Triggerpont kezelés",
+                "Nyújtások és mobilizációk",
+              ],
+            },
+            {
+              heading: "A kezelés menete",
+              bullets: [
+                "Előzetes beszélgetés az egyéni panaszok és fájdalompontok tisztázására",
+                "Kényelmes hason fekvő helyzet a kezelőágyon",
+                "Meleg masszázsolaj használata",
+                "Fókusz a nyakon, vállakon, felső és középső hátszakaszon",
+                "Rövid pihenőidő a kezelés után",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – rövid, célzott kezelés akut feszültségek esetén",
+                "60 perc – intenzívebb kezelés a problémás területekre összpontosítva",
+                "75 perc – átfogó és különösen pihentető kezelés",
+              ],
+            },
+            {
+              heading: "Kinek ajánlott?",
+              bullets: [
+                "Ülő munkát végző embereknek",
+                "Stresszel és mindennapi terheléssel élőknek",
+                "Nyakmerevségben vagy hátfájásban szenvedőknek",
+                "Feszültség okozta fejfájás esetén",
+                "Sportolóknak regenerációhoz",
+                "Mindenkinek, aki célzott ellazulást keres",
+              ],
+            },
+            {
+              heading: "Pozitív hatások",
+              bullets: [
+                "Az izomkeménység és fájdalom csökkentése",
+                "A testtartás javítása",
+                "A mozgástartomány növelése",
+                "A paraszimpatikus idegrendszer aktiválása",
+                "A nyugalom és belső béke elősegítése",
+                "Az alvásminőség javítása",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Akut gyulladás vagy fertőzés",
+                "Láz",
+                "Friss sérülések vagy műtétek",
+                "Akut porckorongsérv",
+                "Trombózis vagy súlyos érrendszeri betegség",
+                "Nyílt sebek vagy bőrbetegség",
+                "Súlyos neurológiai betegségek",
               ],
             },
           ],
         },
       },
+
       individual: {
         de: {
           title: "Individuelle Massage",
@@ -758,39 +1140,83 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die individuelle Massage ist eine maßgeschneiderte Behandlung, die speziell auf die persönlichen Bedürfnisse, Beschwerden und Wünsche des Kunden abgestimmt wird.",
-                "Im Gegensatz zu standardisierten Massagetechniken kombiniert sie verschiedene manuelle Methoden, um ein optimales therapeutisches und entspannendes Ergebnis zu erzielen.",
+                "Die Individualmassage ist eine maßgeschneiderte Behandlung, die speziell auf die persönlichen Bedürfnisse, Beschwerden und Wünsche des Kunden abgestimmt wird. Im Gegensatz zu standardisierten Massageformen kombiniert sie verschiedene manuelle Techniken, um ein optimales therapeutisches und entspannendes Ergebnis zu erzielen.",
+                "Diese Behandlung erfolgt ohne den Einsatz von Hot Stones und konzentriert sich ausschließlich auf die gezielte Anwendung manueller Grifftechniken. Dadurch kann besonders flexibel auf Verspannungen, Schmerzpunkte und individuelle Problemzonen eingegangen werden.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der Individualmassage",
               bullets: [
                 "Individuelle Linderung von Muskelverspannungen",
                 "Schmerzlinderung bei spezifischen Beschwerden",
                 "Förderung der Durchblutung und des Stoffwechsels",
                 "Verbesserung der Beweglichkeit",
                 "Stressabbau und mentale Entspannung",
-                "Unterstützung der Regeneration",
+                "Unterstützung der Regeneration nach körperlicher Belastung",
                 "Steigerung des allgemeinen Wohlbefindens",
               ],
             },
             {
-              heading: "Typische Techniken",
+              heading: "Typische Grifftechniken",
               bullets: [
                 "Effleurage (Streichungen)",
                 "Petrissage (Knetungen)",
                 "Friktionen (Reibungen)",
-                "Triggerpunkttherapie",
+                "Triggerpunktbehandlung",
                 "Dehnungen und Mobilisationen",
                 "Faszientechniken",
               ],
             },
             {
-              heading: "Dauer",
+              heading: "Ablauf einer Behandlung",
+              bullets: [
+                "Vorgespräch und Erfassung der individuellen Ziele",
+                "Auswahl der passenden Körperbereiche und Techniken",
+                "Beginn mit sanften Griffen, danach gezielte intensivere Behandlung",
+                "Flexible Anpassung während der gesamten Behandlung",
+                "Kurze Ruhephase nach der Massage",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
               bullets: [
                 "60 Minuten – gezielte Behandlung einzelner Problemzonen",
                 "90 Minuten – umfassende, individuell angepasste Massage",
                 "120 Minuten – intensive Ganzkörperbehandlung mit Fokus auf mehrere Beschwerdebereiche",
+              ],
+            },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit spezifischen muskulären Beschwerden",
+                "Personen mit Stress und hoher Alltagsbelastung",
+                "Sportler zur Regeneration und Leistungssteigerung",
+                "Menschen mit einseitigen Belastungen",
+                "Personen, die eine flexible und persönliche Behandlung wünschen",
+                "Alle, die tiefe Entspannung suchen",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Individuell angepasste Schmerzlinderung",
+                "Verbesserung der Körperwahrnehmung",
+                "Förderung der Regeneration",
+                "Aktivierung des parasympathischen Nervensystems",
+                "Reduktion von Stress und innerer Unruhe",
+                "Steigerung der Lebensqualität",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Akute Entzündungen oder Infektionen",
+                "Fieber",
+                "Frische Verletzungen oder Operationen",
+                "Thrombose oder schwere Gefäßerkrankungen",
+                "Offene Wunden oder Hauterkrankungen",
+                "Schwere Herz-Kreislauf-Erkrankungen",
+                "Akute Bandscheibenvorfälle",
               ],
             },
           ],
@@ -801,8 +1227,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "Az egyéni masszázs egy személyre szabott kezelés, amelyet kifejezetten a kliens személyes igényeihez, panaszaihoz és kívánságaihoz igazítanak.",
-                "A standardizált masszázstechnikákkal ellentétben különféle manuális technikákat kombinál az optimális terápiás és relaxációs eredmények elérése érdekében.",
+                "Az egyéni masszázs egy személyre szabott kezelés, amelyet kifejezetten a kliens személyes igényeihez, betegségeihez és kívánságaihoz igazítanak. A standardizált masszázstechnikákkal ellentétben különféle manuális technikákat kombinál az optimális terápiás és relaxációs eredmények elérése érdekében.",
               ],
             },
             {
@@ -817,9 +1242,29 @@ export default function ChristinaMassageWebsite() {
                 "Az általános jólét növelése",
               ],
             },
+            {
+              heading: "Tipikus technikák",
+              bullets: [
+                "Effleurage (simogatás)",
+                "Petrissage (gyúrás)",
+                "Frikció (dörzsölés)",
+                "Triggerpont terápia",
+                "Nyújtások és mobilizációk",
+                "Fasciális technikák",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "60 perc – az egyes problémás területek célzott kezelése",
+                "90 perc – átfogó, személyre szabott masszázs",
+                "120 perc – intenzív teljes testes kezelés, amely több területre összpontosít",
+              ],
+            },
           ],
         },
       },
+
       foot: {
         de: {
           title: "Fußmassage",
@@ -827,27 +1272,27 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Fußmassage ist eine wohltuende und zugleich therapeutische Behandlung, die sich auf die Entspannung und Aktivierung der Füße konzentriert.",
-                "Durch gezielte Massagegriffe werden Verspannungen gelöst, die Durchblutung gefördert und das allgemeine Wohlbefinden gesteigert.",
+                "Die Fußmassage ist eine wohltuende und zugleich therapeutische Behandlung, die sich auf die Entspannung und Aktivierung der Füße konzentriert. Unsere Füße tragen uns täglich durch den Alltag und sind dabei enormen Belastungen ausgesetzt.",
+                "Durch gezielte Massagegriffe werden Verspannungen gelöst, die Durchblutung gefördert und das allgemeine Wohlbefinden gesteigert. Je nach Ausführung kann die Fußmassage sowohl tief entspannend als auch aktivierend und belebend wirken.",
               ],
             },
             {
               heading: "Ziele der Fußmassage",
               bullets: [
                 "Förderung der Durchblutung der Füße",
-                "Linderung von Muskelverspannungen",
+                "Lösung von Muskelverspannungen",
                 "Entspannung von Körper und Geist",
-                "Erleichterung bei müden und schweren Beinen",
-                "Unterstützung der Regeneration",
-                "Verbesserung der Beweglichkeit der Fuß- und Sprunggelenke",
+                "Linderung von müden und schweren Beinen",
+                "Unterstützung der Regeneration nach körperlicher Belastung",
+                "Verbesserung der Beweglichkeit der Fußgelenke",
                 "Steigerung des allgemeinen Wohlbefindens",
               ],
             },
             {
-              heading: "Dauer",
+              heading: "Dauer der Behandlung",
               bullets: [
                 "45 Minuten – intensivere Massage mit zusätzlicher Mobilisation",
-                "60 Minuten – umfassende Behandlung, optional mit entspannendem Fußbad",
+                "60 Minuten – umfassende Behandlung inklusive optionalem Fußbad",
               ],
             },
             {
@@ -855,7 +1300,7 @@ export default function ChristinaMassageWebsite() {
               bullets: [
                 "Offene Wunden oder Hauterkrankungen an den Füßen",
                 "Akute Entzündungen oder Infektionen",
-                "Frisch erfolgte Verletzungen oder Operationen",
+                "Frische Verletzungen oder Operationen",
                 "Thrombose oder schwere Gefäßerkrankungen",
                 "Stark ausgeprägte Krampfadern im akuten Stadium",
                 "Ansteckende Fußpilzerkrankungen",
@@ -869,7 +1314,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A talpmasszázs egy nyugtató és terápiás kezelés, amely a lábak ellazítására és aktiválására összpontosít.",
+                "A talpmasszázs egy nyugtató és terápiás kezelés, amely a lábak ellazítására és aktiválására összpontosít. Lábunk végigkísér minket a mindennapi életben, és hatalmas terhelésnek van kitéve.",
                 "A célzott masszázstechnikák oldják a feszültséget, serkentik a vérkeringést és javítják az általános közérzetet.",
               ],
             },
@@ -881,26 +1326,44 @@ export default function ChristinaMassageWebsite() {
                 "Test és lélek ellazítása",
                 "Fáradt és nehéz lábak enyhítése",
                 "Fizikai megterhelés utáni regeneráció támogatása",
-                "A boka mozgásának javítása",
-                "Az általános közérzet növelése",
+                "Boka mozgásának javítása",
+                "Általános közérzet növelése",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – intenzívebb masszázs további mobilizációval",
+                "60 perc – átfogó kezelés, opcionális lábfürdővel",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Nyílt sebek vagy bőrbetegségek a lábon",
+                "Akut gyulladás vagy fertőzés",
+                "Frissen lezajlott sérülések vagy műtétek",
+                "Trombózis vagy súlyos érrendszeri betegségek",
+                "Súlyos visszér akut stádiumban",
+                "Fertőző lábgomba",
               ],
             },
           ],
         },
       },
-      lymph: {
+            lymph: {
         de: {
           title: "Lymphdrainage",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die manuelle Lymphdrainage ist eine besonders sanfte und rhythmische Massagetechnik, die darauf abzielt, den Lymphfluss im Körper zu fördern und überschüssige Gewebsflüssigkeit abzutransportieren.",
+                "Die Manuelle Lymphdrainage ist eine besonders sanfte und rhythmische Massagetechnik, die darauf abzielt, den Lymphfluss im Körper zu fördern und überschüssige Gewebsflüssigkeit abzutransportieren.",
                 "Durch gezielte, kreisförmige und pumpende Grifftechniken wird das Lymphsystem aktiviert, wodurch Schwellungen reduziert und die Entgiftung des Körpers unterstützt werden.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der Lymphdrainage",
               bullets: [
                 "Reduktion von Schwellungen",
                 "Förderung des Lymphabflusses",
@@ -927,7 +1390,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A manuális nyirokelvezetés egy különösen gyengéd és ritmikus masszázstechnika, amelynek célja a nyirokkeringés elősegítése a testben és a felesleges szöveti folyadék eltávolítása.",
+                "A manuális nyirokelvezetés (MLD) egy különösen gyengéd és ritmikus masszázstechnika, amelynek célja a nyirokkeringés elősegítése a testben és a felesleges szöveti folyadék eltávolítása.",
                 "Célzott, körkörös és pumpáló mozdulatokkal aktiválódik a nyirokrendszer, ezáltal csökken a duzzanat és támogatja a szervezet méregtelenítő folyamatait.",
               ],
             },
@@ -944,22 +1407,30 @@ export default function ChristinaMassageWebsite() {
                 "Javított bőr- és szövetszerkezet",
               ],
             },
+            {
+              heading: "Kezelés időtartama",
+              bullets: [
+                "60 perc – egy terület standard kezelése",
+                "90 perc – több testterület átfogó kezelése",
+              ],
+            },
           ],
         },
       },
+
       vagus: {
         de: {
-          title: "Vagus-Massage",
+          title: "Vagus-Massage zur Stressreduktion",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Vagus-Massage ist eine sanfte und tief entspannende Behandlung, die darauf abzielt, den Vagusnerv zu stimulieren.",
-                "Durch gezielte, ruhige Berührungen im Bereich von Nacken, Hals, Kopf und Gesicht wird das parasympathische Nervensystem aktiviert.",
+                "Die Vagus-Massage ist eine sanfte und tief entspannende Behandlung, die darauf abzielt, den Vagusnerv zu stimulieren. Der Vagusnerv ist der längste Nerv des parasympathischen Nervensystems und spielt eine zentrale Rolle bei der Regulation von Stress, Herzfrequenz, Verdauung und emotionalem Gleichgewicht.",
+                "Durch gezielte, ruhige Berührungen im Bereich von Nacken, Hals, Kopf und Gesicht wird das parasympathische Nervensystem aktiviert – auch bekannt als der Ruhe- und Regenerationsmodus des Körpers. Dies führt zu tiefer Entspannung und unterstützt die natürliche Fähigkeit des Körpers, sich zu regenerieren.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der Vagus-Massage",
               bullets: [
                 "Reduktion von Stress und Anspannung",
                 "Aktivierung des parasympathischen Nervensystems",
@@ -972,27 +1443,102 @@ export default function ChristinaMassageWebsite() {
               ],
             },
             {
-              heading: "Dauer",
+              heading: "Typische Grifftechniken",
+              bullets: [
+                "Sanfte Streichungen im Nacken- und Halsbereich",
+                "Kreisende Bewegungen an den Schläfen",
+                "Massage entlang der Schädelbasis",
+                "Ohr- und Kiefermassage",
+                "Atembegleitende Berührungen",
+              ],
+            },
+            {
+              heading: "Ablauf einer Behandlung",
+              bullets: [
+                "Vorgespräch zur Klärung individueller Bedürfnisse",
+                "Bequeme Rückenlage auf der Massageliege",
+                "Ruhige Atmosphäre mit gedämpftem Licht",
+                "Sanfte rhythmische Berührungen an Nacken, Hals, Kopf und Gesicht",
+                "Kurze Nachruhe nach der Behandlung",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
               bullets: [
                 "45 Minuten – intensivere Behandlung mit Fokus auf Nacken und Kopf",
                 "60 Minuten – umfassende Vagus-Massage für maximale Entspannung",
               ],
             },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit hohem Stresslevel",
+                "Personen mit Schlafstörungen",
+                "Menschen mit innerer Unruhe oder Angstgefühlen",
+                "Personen mit Spannungskopfschmerzen",
+                "Menschen mit Verdauungsbeschwerden",
+                "Alle, die tiefe mentale und körperliche Entspannung suchen",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Aktivierung des Ruhe- und Regenerationssystems",
+                "Senkung von Stresshormonen",
+                "Verbesserung der Herzfrequenzvariabilität",
+                "Förderung eines erholsamen Schlafs",
+                "Stabilisierung der emotionalen Balance",
+                "Unterstützung der Selbstheilungskräfte",
+                "Tiefes Gefühl von Sicherheit und Geborgenheit",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Akute Entzündungen oder Infektionen im Halsbereich",
+                "Frische Operationen im Kopf- oder Nackenbereich",
+                "Schwere Herzrhythmusstörungen",
+                "Akute Thrombosen",
+                "Unklare Schwellungen oder Schmerzen im Halsbereich",
+                "Bestimmte neurologische Erkrankungen",
+              ],
+            },
           ],
         },
         hu: {
-          title: "Vagus masszázs",
+          title: "Vagus masszázs stresszcsökkentésre",
           sections: [
             {
               heading: "Általános leírás",
               paragraphs: [
                 "A vagus masszázs egy gyengéd és mélyen ellazító kezelés, amelynek célja a vagus ideg stimulálása.",
-                "A nyak, a torok, a fej és az arc célzott, nyugtató érintésein keresztül aktiválódik a paraszimpatikus idegrendszer.",
+                "A nyak, a torok, a fej és az arc célzott, nyugtató érintésein keresztül aktiválódik a paraszimpatikus idegrendszer – más néven a test nyugalmi és regenerációs üzemmódja.",
+              ],
+            },
+            {
+              heading: "A vagus masszázs céljai",
+              bullets: [
+                "A stressz és a feszültség csökkentése",
+                "A paraszimpatikus idegrendszer aktiválása",
+                "A belső béke és nyugalom elősegítése",
+                "Az alvásminőség javítása",
+                "Az érzelmi egyensúly támogatása",
+                "A pulzusszám szabályozása",
+                "Az emésztés elősegítése",
+                "A feszültség okozta fejfájás enyhítése",
+              ],
+            },
+            {
+              heading: "Kezelés időtartama",
+              bullets: [
+                "45 perc – intenzívebb kezelés, amely a nyakra és a fejre összpontosít",
+                "60 perc – átfogó vagus masszázs a maximális ellazulásért",
               ],
             },
           ],
         },
       },
+
       champi: {
         de: {
           title: "Champi Kopfmassage",
@@ -1000,28 +1546,91 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda.",
-                "Diese Massage konzentriert sich auf Kopf, Nacken, Schultern und Gesicht und zielt darauf ab, Körper und Geist zu harmonisieren.",
+                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda. Der Begriff Champi leitet sich vom Hindi-Wort Chāmpnā ab, was so viel wie kneten oder massieren bedeutet.",
+                "Diese Massage konzentriert sich auf Kopf, Nacken, Schultern und Gesicht und zielt darauf ab, Körper und Geist in Einklang zu bringen. Durch rhythmische und gezielte Grifftechniken wird die Durchblutung gefördert, Stress reduziert und ein tiefes Gefühl der Entspannung erzeugt.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der Champi Kopfmassage",
               bullets: [
                 "Tiefe Entspannung von Körper und Geist",
-                "Reduktion von Stress und innerer Unruhe",
+                "Stressabbau und Reduktion innerer Unruhe",
                 "Förderung der Durchblutung der Kopfhaut",
                 "Unterstützung des Haarwachstums",
-                "Linderung von spannungsbedingten Kopfschmerzen",
+                "Linderung von Spannungskopfschmerzen",
                 "Verbesserung der Konzentrationsfähigkeit",
                 "Aktivierung des Energieflusses im Körper",
                 "Förderung eines erholsamen Schlafs",
               ],
             },
             {
-              heading: "Dauer",
+              heading: "Ayurvedischer Hintergrund",
+              bullets: [
+                "Kronenchakra (Sahasrara)",
+                "Stirnchakra (Ajna)",
+                "Halschakra (Vishuddha)",
+              ],
+            },
+            {
+              heading: "Typische Grifftechniken",
+              bullets: [
+                "Sanfte Streichungen",
+                "Kreisende Bewegungen auf der Kopfhaut",
+                "Knetungen von Nacken und Schultern",
+                "Sanfte Zugbewegungen an den Haaren",
+                "Massage von Schläfen und Stirn",
+                "Gesichtsmassage",
+              ],
+            },
+            {
+              heading: "Ablauf einer Behandlung",
+              bullets: [
+                "Vorgespräch zur Klärung individueller Wünsche",
+                "Massage im Sitzen oder Liegen",
+                "Optional mit warmen ayurvedischen Ölen",
+                "Gezielte Behandlung von Schultern, Nacken, Kopfhaut und Gesicht",
+                "Kurze Ruhephase nach der Massage",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
               bullets: [
                 "45 Minuten – umfassende Massage von Kopf, Nacken und Schultern",
                 "60 Minuten – intensive Behandlung inklusive Gesichtsmassage",
+              ],
+            },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit Stress und mentaler Belastung",
+                "Personen mit Spannungskopfschmerzen oder Migräne",
+                "Menschen mit Nacken- und Schulterverspannungen",
+                "Personen mit Schlafstörungen",
+                "Menschen, die ihre Konzentration verbessern möchten",
+                "Alle, die eine ganzheitliche Entspannungsbehandlung suchen",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Tiefe mentale und körperliche Entspannung",
+                "Verbesserung der Durchblutung der Kopfhaut",
+                "Förderung von Haarwachstum und Haargesundheit",
+                "Linderung von Stresssymptomen",
+                "Verbesserung der Schlafqualität",
+                "Harmonisierung des Energieflusses",
+                "Steigerung des allgemeinen Wohlbefindens",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Akute Entzündungen oder Infektionen im Kopf- oder Nackenbereich",
+                "Offene Wunden oder Hauterkrankungen auf der Kopfhaut",
+                "Frische Operationen",
+                "Fieber",
+                "Schwere neurologische Erkrankungen",
+                "Allergien gegen verwendete Öle",
               ],
             },
           ],
@@ -1036,43 +1645,118 @@ export default function ChristinaMassageWebsite() {
                 "Ez a masszázs a fejre, a nyakra, a vállakra és az arcra összpontosít, célja a test és az elme harmonizálása.",
               ],
             },
+            {
+              heading: "A Champi fejmasszázs céljai",
+              bullets: [
+                "A test és az elme mély ellazulása",
+                "A stressz csökkentése és a belső nyugtalanság enyhítése",
+                "A vérkeringés fokozása a fejbőrben",
+                "A hajnövekedés támogatása",
+                "A feszültség okozta fejfájás enyhítése",
+                "A koncentráció javítása",
+                "Az energiaáramlás aktiválása a testben",
+                "A pihentető alvás elősegítése",
+              ],
+            },
+            {
+              heading: "Kezelés időtartama",
+              bullets: [
+                "45 perc – a fej, a nyak és a vállak átfogó masszázsa",
+                "60 perc – intenzív kezelés arcmasszázzsal",
+              ],
+            },
           ],
         },
       },
+
       fdm: {
         de: {
-          title: "FDM Behandlung",
+          title: "FDM – Fascial Distortion Model",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Das Fascial Distortion Model (FDM) ist ein innovatives und wirkungsvolles Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparates.",
-                "Es basiert auf der Annahme, dass viele Beschwerden auf Verformungen der Faszien zurückzuführen sind.",
+                "Das Fascial Distortion Model (FDM) ist ein innovatives und wirkungsvolles Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparates. Entwickelt wurde diese Methode vom amerikanischen Notfallmediziner Dr. Stephen Typaldos.",
+                "Im Mittelpunkt des FDM steht die Annahme, dass viele Schmerzen und Funktionsstörungen auf Verformungen der Faszien zurückzuführen sind. Ein besonderes Merkmal ist die Interpretation der Körpersprache des Patienten, die Hinweise auf die zugrunde liegende Fasziendistorsion gibt.",
               ],
             },
             {
-              heading: "Ziele",
+              heading: "Ziele der FDM-Behandlung",
               bullets: [
                 "Schnelle Schmerzlinderung",
                 "Verbesserung der Beweglichkeit",
                 "Wiederherstellung der Faszienfunktion",
-                "Behandlung akuter und chronischer Beschwerden",
+                "Behandlung von akuten und chronischen Beschwerden",
                 "Unterstützung der sportlichen Leistungsfähigkeit",
                 "Beschleunigung der Regeneration nach Verletzungen",
               ],
             },
             {
-              heading: "Warum ist FDM besonders?",
+              heading: "Die sechs Fasziendistorsionen",
               bullets: [
-                "Patientenzentrierte Diagnostik über Körpersprache",
-                "Oft schnelle Ergebnisse schon nach der ersten Behandlung",
-                "Natürlicher und gezielter Ansatz",
-                "Hohe Wirksamkeit bei Sportverletzungen und chronischen Beschwerden",
+                "Triggerband (TB)",
+                "Hernierter Triggerpunkt (HTP)",
+                "Kontinuumdistorsion (CD)",
+                "Faltdistorsion (FD)",
+                "Zylinderdistorsion (CyD)",
+                "Tektonische Fixation (TF)",
               ],
             },
             {
-              heading: "Dauer",
-              bullets: ["60 Minuten – umfassende und intensive Behandlung"],
+              heading: "Typische Behandlungstechniken",
+              bullets: [
+                "Gezielter, teilweise intensiver Druck entlang der betroffenen Faszien",
+                "Manuelle Reposition von Gewebestrukturen",
+                "Mobilisation von Gelenken",
+                "Behandlung von Triggerpunkten",
+                "Fasziale Dehn- und Zugtechniken",
+              ],
+            },
+            {
+              heading: "Ablauf der Behandlung",
+              bullets: [
+                "Anamnese und Analyse",
+                "Funktionelle Tests zur Identifikation der Distorsionen",
+                "Gezielte manuelle Techniken zur Korrektur",
+                "Funktionskontrolle nach der Behandlung",
+                "Empfehlungen zu Bewegung, Dehnung und Flüssigkeitszufuhr",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: ["60 Minuten – intensive Behandlung komplexer Beschwerdebilder"],
+            },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit akuten oder chronischen Schmerzen",
+                "Sportler bei Verletzungen oder Überlastungen",
+                "Personen mit Bewegungseinschränkungen",
+                "Menschen mit Gelenkbeschwerden",
+                "Patienten mit Rücken-, Nacken- oder Schulterschmerzen",
+                "Beschwerden wie Bänderdehnungen, Prellungen oder Sehnenreizungen",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Häufig sofortige Schmerzlinderung",
+                "Verbesserung der Beweglichkeit",
+                "Wiederherstellung der Faszienfunktion",
+                "Schnellere Regeneration",
+                "Steigerung der Leistungsfähigkeit",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Frische Knochenbrüche",
+                "Akute Entzündungen oder Infektionen",
+                "Offene Wunden",
+                "Schwere Osteoporose",
+                "Blutgerinnungsstörungen",
+                "Maligne Tumorerkrankungen ohne ärztliche Freigabe",
+              ],
             },
           ],
         },
@@ -1082,13 +1766,34 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A Fasciális Distorzió Modell (FDM) egy innovatív és hatékony kezelési koncepció a mozgásszervi rendszer fájdalmának és mozgáskorlátozottságának terápiájára.",
-                "A módszer egyik különlegessége a páciensközpontú diagnosztika és a gyors eredmény.",
+                "A Fasciális Distorció Modell (FDM) egy innovatív és hatékony kezelési koncepció a mozgásszervi rendszer fájdalmának és mozgáskorlátozottságának terápiájára.",
+                "Azon a feltételezésen alapul, hogy számos fájdalom és funkcionális rendellenesség a fascia torzulásainak köszönhető. A beteg testbeszédére építve gyors fájdalomcsillapítást és mozgásszabadságot eredményez, gyakran már egy-két kezelés után.",
+              ],
+            },
+            {
+              heading: "Az FDM kezelés céljai",
+              bullets: [
+                "Gyors fájdalomcsillapítás",
+                "Javított mobilitás",
+                "A fasciális funkció helyreállítása",
+                "Akut és krónikus állapotok kezelése",
+                "A sportteljesítmény támogatása",
+                "Sérülések utáni regeneráció felgyorsítása",
+              ],
+            },
+            {
+              heading: "Miért különleges az FDM módszer?",
+              bullets: [
+                "Páciensközpontú diagnosztika",
+                "Gyors eredmények",
+                "Természetes megközelítés",
+                "Hatékonyság akut sportsérüléseknél és krónikus panaszoknál",
               ],
             },
           ],
         },
       },
+
       flossing: {
         de: {
           title: "Flossing",
@@ -1096,28 +1801,64 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Flossing ist eine moderne und effektive physiotherapeutische Behandlungsmethode, die gezielt auf das Bindegewebe, die Muskulatur und die Gelenke wirkt.",
-                "Der Kern der Behandlung besteht in der straffen Kompression eines Körperbereichs mit einem speziellen elastischen Band.",
+                "Flossing ist eine komplexe physiotherapeutische Behandlung, die vor allem das Bindegewebe, die Muskeln und die Gelenke beeinflusst. Das Wesentliche der Behandlung ist die straffe Kompression mit einem speziellen Gummiband, das seine positive Wirkung durch mechanische und physiologische Effekte entfaltet.",
+                "Die Anwendung wirkt sich gleichzeitig auf die Gewebestruktur, den Flüssigkeitsaustausch und die Schmerzwahrnehmung aus.",
+              ],
+            },
+            {
+              heading: "Wirkmechanismus von Flossing",
+              bullets: [
+                "Lösung mechanischer Verklebungen im Faszien- und Bindegewebe",
+                "Schwammeffekt im Lymph- und Blutkreislauf",
+                "Stimulation von Mechanorezeptoren zur Schmerzlinderung",
               ],
             },
             {
               heading: "Hauptanwendungsgebiete",
               bullets: [
                 "Verbesserung der Gelenkbeweglichkeit",
-                "Rehabilitation nach Verstauchungen und Muskelzerrungen",
+                "Rehabilitation nach Verstauchungen und Zerrungen",
                 "Schmerzlinderung bei akuten und chronischen Beschwerden",
-                "Reduktion von Ödemen und Schwellungen",
+                "Ödemreduktion und schnellere Abschwellung",
                 "Mobilisation von Narbengewebe",
               ],
             },
             {
-              heading: "Dauer",
-              bullets: ["30 Minuten – gezielte Behandlung eines betroffenen Bereichs"],
+              heading: "Behandlungsdurchführung",
+              bullets: [
+                "Fixierung der Haut mit einem elastischen Band",
+                "Lösung oberflächlicher Verklebungen durch aktive oder passive Bewegung",
+                "Mobilisation von Narbengewebe",
+                "Wiederholungstests und Übungsanleitung",
+              ],
             },
             {
-              heading: "Hinweis",
-              paragraphs: [
-                "Die Flossing-Behandlung kann bei Bedarf auch ergänzend im Rahmen einer individuellen Massage angewendet werden.",
+              heading: "Mögliche Nebenwirkungen",
+              bullets: [
+                "Kann kurzfristig schmerzhaft sein",
+                "Kann Spannungsgefühl verursachen",
+                "Kann Blutergüsse hervorrufen",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Latexallergie",
+                "Frakturstelle",
+                "Schwangerschaft im Bauch- und Taillenbereich",
+                "Pergamenthaut",
+                "Metastasierter Tumor",
+                "Unbehandelter Bluthochdruck",
+                "Akute Thrombose",
+                "Akutes nässendes Ekzem",
+                "Schwere Arteriosklerose",
+              ],
+            },
+            {
+              heading: "Dauer",
+              bullets: [
+                "30 Minuten – gezielte Behandlung",
+                "Die Flossing-Behandlung kann bei Bedarf auch ergänzend in der Individualmassage eingesetzt werden",
               ],
             },
           ],
@@ -1128,57 +1869,118 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A flossing egy komplex fizioterápiás kezelés, amely a kötőszövetre, az izmokra és az ízületekre hat.",
-                "A kezelés lényege egy speciális rugalmas szalaggal történő erőteljes kompresszió.",
+                "A flossing egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
+                "A kezelés lényege egy speciális rugalmas szalag határozott nyomásában rejlik, amely mechanikai és fiziológiai mechanizmusokon keresztül fejti ki pozitív hatását.",
+              ],
+            },
+            {
+              heading: "Főbb alkalmazások",
+              bullets: [
+                "Ízületi mobilitás javítása",
+                "Rándulások és húzódások utáni rehabilitáció",
+                "Fájdalomcsillapítás akut és krónikus állapotokban",
+                "Ödéma és duzzanat csökkentése",
+                "Hegszövet mobilizálása",
+              ],
+            },
+            {
+              heading: "Kezelés időtartama",
+              bullets: [
+                "30 perc – célzott kezelés",
+                "A floss kezelés az egyéni masszázsterápiában szükség szerint alkalmazható",
               ],
             },
           ],
         },
       },
-            schroepfen: {
+
+      schroepfen: {
         de: {
           title: "Schröpfen",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Schröpfen ist eine traditionelle Therapieform mit jahrtausendealter Geschichte. Bei dieser Vakuumtherapie wird mithilfe von Glas-, Silikon- oder Kunststoffschröpfgläsern ein Unterdruck auf der Haut erzeugt.",
-                "Dieser Saugeffekt fördert die lokale Durchblutung und den Lymphfluss, löst Muskelverspannungen, lockert verklebtes Bindegewebe und unterstützt den Abtransport von Stoffwechselendprodukten.",
+                "Schröpfen ist eine traditionelle Therapieform, die seit Jahrhunderten in verschiedenen Kulturen angewendet wird. Ziel der Behandlung ist es, durch das Erzeugen eines Unterdrucks in speziellen Schröpfgläsern die Durchblutung anzuregen, Verspannungen zu lösen und den Stoffwechsel zu aktivieren.",
+                "Die Schröpfgläser werden auf bestimmte Hautareale, meist am Rücken, aufgesetzt. Der entstehende Unterdruck hebt das Gewebe leicht an und stimuliert die darunterliegenden Strukturen.",
               ],
             },
             {
-              heading: "Hauptanwendungsgebiete und Wirkungen",
+              heading: "Ziele des Schröpfens",
               bullets: [
-                "Muskelentspannung",
-                "Verbesserung der Durchblutung",
+                "Förderung der Durchblutung",
+                "Lösung von Muskelverspannungen",
+                "Aktivierung des Stoffwechsels",
+                "Unterstützung der Entgiftungsprozesse",
                 "Schmerzlinderung",
-                "Unterstützung der Entgiftung",
+                "Stimulation des Immunsystems",
+                "Förderung der Regeneration",
               ],
             },
             {
-              heading: "Schröpftechniken",
+              heading: "Formen des Schröpfens",
               bullets: [
-                "Trockenes / fixes Schröpfen",
-                "Gleitendes / dynamisches Schröpfen",
+                "Trockenes Schröpfen",
+                "Schröpfmassage (bewegliches Schröpfen)",
+                "Blutiges Schröpfen nur im medizinischen Kontext",
               ],
             },
             {
-              heading: "Wichtige Hinweise",
-              paragraphs: [
-                "Nach der Behandlung können rötlich-bläuliche Verfärbungen auftreten. Diese klingen in der Regel innerhalb von 2 bis 3 Tagen wieder ab.",
+              heading: "Wirkungsweise",
+              bullets: [
+                "Verbesserte Mikrozirkulation",
+                "Lockerung von Muskel- und Faszienstrukturen",
+                "Reflektorische Wirkung auf innere Organe",
+                "Aktivierung des Lymphflusses",
+                "Schmerzlindernde Effekte",
+              ],
+            },
+            {
+              heading: "Ablauf der Behandlung",
+              bullets: [
+                "Vorgespräch zur Klärung der Beschwerden",
+                "Reinigung der Haut und Auswahl geeigneter Schröpfpunkte",
+                "Erzeugung des Unterdrucks",
+                "Einwirkzeit meist 5 bis 20 Minuten",
+                "Kurze Nachruhe und Pflegehinweise",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: ["30 Minuten – gezielte Behandlung einzelner Bereiche"],
+            },
+            {
+              heading: "Für wen geeignet?",
+              bullets: [
+                "Menschen mit Muskelverspannungen",
+                "Personen mit Rücken- und Nackenschmerzen",
+                "Sportler zur Regeneration",
+                "Menschen mit Stress und Erschöpfung",
+                "Personen mit Durchblutungsstörungen",
+                "Unterstützend bei Erkältungsneigung",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Linderung von Schmerzen und Verspannungen",
+                "Verbesserung der Durchblutung",
+                "Förderung der Entgiftung",
+                "Aktivierung des Immunsystems",
+                "Unterstützung der Regeneration",
+                "Tiefes Gefühl der Entspannung",
               ],
             },
             {
               heading: "Kontraindikationen",
               bullets: [
-                "Blutgerinnungsstörungen",
-                "Hauterkrankungen oder offene Wunden",
+                "Blutgerinnungsstörungen oder Antikoagulantien",
+                "Offene Wunden oder Hauterkrankungen",
+                "Akute Entzündungen",
+                "Fieber",
+                "Schwere Herz-Kreislauf-Erkrankungen",
+                "Schwangerschaft je nach Behandlungsregion",
                 "Sehr empfindliche Haut",
-                "Akute Thrombose",
-                "Akute Krampfadern",
-                "Tumorerkrankungen",
-                "Schwere Osteoporose",
-                "Schwangerschaft",
               ],
             },
           ],
@@ -1189,13 +1991,51 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során vákuumot hoznak létre a bőr felszínén.",
-                "Ez a szívóhatás fokozza a helyi vér- és nyirokkeringést, oldja az izomcsomókat és lazítja a letapadt kötőszövetet.",
+                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során üveg-, szilikon- vagy műanyag csészékkel vákuumot hoznak létre a bőr felszínén.",
+                "Ez a szívóhatás fokozza a helyi vér- és nyirokkeringést, oldja az izomcsomókat, lazítja a letapadt kötőszövetet, valamint segíti a méreganyagok eltávolítását.",
+              ],
+            },
+            {
+              heading: "Főbb alkalmazási területek és hatások",
+              bullets: [
+                "Izomlazítás",
+                "Keringésjavítás",
+                "Fájdalomcsillapítás",
+                "Salaktalanítás",
+                "Jó keringés – jó funkció – jó mozgásminta – minőségi gyógyulás",
+              ],
+            },
+            {
+              heading: "Köpölyözési technikák",
+              bullets: [
+                "Száraz / fix köpölyözés",
+                "Csúszó / dinamikus köpölyözés",
+              ],
+            },
+            {
+              heading: "Fontos tudnivalók",
+              paragraphs: [
+                "A kezelés után gyakran lilás-kékes foltok keletkeznek, amelyek 2–3 nap alatt maguktól felszívódnak.",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Véralvadási problémák",
+                "Bőrbetegségek",
+                "Nagy anyajegyek",
+                "Idős pácienseknél pergamenbőr",
+                "Akut trombózis",
+                "Akut vénatágulat",
+                "Daganatos betegségek",
+                "Csontritkulás",
+                "Terhesség",
               ],
             },
           ],
         },
       },
+
       scarTreatment: {
         de: {
           title: "Narbenbehandlung",
@@ -1203,8 +2043,8 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Narbenbehandlung umfasst verschiedene therapeutische Verfahren zur ästhetischen und funktionellen Verbesserung von Narbengewebe. Dazu gehören insbesondere manuelle Techniken wie Massage und Mobilisation.",
-                "Ziel der Behandlung ist es, Spannungen zu lösen, Verklebungen zu beseitigen, die Durchblutung zu fördern und die Sichtbarkeit der Narbe zu reduzieren.",
+                "Die Narbenbehandlung umfasst Maßnahmen zur ästhetischen und funktionellen Verbesserung des Narbengewebes. Dazu gehören manuelle Techniken wie Massage und Mobilisation.",
+                "Ziel ist es, Spannungen zu lösen, Verklebungen zu beseitigen, die Durchblutung zu fördern und die Beweglichkeit betroffener Gewebe zu verbessern.",
               ],
             },
             {
@@ -1212,17 +2052,17 @@ export default function ChristinaMassageWebsite() {
               bullets: [
                 "Manuelle Narbenbehandlung / Narbenmassage",
                 "Schröpfen und Faszientechniken",
-                "Einsatz von Narbenbehandlungsstäben und Kinesio-Tape",
+                "Arbeit mit Narbenstab und Kinesio-Tape",
               ],
             },
             {
-              heading: "Wann ist eine Narbenbehandlung empfehlenswert?",
+              heading: "Wann sinnvoll?",
               bullets: [
                 "Bei verklebten Operationsnarben",
-                "Bei Ödemen nach operativen Eingriffen",
-                "Zur Behandlung von Narben nach Verbrennungen",
-                "Bei schmerzhaften oder spannenden Narben",
-                "Wenn die Beweglichkeit eingeschränkt ist",
+                "Bei Ödemen nach Operationen",
+                "Bei Narben nach Verbrennungen",
+                "Bei schmerzhaften, spannenden oder geröteten Narben",
+                "Wenn die Narbe die Beweglichkeit einschränkt",
               ],
             },
             {
@@ -1231,23 +2071,8 @@ export default function ChristinaMassageWebsite() {
                 "Chronische Schmerzen",
                 "Bewegungseinschränkungen",
                 "Beschwerden im Lendenbereich",
-                "Verdauungsprobleme oder Verstopfung",
+                "Verdauungsprobleme",
                 "Ödembildung",
-              ],
-            },
-            {
-              heading: "Arten von Narben",
-              bullets: [
-                "Atrophe Narben",
-                "Hypertrophe Narben",
-                "Keloide",
-                "Kontrakte Narben",
-              ],
-            },
-            {
-              heading: "Dauer",
-              bullets: [
-                "30–60 Minuten – je nach Größe, Art und Beschaffenheit der Narbe",
               ],
             },
           ],
@@ -1265,8 +2090,8 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "A hegkezelés főbb módszerei",
               bullets: [
-                "Manuális hegkezelés / hegmasszázs",
-                "Köpölyözés és fasciális technikák",
+                "Manuális hegkezelés / masszázs",
+                "Köpölyözés és fascia technikák",
                 "Hegkezelő pálca és kinesio tape alkalmazása",
               ],
             },
@@ -1274,10 +2099,20 @@ export default function ChristinaMassageWebsite() {
               heading: "Mikor ajánlott?",
               bullets: [
                 "Műtéti hegek letapadása esetén",
-                "Műtét utáni ödéma esetén",
+                "Műtét után fellépő ödéma esetén",
                 "Égési sérülések utáni hegek kezelésére",
-                "Fájdalmas, húzódó vagy vöröses-lilás hegek esetén",
+                "Feszülő, húzódó vagy fájdalmas hegek esetén",
                 "Ha a heg korlátozza a mozgást",
+              ],
+            },
+            {
+              heading: "Kezeletlen hegek lehetséges következményei",
+              bullets: [
+                "Krónikus fájdalom",
+                "Mozgáskorlátozottság",
+                "Deréktáji panaszok",
+                "Székrekedés",
+                "Ödémásodás",
               ],
             },
           ],
@@ -1636,27 +2471,27 @@ export default function ChristinaMassageWebsite() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.18em] text-[#7a8566]">HIEMT</p>
-                <h3 className="mt-2 text-2xl font-semibold text-stone-900 md:text-3xl">{c.special.infoTitle}</h3>
+                <h3 className="mt-2 text-2xl font-semibold text-stone-900 md:text-3xl">{hiemtInfo[language].title}</h3>
               </div>
               <button onClick={() => setShowHiemtInfo(false)} className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm">
-                {language === "de" ? "Schließen" : "Bezárás"}
+                {c.close}
               </button>
             </div>
             <div className="mt-8 space-y-8">
-              {c.special.infoSections.map((section: any) => (
-                <div key={section.heading}>
+              {hiemtInfo[language].sections.map((section, index) => (
+                <div key={`${section.heading}-${index}`}>
                   <h4 className="text-lg font-semibold text-[#556246]">{section.heading}</h4>
                   {section.paragraphs && (
                     <div className="mt-4 space-y-4 text-sm leading-8 text-stone-700 md:text-base">
-                      {section.paragraphs.map((paragraph: string) => (
-                        <p key={paragraph}>{paragraph}</p>
+                      {section.paragraphs.map((paragraph, i) => (
+                        <p key={`${paragraph}-${i}`}>{paragraph}</p>
                       ))}
                     </div>
                   )}
                   {section.bullets && (
                     <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-700 md:text-base">
-                      {section.bullets.map((bullet: string) => (
-                        <li key={bullet} className="flex gap-3">
+                      {section.bullets.map((bullet, i) => (
+                        <li key={`${bullet}-${i}`} className="flex gap-3">
                           <span className="mt-[10px] h-2 w-2 rounded-full bg-[#6f7d58]" />
                           <span>{bullet}</span>
                         </li>
@@ -1678,7 +2513,7 @@ export default function ChristinaMassageWebsite() {
                 {infoContent[activeInfo][language].title}
               </h3>
               <button onClick={() => setActiveInfo(null)} className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm">
-                {language === "de" ? "Schließen" : "Bezárás"}
+                {c.close}
               </button>
             </div>
 
