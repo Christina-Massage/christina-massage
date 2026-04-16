@@ -449,7 +449,8 @@ export default function ChristinaMassageWebsite() {
   }, [language]);
 
   const c = content as any;
-    const hiemtInfo = useMemo<{ de: InfoEntry; hu: InfoEntry }>(
+
+  const hiemtInfo = useMemo<{ de: InfoEntry; hu: InfoEntry }>(
     () => ({
       de: {
         title: "HIEMT Beckenboden-Training",
@@ -504,6 +505,224 @@ export default function ChristinaMassageWebsite() {
 
   const infoContent = useMemo<Record<string, { de: InfoEntry; hu: InfoEntry }>>(
     () => ({
+      swedish: {
+        de: {
+          title: "Schwedische Massage",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Die schwedische Massage ist eine klassische Massageform zur Entspannung, Lockerung und Regeneration des Körpers.",
+                "Sie kombiniert bewährte Grifftechniken, um die Durchblutung zu fördern, Muskelverspannungen zu lösen und das allgemeine Wohlbefinden zu steigern.",
+              ],
+            },
+            {
+              heading: "Ziele",
+              bullets: [
+                "Lösen von Muskelverspannungen",
+                "Förderung der Durchblutung",
+                "Stressabbau und Entspannung",
+                "Verbesserung des körperlichen Wohlbefindens",
+                "Unterstützung der Regeneration",
+              ],
+            },
+            {
+              heading: "Typische Techniken",
+              bullets: [
+                "Streichungen",
+                "Knetungen",
+                "Reibungen",
+                "Klopfungen",
+                "Vibrationen",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "60 Minuten – gezielte Ganz- oder Teilkörpermassage",
+                "90 Minuten – intensivere, umfassendere Behandlung",
+                "120 Minuten – ausführliche und besonders entspannende Ganzkörperbehandlung",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Svédmasszázs",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A svédmasszázs egy klasszikus masszázsforma, amely a test ellazítására, lazítására és regenerálására szolgál.",
+                "Bevált fogásokat kombinál a vérkeringés fokozása, az izomfeszültség oldása és az általános jó közérzet javítása érdekében.",
+              ],
+            },
+            {
+              heading: "Célok",
+              bullets: [
+                "Az izomfeszültség oldása",
+                "A vérkeringés fokozása",
+                "Stresszoldás és relaxáció",
+                "A testi közérzet javítása",
+                "A regeneráció támogatása",
+              ],
+            },
+            {
+              heading: "Tipikus technikák",
+              bullets: [
+                "Simítás",
+                "Gyúrás",
+                "Dörzsölés",
+                "Ütögetés",
+                "Rezgés",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "60 perc – célzott teljes vagy résztest masszázs",
+                "90 perc – intenzívebb, átfogóbb kezelés",
+                "120 perc – részletes és különösen pihentető teljes testes kezelés",
+              ],
+            },
+          ],
+        },
+      },
+
+      backNeck: {
+        de: {
+          title: "Rücken- und Nackenmassage",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Die Nacken- und Rückenmassage ist eine gezielte Teilkörpermassage, die speziell auf die am häufigsten von Verspannungen betroffenen Bereiche des Körpers ausgerichtet ist.",
+                "Durch langes Sitzen, Stress, einseitige Belastungen oder körperliche Überanstrengung entstehen häufig Muskelverhärtungen im Nacken-, Schulter- und Rückenbereich.",
+                "Diese Massageform dient dazu, Schmerzen zu lindern, Verspannungen zu lösen und das allgemeine Wohlbefinden zu steigern.",
+              ],
+            },
+            {
+              heading: "Ziele der Rücken- und Nackenmassage",
+              bullets: [
+                "Lösung von Muskelverspannungen im Nacken- und Rückenbereich",
+                "Schmerzlinderung bei Verspannungen und Fehlhaltungen",
+                "Förderung der Durchblutung und Sauerstoffversorgung der Muskulatur",
+                "Verbesserung der Beweglichkeit von Nacken und Schultern",
+                "Stressabbau und mentale Entspannung",
+                "Vorbeugung von Kopf- und Spannungskopfschmerzen",
+                "Unterstützung einer gesunden Körperhaltung",
+              ],
+            },
+            {
+              heading: "Typische Massagetechniken",
+              bullets: [
+                "Streichungen",
+                "Knetungen",
+                "Reibungen",
+                "Triggerpunkt-Therapie",
+                "Dehnungen und Mobilisationen",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "45 Minuten – kurze, gezielte Behandlung bei akuten Verspannungen",
+                "60 Minuten – intensivere Behandlung mit Fokus auf Problembereiche",
+                "75 Minuten – umfassende und besonders entspannende Therapie",
+              ],
+            },
+            {
+              heading: "Positive Wirkungen",
+              bullets: [
+                "Reduzierung von Muskelhärte und Schmerzen",
+                "Verbesserung der Körperhaltung",
+                "Steigerung des Bewegungsumfangs",
+                "Aktivierung des parasympathischen Nervensystems",
+                "Förderung von Entspannung und innerer Ruhe",
+                "Verbesserung der Schlafqualität",
+              ],
+            },
+            {
+              heading: "Kontraindikationen",
+              bullets: [
+                "Akute Entzündungen oder Infektionen",
+                "Fieber",
+                "Frische Verletzungen oder Operationen",
+                "Akute Bandscheibenvorfälle",
+                "Thrombose oder schwere Gefäßerkrankungen",
+                "Offene Wunden oder Hauterkrankungen",
+                "Schwere neurologische Erkrankungen",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Hát- és nyakmasszázs",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A nyak- és hátmasszázs egy célzott részleges testmasszázs, amely kifejezetten a feszültség által leggyakrabban érintett testrészekre összpontosít.",
+                "A hosszan tartó ülés, a stressz, az ismétlődő megterhelés vagy a fizikai túlterhelés gyakran izomfeszültséghez vezet a nyakban, a vállakban és a hátban.",
+                "Ez a fajta masszázs célja a fájdalom enyhítése, a feszültség oldása és az általános közérzet javítása.",
+              ],
+            },
+            {
+              heading: "Nyak- és hátmasszázs céljai",
+              bullets: [
+                "A nyak és a hát izomfeszültségének enyhítése",
+                "A feszültség és a rossz testtartás okozta fájdalom csillapítása",
+                "Az izmok vérkeringésének és oxigénellátásának elősegítése",
+                "A nyak és a vállak mozgékonyságának javítása",
+                "Stresszcsökkentés és mentális relaxáció",
+                "Fejfájás és feszültség okozta fejfájás megelőzése",
+                "Az egészséges testtartás támogatása",
+              ],
+            },
+            {
+              heading: "Tipikus masszázstechnikák",
+              bullets: [
+                "Simítás",
+                "Gyúrás",
+                "Dörzsölés",
+                "Triggerpont terápia",
+                "Nyújtások és mobilizációk",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – Rövid, célzott kezelés akut feszültség esetén",
+                "60 perc – Intenzívebb kezelés, amely a problémás területekre összpontosít",
+                "75 perc – Átfogó és különösen pihentető terápia",
+              ],
+            },
+            {
+              heading: "Pozitív hatások",
+              bullets: [
+                "Izommerevség és fájdalom csökkentése",
+                "Javuló testtartás",
+                "Mozgástartomány növelése",
+                "A paraszimpatikus idegrendszer aktiválása",
+                "Ellazulás és belső béke elősegítése",
+                "Javuló alvásminőség",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Akut gyulladás vagy fertőzés",
+                "Láz",
+                "Friss vagy műtét utáni sérülések vagy műtétek",
+                "Akut porckorongsérv",
+                "Trombózis vagy súlyos érbetegség",
+                "Nyílt sebek vagy bőrsérülések betegségek",
+                "Súlyos neurológiai rendellenességek",
+              ],
+            },
+          ],
+        },
+      },
+
       individual: {
         de: {
           title: "Individuelle Massage",
@@ -513,7 +732,7 @@ export default function ChristinaMassageWebsite() {
               paragraphs: [
                 "Die Individualmassage ist eine maßgeschneiderte Behandlung, die speziell auf die persönlichen Bedürfnisse, Beschwerden und Wünsche des Kunden abgestimmt wird.",
                 "Im Gegensatz zu standardisierten Massageformen kombiniert sie verschiedene manuelle Techniken, um ein optimales therapeutisches und entspannendes Ergebnis zu erzielen.",
-                "Je nach Befund und Bedarf können ergänzend auch FDM, Schröpfen oder Flossing in die Behandlung integriert werden. Diese Techniken gehören damit bei Bedarf zur individuellen Massage und werden vor Ort passend entschieden.",
+                "Je nach Befund und Bedarf können ergänzend auch FDM, Schröpfen oder Flossing in die Behandlung integriert werden.",
               ],
             },
             {
@@ -595,142 +814,238 @@ export default function ChristinaMassageWebsite() {
         },
       },
 
-      backNeck: {
+      foot: {
         de: {
-          title: "Rücken- und Nackenmassage",
+          title: "Fußmassage",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Nacken- und Rückenmassage ist eine gezielte Teilkörpermassage, die speziell auf die am häufigsten von Verspannungen betroffenen Bereiche des Körpers ausgerichtet ist.",
-                "Durch langes Sitzen, Stress, einseitige Belastungen oder körperliche Überanstrengung entstehen häufig Muskelverhärtungen im Nacken-, Schulter- und Rückenbereich.",
-                "Diese Massageform dient dazu, Schmerzen zu lindern, Verspannungen zu lösen und das allgemeine Wohlbefinden zu steigern.",
+                "Die Fußmassage ist eine wohltuende Behandlung zur Entspannung, Aktivierung und Entlastung müder und stark beanspruchter Füße.",
+                "Sie kann sowohl beruhigend als auch belebend wirken und unterstützt das allgemeine Körpergefühl.",
+              ],
+            },
+            {
+              heading: "Ziele",
+              bullets: [
+                "Entspannung beanspruchter Füße",
+                "Anregung der Durchblutung",
+                "Linderung von Spannungsgefühlen",
+                "Verbesserung des allgemeinen Wohlbefindens",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "45 Minuten – gezielte Entspannung",
+                "60 Minuten – intensivere und umfassendere Behandlung",
               ],
             },
           ],
         },
         hu: {
-          title: "Hát- és nyakmasszázs",
+          title: "Talpmasszázs",
           sections: [
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A nyak- és hátmasszázs egy célzott részleges testmasszázs, amely kifejezetten a feszültség által leggyakrabban érintett testrészekre összpontosít.",
-                "A hosszan tartó ülés, a stressz, az ismétlődő megterhelés vagy a fizikai túlterhelés gyakran izomfeszültséghez vezet a nyakban, a vállakban és a hátban. Ez a fajta masszázs célja a fájdalom enyhítése, a feszültség oldása és az általános közérzet javítása.",
+                "A talpmasszázs kellemes kezelés a fáradt és igénybevett lábak ellazítására, aktiválására és tehermentesítésére.",
+                "Nyugtató és élénkítő hatású is lehet, miközben támogatja az általános testi közérzetet.",
               ],
             },
             {
-              heading: "Nyak- és hátmasszázs céljai",
+              heading: "Célok",
               bullets: [
-                "A nyak és a hát izomfeszültségének enyhítése",
-                "A feszültség és a rossz testtartás okozta fájdalom csillapítása",
-                "Az izmok vérkeringésének és oxigénellátásának elősegítése",
-                "A nyak és a vállak mozgékonyságának javítása",
-                "Stresszcsökkentés és mentális relaxáció",
-                "Fejfájás és feszültség okozta fejfájás megelőzése",
-                "Az egészséges testtartás támogatása",
-              ],
-            },
-            {
-              heading: "Tipikus masszázstechnikák",
-              bullets: [
-                "Simítás",
-                "Gyúrás",
-                "Dörzsölés",
-                "Triggerpont terápia",
-                "Nyújtások és mobilizációk",
+                "Az igénybevett lábak ellazítása",
+                "A vérkeringés fokozása",
+                "A feszültségérzet csökkentése",
+                "Az általános jó közérzet javítása",
               ],
             },
             {
               heading: "A kezelés időtartama",
               bullets: [
-                "45 perc – Rövid, célzott kezelés akut feszültség esetén",
-                "60 perc – Intenzívebb kezelés, amely a problémás területekre összpontosít",
-                "75 perc – Átfogó és különösen pihentető terápia",
-              ],
-            },
-            {
-              heading: "Pozitív hatások",
-              bullets: [
-                "Izommerevség és fájdalom csökkentése",
-                "Javuló testtartás",
-                "Mozgástartomány növelése",
-                "A paraszimpatikus idegrendszer aktiválása",
-                "Ellazulás és belső béke elősegítése",
-                "Javuló alvásminőség",
-              ],
-            },
-            {
-              heading: "Ellenjavallatok",
-              bullets: [
-                "Akut gyulladás vagy fertőzés",
-                "Láz",
-                "Friss vagy műtét utáni sérülések vagy műtétek",
-                "Akut porckorongsérv",
-                "Trombózis vagy súlyos érbetegség",
-                "Nyílt sebek vagy bőrsérülések betegségek",
-                "Súlyos neurológiai rendellenességek",
+                "45 perc – célzott lazítás",
+                "60 perc – intenzívebb és átfogóbb kezelés",
               ],
             },
           ],
         },
       },
 
-      flossing: {
+      lymph: {
         de: {
-          title: "Flossing",
+          title: "Lymphdrainage",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Flossing ist eine komplexe physiotherapeutische Behandlung, die das Bindegewebe, die Muskeln und die Gelenke betrifft.",
-                "Der Kern der Behandlung liegt im gezielten Druck eines speziellen elastischen Bandes, das über mechanische und physiologische Mechanismen positive Wirkungen entfaltet.",
+                "Die Lymphdrainage ist eine besonders sanfte und rhythmische Behandlung zur Unterstützung des Lymphflusses.",
+                "Sie wird eingesetzt, um Schwellungen zu reduzieren, Gewebe zu entlasten und den Flüssigkeitstransport im Körper zu fördern.",
               ],
             },
             {
-              heading: "Hauptanwendungen",
+              heading: "Ziele",
               bullets: [
-                "Verbesserung der Gelenkmobilität",
-                "Rehabilitation nach Verstauchungen und Zerrungen",
-                "Schmerzlinderung bei akuten und chronischen Zuständen",
-                "Reduktion von Ödemen und Schwellungen",
-                "Mobilisation von Narbengewebe",
+                "Förderung des Lymphflusses",
+                "Reduktion von Schwellungen",
+                "Entlastung des Gewebes",
+                "Sanfte Unterstützung der Regeneration",
               ],
             },
             {
-              heading: "Behandlungsdauer",
+              heading: "Dauer der Behandlung",
               bullets: [
-                "30 Minuten – gezielte Behandlung",
-                "Die Floss-Behandlung kann bei Bedarf innerhalb der individuellen Massagetherapie eingesetzt werden.",
+                "60 Minuten – gezielte lymphatische Behandlung",
+                "90 Minuten – umfassendere Entlastung und Unterstützung",
               ],
             },
           ],
         },
         hu: {
-          title: "Flossing",
+          title: "Nyirokelvezetés",
           sections: [
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A fogselyemhasználat egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
-                "A kezelés lényege egy speciális rugalmas szalag határozott nyomásában rejlik, amely mechanikai és fiziológiai mechanizmusokon keresztül fejti ki pozitív hatását.",
+                "A nyirokelvezetés különösen gyengéd és ritmikus kezelés, amely támogatja a nyirokkeringést.",
+                "A kezelés célja a duzzanatok csökkentése, a szövetek tehermentesítése és a folyadékszállítás serkentése a szervezetben.",
               ],
             },
             {
-              heading: "Főbb alkalmazások",
+              heading: "Célok",
               bullets: [
-                "Ízületi mobilitás javítása",
-                "Rándulások és húzódások utáni rehabilitáció",
-                "Fájdalomcsillapítás akut és krónikus állapotokban",
-                "Ödéma és duzzanat csökkentése",
-                "Hegszövet mobilizálása",
+                "A nyirokkeringés támogatása",
+                "A duzzanatok csökkentése",
+                "A szövetek tehermentesítése",
+                "A regeneráció gyengéd támogatása",
               ],
             },
             {
-              heading: "Kezelés időtartama",
+              heading: "A kezelés időtartama",
               bullets: [
-                "30 perc – Célzott kezelés",
-                "A floss kezelés az egyéni masszázsterápiában szükség szerint alkalmazható",
+                "60 perc – célzott nyirokkezelés",
+                "90 perc – átfogóbb tehermentesítés és támogatás",
+              ],
+            },
+          ],
+        },
+      },
+
+      vagus: {
+        de: {
+          title: "Vagus / Stressabbau",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Die Vagus-Massage ist eine sanfte und tief entspannende Behandlung, die darauf abzielt, das Nervensystem zu beruhigen und den Körper in einen Zustand tiefer Regeneration zu begleiten.",
+                "Durch ruhige, achtsame Berührungen wird die parasympathische Regulation unterstützt.",
+              ],
+            },
+            {
+              heading: "Ziele",
+              bullets: [
+                "Reduktion von Stress und innerer Anspannung",
+                "Förderung von Ruhe und Ausgeglichenheit",
+                "Unterstützung der Regeneration",
+                "Verbesserung des Körpergefühls",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "45 Minuten – gezielte Entspannungsbehandlung",
+                "60 Minuten – intensivere nervliche und körperliche Entlastung",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Vagus / stresszoldás",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A vagus masszázs egy gyengéd és mélyen ellazító kezelés, amelynek célja az idegrendszer megnyugtatása és a test mély regenerációjának támogatása.",
+                "A nyugodt, figyelmes érintések támogatják a paraszimpatikus szabályozást.",
+              ],
+            },
+            {
+              heading: "Célok",
+              bullets: [
+                "A stressz és belső feszültség csökkentése",
+                "A nyugalom és egyensúly támogatása",
+                "A regeneráció elősegítése",
+                "A testérzet javítása",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – célzott relaxációs kezelés",
+                "60 perc – intenzívebb idegrendszeri és testi tehermentesítés",
+              ],
+            },
+          ],
+        },
+      },
+
+      champi: {
+        de: {
+          title: "Champi – Indische Kopfmassage",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der ayurvedischen Heilkunst.",
+                "Sie konzentriert sich auf Kopf, Nacken, Schultern und teilweise Gesicht und zielt auf tiefe Entspannung, mentale Ruhe und neue Energie ab.",
+              ],
+            },
+            {
+              heading: "Ziele",
+              bullets: [
+                "Tiefe Entspannung von Körper und Geist",
+                "Stressabbau",
+                "Förderung der Durchblutung der Kopfhaut",
+                "Linderung von Spannungsgefühlen",
+                "Unterstützung innerer Ruhe",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "45 Minuten – gezielte entspannende Kopfmassage",
+                "60 Minuten – intensivere und umfassendere Behandlung",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Champi – indiai fejmasszázs",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A Champi fejmasszázs, más néven indiai fejmasszázs, egy hagyományos kezelés, amely az ájurvédikus gyógyászatból ered.",
+                "A fejre, a nyakra, a vállakra és részben az arcra összpontosít, célja a mély ellazulás, a mentális nyugalom és az új energia támogatása.",
+              ],
+            },
+            {
+              heading: "Célok",
+              bullets: [
+                "A test és az elme mély ellazítása",
+                "Stresszcsökkentés",
+                "A fejbőr vérkeringésének fokozása",
+                "A feszültségérzet enyhítése",
+                "A belső nyugalom támogatása",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – célzott relaxáló fejmasszázs",
+                "60 perc – intenzívebb és átfogóbb kezelés",
               ],
             },
           ],
@@ -745,27 +1060,7 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Das Fascial Distortion Model (FDM) ist ein innovatives und wirksames Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparats.",
-                "Es basiert auf der Annahme, dass viele Schmerzen und funktionelle Störungen auf Verformungen der Faszien zurückzuführen sind. Auf Grundlage der Körpersprache des Patienten kann häufig schon nach ein oder zwei Behandlungen eine schnelle Schmerzlinderung und mehr Bewegungsfreiheit erreicht werden.",
-              ],
-            },
-            {
-              heading: "Ziele der FDM-Behandlung",
-              bullets: [
-                "Schnelle Schmerzlinderung",
-                "Verbesserte Mobilität",
-                "Wiederherstellung der faszialen Funktion",
-                "Behandlung akuter und chronischer Zustände",
-                "Unterstützung der sportlichen Leistungsfähigkeit",
-                "Beschleunigung der Regeneration nach Verletzungen",
-              ],
-            },
-            {
-              heading: "Warum ist die FDM-Methode besonders?",
-              bullets: [
-                "Patientenzentrierte Diagnostik: Grundlage der Behandlung ist Ihre Körpersprache – spontane Gesten zur Beschreibung des Schmerzes zeigen die Art der faszialen Veränderung.",
-                "Schnelle Ergebnisse: Zielgerichtete manuelle Griffe erreichen oft bereits bei der ersten Sitzung eine deutliche schmerzlindernde Wirkung.",
-                "Natürlicher Ansatz: Die Methode baut auf den instinktiven Signalen des Körpers auf und behandelt genau dort, wo die Gewebeverzerrung entstanden ist.",
-                "Hohe Wirksamkeit: Sehr gut einsetzbar bei akuten Sportverletzungen, chronischen Beschwerden des Bewegungsapparates und eingeschränkten Bewegungsumfängen.",
+                "Es basiert auf der Annahme, dass viele Schmerzen und funktionelle Störungen auf Verformungen der Faszien zurückzuführen sind.",
               ],
             },
           ],
@@ -777,33 +1072,38 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A Fasciális Distorció Modell (FDM) egy innovatív és hatékony kezelési koncepció a mozgásszervi rendszer fájdalmának és mozgáskorlátozottságának terápiájára.",
-                "Azon a feltételezésen alapul, hogy számos fájdalom és funkcionális rendellenesség a fascia torzulásainak köszönhető. A beteg testbeszédére építve gyors fájdalomcsillapítást és mozgásszabadságot eredményez, gyakran már egy-két kezelés után.",
-              ],
-            },
-            {
-              heading: "Az FDM kezelés céljai",
-              bullets: [
-                "Gyors fájdalomcsillapítás",
-                "Javított mobilitás",
-                "A fasciális funkció helyreállítása",
-                "Akut és krónikus állapotok kezelése",
-                "A sportteljesítmény támogatása",
-                "Sérülések utáni regeneráció felgyorsítása",
-              ],
-            },
-            {
-              heading: "Miért különleges az FDM módszer?",
-              bullets: [
-                "Páciensközpontú diagnosztika: A kezelés alapja az Ön testbeszéde – a fájdalom leírására használt spontán gesztusok pontosan megmutatják a fascia elváltozásának típusát.",
-                "Gyors eredmények: A célzott manuális fogások gyakran már az első alkalommal jelentős fájdalomcsillapító hatást érnek el.",
-                "Természetes megközelítés: A módszer a test ösztönös jelzéseire épít, így a kezelés pontosan ott avatkozik be, ahol a szöveti torzulás történt.",
-                "Hatékonyság: Kiválóan alkalmazható akut sportsérülések, krónikus mozgásszervi panaszok és beszűkült mozgástartomány esetén is.",
               ],
             },
           ],
         },
       },
-            schroepfen: {
+
+      flossing: {
+        de: {
+          title: "Flossing",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Flossing ist eine komplexe physiotherapeutische Behandlung, die das Bindegewebe, die Muskeln und die Gelenke betrifft.",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Flossing",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A fogselyemhasználat egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
+              ],
+            },
+          ],
+        },
+      },
+
+      schroepfen: {
         de: {
           title: "Schröpfen",
           sections: [
@@ -811,31 +1111,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
                 "Schröpfen ist eine Vakuumtherapie mit jahrtausendealter Tradition. Dabei wird mit Glas-, Silikon- oder Kunststoffbechern ein Unterdruck auf der Hautoberfläche erzeugt.",
-                "Dieser Saugeffekt fördert die lokale Blut- und Lymphzirkulation, löst Muskelknoten, lockert verklebtes Bindegewebe und unterstützt den Abtransport von Stoffwechselrückständen.",
-              ],
-            },
-            {
-              heading: "Wichtige Anwendungsbereiche und Wirkungen",
-              bullets: [
-                "Muskelentspannung: Wirksam bei Rücken-, Schulter- und Lendenschmerzen sowie bei muskulären und faszialen Verklebungen.",
-                "Verbesserung der Durchblutung: Fördert Stoffwechsel und Sauerstoffversorgung des Gewebes.",
-                "Schmerzlinderung: Reduziert myofasziale Spannungen und aktiviert das parasympathische Nervensystem.",
-                "Ausleitung: Die verstärkte Durchblutung unterstützt den Abtransport von Belastungsstoffen.",
-                "Gute Durchblutung – gute Funktion – gutes Bewegungsmuster – qualitativ gute Heilung.",
-              ],
-            },
-            {
-              heading: "Schröpftechniken",
-              bullets: [
-                "Trockenes / fixes Schröpfen: Die Becher bleiben 10–15 Minuten an einer Stelle.",
-                "Gleitendes / dynamisches Schröpfen: Auf eingeölter Haut wird der Becher massageartig bewegt. Eine Art „großes Rücken-Wellness“, die innere Funktionen harmonisieren kann.",
-              ],
-            },
-            {
-              heading: "Wichtige Hinweise",
-              bullets: [
-                "Nach der Behandlung entstehen häufig bläulich-violette Flecken, die sich meist innerhalb von 2–3 Tagen zurückbilden.",
-                "Nicht empfohlen bei Blutgerinnungsstörungen, Hauterkrankungen, großen Muttermalen, sehr empfindlicher Pergamenthaut älterer Patienten, akuter Thrombose, akuter Venenerweiterung, Tumorerkrankungen, Osteoporose sowie in der Schwangerschaft.",
               ],
             },
           ],
@@ -846,31 +1121,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során üveg-, szilikon- vagy műanyag csészékkel vákuumot hoznak létre a bőr felszínén. Ez a szívóhatás fokozza a helyi vér- és nyirokkeringést, oldja az izomcsomókat, lazítja a letapadt kötőszövetet, valamint segíti a méreganyagok eltávolítását.",
-              ],
-            },
-            {
-              heading: "Főbb alkalmazási területek és hatások",
-              bullets: [
-                "Izomlazítás: Hatékony hát-, váll- és derékfájdalmak, valamint mozgásszervi letapadások kezelésére.",
-                "Keringésjavítás: Fokozza a szövetek anyagcseréjét és oxigénellátását.",
-                "Fájdalomcsillapítás: Csökkenti a myofascialis feszültséget és aktiválja a paraszimpatikus idegrendszert.",
-                "Salaktalanítás: A fokozott vérbőség segíti a salakanyagok távozását.",
-                "jó keringés-jó funkció-jó mozgásminta-minöségi gyógyulás",
-              ],
-            },
-            {
-              heading: "Köpölyözési technikák",
-              bullets: [
-                "Száraz/fix köpölyözés: A csészéket 10-15 percig egy helyen hagyják.",
-                "Csúszó/dinamikus köpölyözés: Olajos bőrfelületen a csészét mozgatják, masszázs jelleggel. \"Nagy háti vellnes\" amely a belsöszervek müködését egymáshoz hangolják.",
-              ],
-            },
-            {
-              heading: "Fontos tudnivalók",
-              bullets: [
-                "A kezelés után gyakran lilás-kékes foltok (bevérzések) keletkeznek, amelyek 2-3 nap alatt maguktól felszívódnak.",
-                "Nem javasolt véralvadási problémák, bőrbetegségek, nagy anyajegyek, idös paciens pergamenbörének, akut trombozis esetén, akut vénatágulatnál, daganatos betegségek, csontritkulás esetén, illetve terhesség alatt.",
+                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során üveg-, szilikon- vagy műanyag csészékkel vákuumot hoznak létre a bőr felszínén.",
               ],
             },
           ],
@@ -884,49 +1135,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Narbenbehandlung umfasst Verfahren zur ästhetischen und funktionellen Verbesserung des Narbengewebes. Dazu gehören manuelle Techniken wie Massage und Mobilisation.",
-                "Ziel ist es, Spannungen zu lösen, Verklebungen zu beseitigen, die Durchblutung zu fördern und die Sichtbarkeit von Narben zu verringern. Nach Operationen, zum Beispiel nach einem Kaiserschnitt, ist die Behandlung wichtig, um Beweglichkeit und Funktion wiederherzustellen.",
-              ],
-            },
-            {
-              heading: "Wichtige Methoden der Narbenbehandlung",
-              bullets: [
-                "Manuelle Narbenbehandlung / Massage: Vom Therapeuten durchgeführt oder für zuhause erlernbar. Dabei wird das Narbengewebe zunächst sanft kreisend, später auch in tieferen Schichten mobilisiert.",
-                "Schröpfen und Faszientechniken: Tief verklebte Narben können mit Schröpfen, Flossing, FDM-Techniken, Narbenbehandlungsstab und Kinesio-Tape gelöst werden.",
-              ],
-            },
-            {
-              heading: "Wann ist die Behandlung sinnvoll?",
-              bullets: [
-                "Bei verklebten Operationsnarben wie Kaiserschnitt oder Laparoskopie sowie bei Ödemen nach einer Operation.",
-                "Bei Narben nach Verbrennungen.",
-                "Bei spannenden, ziehenden, schmerzhaften oder rötlich-violetten Narben.",
-                "Wenn die Narbe die Beweglichkeit eines Körperbereichs einschränkt.",
-              ],
-            },
-            {
-              heading: "Mögliche Folgen unbehandelter Narben",
-              bullets: [
-                "Unbehandelte Narben können verkleben und chronische Schmerzen, Bewegungseinschränkungen, Beschwerden im unteren Rücken, Verstopfung oder Ödeme verursachen.",
-              ],
-            },
-            {
-              heading: "Narbenbildungsdefekte",
-              bullets: [
-                "Atroph: Die Haut ist auseinandergezogen oder eingerissen.",
-                "Hypertroph: Die Narbe ist erhaben, aber nur über der Wunde, rötlich und fest.",
-                "Keloid: Die Narbe ist erhaben, wächst weiter, glänzend weiß und hart.",
-                "Kontraktur: Die Narbe zieht das Gewebe nach innen.",
-              ],
-            },
-            {
-              heading: "Über Narben und Adhäsionen",
-              bullets: [
-                "Nach Immobilisation kann ein chaotisches Bindegewebsnetz im Bewegungsapparat, in der Bauchhöhle oder im Brustraum entstehen.",
-                "Es kann Schmerzen verursachen oder auch schmerzfrei bleiben.",
-                "Am häufigsten im Becken, in der Bauchhöhle und im Bereich Herz / Perikard.",
-                "In etwa 10 % der Fälle bestehen Adhäsionen auch ohne Operation, besonders ab 30 Jahren und bei sitzender Lebensweise.",
-                "30–40 % bemerken nie Beschwerden, 60–70 % entwickeln jedoch häufiger Darm- und Beckenorganprobleme sowie Beinödeme.",
+                "Die Narbenbehandlung umfasst Verfahren zur ästhetischen und funktionellen Verbesserung des Narbengewebes.",
               ],
             },
           ],
@@ -937,73 +1146,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége, amely magában foglalja a manuális technikákat (masszázs, mobilizálás). Célja a feszülés oldása, a letapadások megszüntetése, a vérkeringés fokozása és a hegek láthatóságának csökkentése. A kezelés elengedhetetlen műtétek (pl. császármetszés) után a mozgásterjedelem visszaállításához.",
-              ],
-            },
-            {
-              heading: "A hegkezelés főbb módszerei",
-              bullets: [
-                "Manuális hegkezelés/masszázs: a szakember által végzett, vagy otthon megtanulható, a hegszövet finom, körkörös, majd mélyebb rétegeket is érintő kimozgatása, kézi technikák",
-                "Köpölyözés és fascia technikák: A mélyebben letapadt hegek fellazítására használhatunk köpölyt, flosst, és FDM technikákat, valamint dolgozhatunk a hegkezelö pálcánkkal, alkalmazhatunk kienzio tape-t.",
-              ],
-            },
-            {
-              heading: "Mikor ajánlott?",
-              bullets: [
-                "Műtéti hegek (császármetszés, laporoszkópia) letapadása esetén, illetve mütét után fellépö ödéma esetén.",
-                "Égési sérülések utáni hegek kezelésére.",
-                "Feszülő, húzódó, fájdalmas, vagy vöröses-lilás hegek esetén.",
-                "Ha a heg korlátozza az érintett testrész mozgását.",
-              ],
-            },
-            {
-              heading: "Szövődmények",
-              bullets: [
-                "A kezeletlen heg letapadhat, ami krónikus fájdalmat, mozgáskorlátozottságot, vagy akár deréktáji panaszokat, székrekedést, ödémát is okozhat.",
-              ],
-            },
-            {
-              heading: "Hegesedési defektusok",
-              bullets: [
-                "Atróf: a bőr szétnyúlt, széjjelszakad",
-                "Hipertróf: a heg kiemelkedő, de csak a seb fölött, vöröses, kemény (vörös kukac)",
-                "Keloid: a heg kiemelkedő, folyton növő a seb, csillogó fehér, kemény",
-                "Kontratúrás: behúz a mélybe",
-              ],
-            },
-            {
-              heading: "Hegekröl és az adhéziókról (összetapadás)",
-              bullets: [
-                "immobilizálást követően létrejött kaotikus kötőszövetes háló mozgásszervben, hasüregben, mellüregben egyaránt",
-                "Fájhat vagy nem",
-                "Leggyakoribb: medencében, hasüregben, szív-pericardium területén",
-                "10%-ban akkor is van, ha soha nem volt operálva, 30 fölött, ülő életmódnál!",
-                "30-40%-ban soha nem fog zavarni, 60-70%-ban leggyakrabban bélelhalás és medence belszervi panaszokat okoz, valamint lábi ödémásodást.",
-              ],
-            },
-          ],
-        },
-      },
-
-      champi: {
-        de: {
-          title: "Champi Kopfmassage",
-          sections: [
-            {
-              heading: "Allgemeine Beschreibung",
-              paragraphs: [
-                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda.",
-              ],
-            },
-          ],
-        },
-        hu: {
-          title: "Champi fejmasszázs",
-          sections: [
-            {
-              heading: "Általános leírás",
-              paragraphs: [
-                "A Champi fejmasszázs, más néven indiai fejmasszázs, egy hagyományos kezelés, amely az indiai ájurvéda gyógyító művészetéből ered.",
+                "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége.",
               ],
             },
           ],
@@ -1018,9 +1161,15 @@ export default function ChristinaMassageWebsite() {
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 lg:px-10">
           <nav className="hidden items-center gap-8 text-base text-white lg:flex">
-            <a href="#ueber" className="hover:text-[#f5efe3]">{c.nav.about}</a>
-            <a href="#leistungen" className="hover:text-[#f5efe3]">{c.nav.services}</a>
-            <a href="#special" className="hover:text-[#f5efe3]">{c.nav.special}</a>
+            <a href="#ueber" className="hover:text-[#f5efe3]">
+              {c.nav.about}
+            </a>
+            <a href="#leistungen" className="hover:text-[#f5efe3]">
+              {c.nav.services}
+            </a>
+            <a href="#special" className="hover:text-[#f5efe3]">
+              {c.nav.special}
+            </a>
           </nav>
 
           <div className="flex flex-col items-center">
@@ -1035,8 +1184,12 @@ export default function ChristinaMassageWebsite() {
           </div>
 
           <div className="hidden items-center gap-8 text-base text-white lg:flex">
-            <a href="#zusatzangebote" className="hover:text-[#f5efe3]">{c.nav.methods}</a>
-            <a href="#anfahrt" className="hover:text-[#f5efe3]">{c.nav.location}</a>
+            <a href="#zusatzangebote" className="hover:text-[#f5efe3]">
+              {c.nav.methods}
+            </a>
+            <a href="#anfahrt" className="hover:text-[#f5efe3]">
+              {c.nav.location}
+            </a>
             <a
               href="/booking"
               className="rounded-full border border-[#f5efe3] px-5 py-2 text-base font-medium text-[#f5efe3] hover:bg-[#f5efe3] hover:text-[#556246]"
@@ -1070,7 +1223,11 @@ export default function ChristinaMassageWebsite() {
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(64,94,63,0.22),rgba(64,94,63,0.18))]" />
-        <img src="/massage-hero.png" alt="Massage Hero" className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src="/massage-hero.png"
+          alt="Massage Hero"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col items-center justify-center px-6 py-20 text-center lg:px-10">
           <h1 className="max-w-5xl text-4xl font-light tracking-wide text-white md:text-7xl">
             {c.hero.title}
@@ -1080,10 +1237,18 @@ export default function ChristinaMassageWebsite() {
             {c.hero.subtitle}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a href="/booking" className="rounded-none border border-[#d6b36a] bg-[#d6b36a] px-10 py-4 text-base font-medium text-stone-900 transition hover:opacity-90">
+            <a
+              href="/booking"
+              className="rounded-none border border-[#d6b36a] bg-[#d6b36a] px-10 py-4 text-base font-medium text-stone-900 transition hover:opacity-90"
+            >
               {c.hero.primary}
             </a>
-            <a href={c.brand.whatsappLink} target="_blank" rel="noopener noreferrer" className="rounded-none border border-white/60 px-10 py-4 text-base font-medium text-white transition hover:bg-white/10">
+            <a
+              href={c.brand.whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-none border border-white/60 px-10 py-4 text-base font-medium text-white transition hover:bg-white/10"
+            >
               {c.hero.secondary}
             </a>
           </div>
@@ -1093,13 +1258,21 @@ export default function ChristinaMassageWebsite() {
       <section id="ueber" className="bg-[#f8f2e9] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.about.eyebrow}</p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.about.title}</h2>
+            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
+              {c.about.eyebrow}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+              {c.about.title}
+            </h2>
           </div>
 
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
             <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
-              <img src="/christina-about.jpg" alt="Christina" className="h-[420px] w-full object-cover object-center md:h-[520px]" />
+              <img
+                src="/christina-about.jpg"
+                alt="Christina"
+                className="h-[420px] w-full object-cover object-center md:h-[520px]"
+              />
             </div>
 
             <div className="space-y-6">
@@ -1112,7 +1285,9 @@ export default function ChristinaMassageWebsite() {
               </div>
 
               <div className="rounded-[2rem] border border-[#ddd3c2] bg-[#efe7da] p-6 shadow-sm md:p-8">
-                <h3 className="text-2xl font-semibold text-stone-900">{c.about.qualificationsTitle}</h3>
+                <h3 className="text-2xl font-semibold text-stone-900">
+                  {c.about.qualificationsTitle}
+                </h3>
                 <div className="mt-5 space-y-3 text-base leading-8 text-stone-700">
                   {c.about.qualificationsText.map((paragraph: string) => (
                     <p key={paragraph}>{paragraph}</p>
@@ -1129,19 +1304,30 @@ export default function ChristinaMassageWebsite() {
           <div className="overflow-hidden rounded-[2.2rem] border border-stone-200 bg-white shadow-[0_30px_80px_rgba(120,100,80,0.12)]">
             <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
               <div className="bg-[#16212a]">
-                <img src="/hiemt-pad.jpg" alt="HIEMT Gerät" className="h-full min-h-[360px] w-full object-cover" />
+                <img
+                  src="/hiemt-pad.jpg"
+                  alt="HIEMT Gerät"
+                  className="h-full min-h-[360px] w-full object-cover"
+                />
               </div>
 
               <div className="bg-[#f8f5ef] p-8 md:p-10">
                 <div className="inline-flex rounded-full bg-[#dfe6da] px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-stone-700">
                   {c.special.eyebrow}
                 </div>
-                <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.special.title}</h2>
-                <p className="mt-5 text-lg leading-8 text-stone-600">{c.special.text}</p>
+                <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+                  {c.special.title}
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-stone-600">
+                  {c.special.text}
+                </p>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   {c.special.bullets.map((bullet: string) => (
-                    <div key={bullet} className="rounded-2xl border border-stone-200 bg-white p-4 text-sm text-stone-700 shadow-sm">
+                    <div
+                      key={bullet}
+                      className="rounded-2xl border border-stone-200 bg-white p-4 text-sm text-stone-700 shadow-sm"
+                    >
                       {bullet}
                     </div>
                   ))}
@@ -1149,12 +1335,20 @@ export default function ChristinaMassageWebsite() {
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[1.6rem] bg-[#567a57] p-6 text-white">
-                    <div className="text-sm uppercase tracking-[0.18em] text-white/70">{c.special.trialLabel}</div>
-                    <div className="mt-2 text-3xl font-semibold">{c.special.trialPrice}</div>
+                    <div className="text-sm uppercase tracking-[0.18em] text-white/70">
+                      {c.special.trialLabel}
+                    </div>
+                    <div className="mt-2 text-3xl font-semibold">
+                      {c.special.trialPrice}
+                    </div>
                   </div>
                   <div className="rounded-[1.6rem] bg-[#a8b79a] p-6 text-stone-900">
-                    <div className="text-sm uppercase tracking-[0.18em] text-stone-700">{c.special.packLabel}</div>
-                    <div className="mt-2 text-3xl font-semibold">{c.special.packPrice}</div>
+                    <div className="text-sm uppercase tracking-[0.18em] text-stone-700">
+                      {c.special.packLabel}
+                    </div>
+                    <div className="mt-2 text-3xl font-semibold">
+                      {c.special.packPrice}
+                    </div>
                   </div>
                 </div>
 
@@ -1163,18 +1357,36 @@ export default function ChristinaMassageWebsite() {
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-[#cfd8bf] bg-[#edf4e3] p-5">
-                  <p className="text-sm font-medium text-[#4e5f3f]">{c.special.whatsappText}</p>
+                  <p className="text-sm font-medium text-[#4e5f3f]">
+                    {c.special.whatsappText}
+                  </p>
                   <div className="mt-4 flex flex-wrap gap-3">
-                    <a href={c.brand.hiemtWhatsappLink} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full bg-[#6f7d58] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#5f6c4a]">
+                    <a
+                      href={c.brand.hiemtWhatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block rounded-full bg-[#6f7d58] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#5f6c4a]"
+                    >
                       {c.special.whatsappButton}
                     </a>
-                    <button onClick={() => setShowHiemtInfo(true)} className="inline-block rounded-full border border-[#6f7d58] px-6 py-3 text-sm font-semibold text-[#556246] transition hover:bg-[#eef3e6]">
+                    <button
+                      onClick={() => setShowHiemtInfo(true)}
+                      className="inline-block rounded-full border border-[#6f7d58] px-6 py-3 text-sm font-semibold text-[#556246] transition hover:bg-[#eef3e6]"
+                    >
                       {c.special.infoButton}
                     </button>
-                    <a href="/hiemt-de.pdf" download className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-50">
+                    <a
+                      href="/hiemt-de.pdf"
+                      download
+                      className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-50"
+                    >
                       {c.special.pdfDe}
                     </a>
-                    <a href="/hiemt-hu.pdf" download className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-50">
+                    <a
+                      href="/hiemt-hu.pdf"
+                      download
+                      className="inline-block rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-50"
+                    >
                       {c.special.pdfHu}
                     </a>
                   </div>
@@ -1188,35 +1400,62 @@ export default function ChristinaMassageWebsite() {
       <section id="leistungen" className="pt-20 pb-2">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.services.eyebrow}</p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.services.title}</h2>
-            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">{c.services.text}</p>
+            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
+              {c.services.eyebrow}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+              {c.services.title}
+            </h2>
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
+              {c.services.text}
+            </p>
           </div>
 
           <div className="relative">
-            <button type="button" onClick={() => scrollSlider(servicesSliderRef, "left")} className="absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex">
+            <button
+              type="button"
+              onClick={() => scrollSlider(servicesSliderRef, "left")}
+              className="absolute left-0 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
+            >
               <span className="text-2xl leading-none">‹</span>
             </button>
 
-            <div ref={servicesSliderRef} className="flex snap-x snap-mandatory gap-8 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div
+              ref={servicesSliderRef}
+              className="flex snap-x snap-mandatory gap-8 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            >
               {c.services.items.map((service: ServiceCard) => (
-                <div key={service.key} className="min-w-[92%] snap-center md:min-w-[78%] lg:min-w-[86%]">
+                <div
+                  key={service.key}
+                  className="min-w-[92%] snap-center md:min-w-[78%] lg:min-w-[86%]"
+                >
                   <div className="relative mx-auto grid min-h-[540px] overflow-hidden rounded-[2.2rem] md:grid-cols-[0.95fr_1.25fr]">
                     <div className="relative z-10 flex items-center justify-center px-6 py-10 md:px-10">
                       <div className="absolute left-0 top-1/2 hidden h-[300px] w-[430px] -translate-y-1/2 rounded-[2rem] bg-[#cfd5cb] md:block" />
                       <div className="relative z-10 w-full max-w-[380px] rounded-[2rem] bg-[#cfd5cb] p-8 text-center shadow-sm md:-mr-12">
-                        <h3 className="text-3xl font-medium leading-tight text-stone-800 md:text-4xl">{service.title}</h3>
-                        <p className="mt-6 leading-8 text-stone-700">{service.description}</p>
+                        <h3 className="text-3xl font-medium leading-tight text-stone-800 md:text-4xl">
+                          {service.title}
+                        </h3>
+                        <p className="mt-6 leading-8 text-stone-700">
+                          {service.description}
+                        </p>
                         <div className="mt-6 space-y-2 text-sm font-medium text-stone-700">
                           {service.durations.map((duration) => (
                             <div key={duration}>{duration}</div>
                           ))}
                         </div>
                         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                          <a href="/booking" className="inline-block rounded-none bg-[#405e3f] px-8 py-4 text-base font-medium text-white transition hover:-translate-y-0.5">
+                          <a
+                            href="/booking"
+                            className="inline-block rounded-none bg-[#405e3f] px-8 py-4 text-base font-medium text-white transition hover:-translate-y-0.5"
+                          >
                             {c.services.button}
                           </a>
-                          <button onClick={() => setActiveInfo(service.key)} className="rounded-none border border-[#405e3f] px-8 py-4 text-base font-medium text-[#405e3f] transition hover:bg-[#eef3e6]">
+                          <button
+                            type="button"
+                            onClick={() => setActiveInfo(service.key)}
+                            className="rounded-none border border-[#405e3f] px-8 py-4 text-base font-medium text-[#405e3f] transition hover:bg-[#eef3e6]"
+                          >
                             {c.services.info}
                           </button>
                         </div>
@@ -1224,34 +1463,22 @@ export default function ChristinaMassageWebsite() {
                     </div>
 
                     <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
-                      <div className="flex h-full min-h-[440px] w-full items-center justify-center bg-white">
-                        {service.key === "champi" ? (
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className="h-full min-h-[440px] w-full object-cover object-center"
-                          />
-                        ) : service.key === "individual" ? (
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className="h-full min-h-[440px] w-full object-cover object-center"
-                          />
-                        ) : (
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className="h-full min-h-[440px] w-full object-cover"
-                          />
-                        )}
-                      </div>
+                      <img
+                        src={service.image}
+                        alt={service.title}
+                        className="h-full min-h-[440px] w-full object-cover object-center"
+                      />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <button type="button" onClick={() => scrollSlider(servicesSliderRef, "right")} className="absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex">
+            <button
+              type="button"
+              onClick={() => scrollSlider(servicesSliderRef, "right")}
+              className="absolute right-0 top-1/2 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-stone-300 bg-white/90 p-4 text-stone-700 shadow-md transition hover:bg-white lg:flex"
+            >
               <span className="text-2xl leading-none">›</span>
             </button>
           </div>
@@ -1261,27 +1488,34 @@ export default function ChristinaMassageWebsite() {
       <section id="zusatzangebote" className="bg-[#f8f2e9] pt-6 pb-14">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.methods.eyebrow}</p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.methods.title}</h2>
-            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">{c.methods.text}</p>
+            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
+              {c.methods.eyebrow}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+              {c.methods.title}
+            </h2>
+            <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
+              {c.methods.text}
+            </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
             {c.methods.items.map((item: MethodCard) => (
-              <div key={item.key} className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
+              <div
+                key={item.key}
+                className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm"
+              >
                 <div className="h-64 w-full bg-stone-100">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className={`h-full w-full ${
-                      item.key === "scarTreatment"
-                        ? "object-cover object-center"
-                        : "object-cover"
-                    }`}
+                    className="h-full w-full object-cover object-center"
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-semibold text-stone-900">{item.title}</h3>
+                  <h3 className="text-2xl font-semibold text-stone-900">
+                    {item.title}
+                  </h3>
                   <p className="mt-5 leading-8 text-stone-600">{item.text}</p>
                   <div className="mt-6">
                     <button
@@ -1300,10 +1534,19 @@ export default function ChristinaMassageWebsite() {
 
       <section id="booking" className="py-20">
         <div className="mx-auto max-w-5xl px-6 text-center lg:px-10">
-          <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.booking.eyebrow}</p>
-          <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.booking.title}</h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">{c.booking.text}</p>
-          <a href="/booking" className="mt-10 inline-block rounded-full bg-[#567a57] px-8 py-4 text-base font-medium text-white hover:opacity-90">
+          <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
+            {c.booking.eyebrow}
+          </p>
+          <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+            {c.booking.title}
+          </h2>
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-stone-600">
+            {c.booking.text}
+          </p>
+          <a
+            href="/booking"
+            className="mt-10 inline-block rounded-full bg-[#567a57] px-8 py-4 text-base font-medium text-white hover:opacity-90"
+          >
             {c.booking.button}
           </a>
         </div>
@@ -1312,8 +1555,12 @@ export default function ChristinaMassageWebsite() {
       <section id="anfahrt" className="py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">{c.location.eyebrow}</p>
-            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">{c.location.title}</h2>
+            <p className="text-sm uppercase tracking-[0.28em] text-stone-500">
+              {c.location.eyebrow}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-stone-900 md:text-5xl">
+              {c.location.title}
+            </h2>
           </div>
 
           <div className="mx-auto max-w-6xl rounded-[2rem] bg-[#f8f1e6] px-4 pb-4 pt-4 shadow-sm">
@@ -1333,19 +1580,37 @@ export default function ChristinaMassageWebsite() {
 
           <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-center">
             <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
-              <img src="/entrance.jpeg" alt="Eingang Christina Massage" className="h-full w-full object-cover" />
+              <img
+                src="/entrance.jpeg"
+                alt="Eingang Christina Massage"
+                className="h-full w-full object-cover"
+              />
             </div>
 
             <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-sm">
-              <p className="text-base leading-8 text-stone-700">{c.location.intro}</p>
+              <p className="text-base leading-8 text-stone-700">
+                {c.location.intro}
+              </p>
               <p className="mt-4 text-base leading-8 text-stone-700">
                 <strong>{c.location.seoText}</strong>
               </p>
               <div className="mt-6 space-y-3 text-base leading-7 text-stone-700">
-                <p><strong>{c.location.addressLabel}</strong> Bahnhofstraße 21, 82383 Hohenpeißenberg</p>
-                <p><strong>{c.location.entranceLabel}</strong> {c.location.entranceText}</p>
-                <p><strong>{c.location.parkingLabel}</strong> {c.location.parkingText}</p>
-                <p><strong>{c.location.arrivalLabel}</strong> {c.location.arrivalText}</p>
+                <p>
+                  <strong>{c.location.addressLabel}</strong> Bahnhofstraße 21,
+                  82383 Hohenpeißenberg
+                </p>
+                <p>
+                  <strong>{c.location.entranceLabel}</strong>{" "}
+                  {c.location.entranceText}
+                </p>
+                <p>
+                  <strong>{c.location.parkingLabel}</strong>{" "}
+                  {c.location.parkingText}
+                </p>
+                <p>
+                  <strong>{c.location.arrivalLabel}</strong>{" "}
+                  {c.location.arrivalText}
+                </p>
               </div>
             </div>
           </div>
@@ -1356,8 +1621,12 @@ export default function ChristinaMassageWebsite() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <p>{c.footer.text}</p>
           <div className="flex gap-6">
-            <a href="/impressum" className="hover:text-stone-800">{c.footer.imprint}</a>
-            <a href="/datenschutz" className="hover:text-stone-800">{c.footer.privacy}</a>
+            <a href="/impressum" className="hover:text-stone-800">
+              {c.footer.imprint}
+            </a>
+            <a href="/datenschutz" className="hover:text-stone-800">
+              {c.footer.privacy}
+            </a>
           </div>
         </div>
       </footer>
@@ -1367,17 +1636,26 @@ export default function ChristinaMassageWebsite() {
           <div className="max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-[#f8f5ef] p-6 shadow-2xl md:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.18em] text-[#7a8566]">HIEMT</p>
-                <h3 className="mt-2 text-2xl font-semibold text-stone-900 md:text-3xl">{hiemtInfo[language].title}</h3>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#7a8566]">
+                  HIEMT
+                </p>
+                <h3 className="mt-2 text-2xl font-semibold text-stone-900 md:text-3xl">
+                  {hiemtInfo[language].title}
+                </h3>
               </div>
-              <button onClick={() => setShowHiemtInfo(false)} className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm">
+              <button
+                onClick={() => setShowHiemtInfo(false)}
+                className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm"
+              >
                 {c.close}
               </button>
             </div>
             <div className="mt-8 space-y-8">
               {hiemtInfo[language].sections.map((section, index) => (
                 <div key={`${section.heading}-${index}`}>
-                  <h4 className="text-lg font-semibold text-[#556246]">{section.heading}</h4>
+                  <h4 className="text-lg font-semibold text-[#556246]">
+                    {section.heading}
+                  </h4>
                   {section.paragraphs && (
                     <div className="mt-4 space-y-4 text-sm leading-8 text-stone-700 md:text-base">
                       {section.paragraphs.map((paragraph, i) => (
@@ -1409,31 +1687,38 @@ export default function ChristinaMassageWebsite() {
               <h3 className="text-2xl font-semibold text-stone-900">
                 {infoContent[activeInfo][language].title}
               </h3>
-              <button onClick={() => setActiveInfo(null)} className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm">
+              <button
+                onClick={() => setActiveInfo(null)}
+                className="rounded-full bg-white px-4 py-2 text-sm text-stone-700 shadow-sm"
+              >
                 {c.close}
               </button>
             </div>
 
             <div className="mt-6 space-y-6 text-stone-700">
-              {infoContent[activeInfo][language].sections.map((section, index) => (
-                <div key={`${section.heading}-${index}`}>
-                  <h4 className="text-lg font-semibold text-[#405e3f]">{section.heading}</h4>
-                  {section.paragraphs && (
-                    <div className="mt-2 space-y-2">
-                      {section.paragraphs.map((p, i) => (
-                        <p key={`${p}-${i}`}>{p}</p>
-                      ))}
-                    </div>
-                  )}
-                  {section.bullets && (
-                    <ul className="mt-2 list-disc pl-5 space-y-1">
-                      {section.bullets.map((b, i) => (
-                        <li key={`${b}-${i}`}>{b}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+              {infoContent[activeInfo][language].sections.map(
+                (section, index) => (
+                  <div key={`${section.heading}-${index}`}>
+                    <h4 className="text-lg font-semibold text-[#405e3f]">
+                      {section.heading}
+                    </h4>
+                    {section.paragraphs && (
+                      <div className="mt-2 space-y-2">
+                        {section.paragraphs.map((p, i) => (
+                          <p key={`${p}-${i}`}>{p}</p>
+                        ))}
+                      </div>
+                    )}
+                    {section.bullets && (
+                      <ul className="mt-2 list-disc pl-5 space-y-1">
+                        {section.bullets.map((b, i) => (
+                          <li key={`${b}-${i}`}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
