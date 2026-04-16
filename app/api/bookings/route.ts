@@ -2,15 +2,15 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabaseServiceRoleKey) {
   throw new Error(
-    "Supabase environment variables are missing. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+    "Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
   );
 }
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -155,20 +155,23 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data, error } = await supabase.from("bookings").insert([
-      {
-        user_id,
-        full_name: name,
-        email,
-        service_name: service,
-        booking_date: date,
-        booking_time: time,
-        duration_minutes: Number(duration),
-        price_eur: Number(price),
-        accepted_terms: Boolean(accepted_terms),
-        status: "requested",
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("bookings")
+      .insert([
+        {
+          user_id,
+          full_name: name,
+          email,
+          service_name: service,
+          booking_date: date,
+          booking_time: time,
+          duration_minutes: Number(duration),
+          price_eur: Number(price),
+          accepted_terms: Boolean(accepted_terms),
+          status: "requested",
+        },
+      ])
+      .select();
 
     if (error) {
       return NextResponse.json(
