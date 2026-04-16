@@ -1054,7 +1054,7 @@ export default function ChristinaMassageWebsite() {
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-cross-origin"
+                referrerPolicy="no-referrer-when-downgrade"
                 title="Google Maps Standort Christina Massage"
               />
             </div>
