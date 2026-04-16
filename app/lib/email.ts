@@ -7,14 +7,10 @@ if (!resendApiKey) {
   throw new Error("Missing RESEND_API_KEY.");
 }
 
-if (!ownerNotificationEmail) {
-  throw new Error("Missing OWNER_NOTIFICATION_EMAIL.");
-}
-
 const resend = new Resend(resendApiKey);
-const ownerEmail: string = ownerNotificationEmail;
+const ownerEmail = ownerNotificationEmail || "";
 
-const FROM_EMAIL = "Christina Massage <onboarding@resend.dev>";
+const FROM_EMAIL = "Christina Massage <buchung@christina-massage.com>";
 
 type BookingMailData = {
   name: string;
@@ -29,7 +25,7 @@ type BookingMailData = {
 export async function sendCustomerBookingRequestEmail(
   data: BookingMailData
 ) {
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: FROM_EMAIL,
     to: data.email,
     subject: "Deine Buchungsanfrage bei Christina Massage",
@@ -52,10 +48,17 @@ export async function sendCustomerBookingRequestEmail(
       </div>
     `,
   });
+
+  console.log("Customer booking request mail:", result);
 }
 
 export async function sendOwnerBookingRequestEmail(data: BookingMailData) {
-  await resend.emails.send({
+  if (!ownerEmail) {
+    console.warn("OWNER_NOTIFICATION_EMAIL fehlt.");
+    return;
+  }
+
+  const result = await resend.emails.send({
     from: FROM_EMAIL,
     to: ownerEmail,
     subject: "Neue Buchungsanfrage eingegangen",
@@ -76,10 +79,12 @@ export async function sendOwnerBookingRequestEmail(data: BookingMailData) {
       </div>
     `,
   });
+
+  console.log("Owner booking request mail:", result);
 }
 
 export async function sendCustomerConfirmedEmail(data: BookingMailData) {
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: FROM_EMAIL,
     to: data.email,
     subject: "Dein Termin wurde bestätigt",
@@ -96,10 +101,12 @@ export async function sendCustomerConfirmedEmail(data: BookingMailData) {
       </div>
     `,
   });
+
+  console.log("Customer confirmed mail:", result);
 }
 
 export async function sendCustomerCancelledEmail(data: BookingMailData) {
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: FROM_EMAIL,
     to: data.email,
     subject: "Dein Termin wurde storniert",
@@ -117,4 +124,6 @@ export async function sendCustomerCancelledEmail(data: BookingMailData) {
       </div>
     `,
   });
+
+  console.log("Customer cancelled mail:", result);
 }
