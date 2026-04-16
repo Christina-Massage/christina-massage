@@ -528,119 +528,117 @@ export default function BookingPage() {
     }
   };
 
-  const handleBookingSubmit = async () => {
-    setStatusMessage("", "info");
+ const handleBookingSubmit = async () => {
+  setStatusMessage("", "info");
 
-    if (isWeekend(bookingDate)) {
-      setStatusMessage(t.weekendClosed, "error");
+  if (isWeekend(bookingDate)) {
+    setStatusMessage(t.weekendClosed, "error");
+    return;
+  }
+
+  if (!bookingReady) {
+    setStatusMessage(
+      language === "de"
+        ? "Bitte einloggen, AGB bestätigen und einen freien Termin auswählen."
+        : "Kérjük jelentkezz be, fogadd el a feltételeket és válassz szabad időpontot.",
+      "error"
+    );
+    return;
+  }
+
+  if (
+    selectedSlotTime &&
+    isSlotUnavailable(
+      selectedSlotTime,
+      selectedOption.duration,
+      blockedTimes,
+      existingBookings,
+      bookingDate
+    )
+  ) {
+    setStatusMessage(
+      language === "de"
+        ? "Dieser Zeitraum ist nicht verfügbar. Bitte wähle eine andere Uhrzeit."
+        : "Ez az időszak nem elérhető. Kérjük válassz másik időpontot.",
+      "error"
+    );
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setStatusMessage(t.pleaseLoginFirst, "error");
       return;
     }
 
-    if (!bookingReady) {
-      setStatusMessage(
-        language === "de"
-          ? "Bitte einloggen, AGB bestätigen und einen freien Termin auswählen."
-          : "Kérjük jelentkezz be, fogadd el a feltételeket és válassz szabad időpontot.",
-        "error"
-      );
-      return;
-    }
+    const finalName =
+      fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
 
-    if (
-      selectedSlotTime &&
-      isSlotUnavailable(
-        selectedSlotTime,
-        selectedOption.duration,
-        blockedTimes,
-        existingBookings,
-        bookingDate
-      )
-    ) {
-      setStatusMessage(
-        language === "de"
-          ? "Dieser Zeitraum ist nicht verfügbar. Bitte wähle eine andere Uhrzeit."
-          : "Ez az időszak nem elérhető. Kérjük válassz másik időpontot.",
-        "error"
-      );
-      return;
-    }
+    const serviceName = selectedService.name[language];
 
-    setLoading(true);
-
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setStatusMessage(t.pleaseLoginFirst, "error");
-        return;
-      }
-
-      const finalName =
-        fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
-
-      const serviceName = selectedService.name[language];
-
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          name: finalName,
-          email: user.email ?? email.trim(),
-          service: serviceName,
-          date: bookingDate,
-          time: selectedSlotTime,
-          duration: selectedOption.duration,
-          price: selectedOption.price,
-          accepted_terms: acceptedTerms,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        if (
-          result?.message?.includes("duplicate key") ||
-          result?.message?.includes("23505")
-        ) {
-          setStatusMessage(t.duplicateError, "error");
-        } else {
-          setStatusMessage(result?.message || t.bookingError, "error");
-        }
-        return;
-      }
-
-      setExistingBookings((prev) => [
-        ...prev,
+    const { data, error } = await supabase
+      .from("bookings")
+      .insert([
         {
-          booking_time: selectedSlotTime!,
-          duration_minutes: selectedOption.duration,
+          user_id: user.id,
+          full_name: finalName,
+          email: user.email ?? email.trim(),
+          service_name: serviceName,
+          booking_date: bookingDate,
+          booking_time: selectedSlotTime,
+          duration_minutes: Number(selectedOption.duration),
+          price_eur: Number(selectedOption.price),
+          accepted_terms: Boolean(acceptedTerms),
+          status: "requested",
         },
-      ]);
+      ])
+      .select();
 
-      setStatusMessage(t.bookingSuccess, "success");
-      setSelectedSlotTime(null);
-      setAcceptedTerms(false);
-
-      setTimeout(() => {
-        router.push("/my-bookings");
-      }, 900);
-    } catch (error) {
-      console.error("Fehler in handleBookingSubmit:", error);
-      setStatusMessage(
-        language === "de"
-          ? "Es ist ein unerwarteter Fehler aufgetreten."
-          : "Váratlan hiba történt.",
-        "error"
-      );
-    } finally {
-      setLoading(false);
+    if (error) {
+      if (
+        error.message?.includes("duplicate key") ||
+        error.message?.includes("23505")
+      ) {
+        setStatusMessage(t.duplicateError, "error");
+      } else {
+        setStatusMessage(error.message || t.bookingError, "error");
+      }
+      return;
     }
-  };
+
+    setExistingBookings((prev) => [
+      ...prev,
+      {
+        booking_time: selectedSlotTime!,
+        duration_minutes: selectedOption.duration,
+      },
+    ]);
+
+    setStatusMessage(t.bookingSuccess, "success");
+    setSelectedSlotTime(null);
+    setAcceptedTerms(false);
+
+    setTimeout(() => {
+      router.push("/my-bookings");
+    }, 900);
+  } catch (error) {
+    console.error("Fehler in handleBookingSubmit:", error);
+    setStatusMessage(
+      language === "de"
+        ? "Es ist ein unerwarteter Fehler aufgetreten."
+        : "Váratlan hiba történt.",
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+}; 
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
