@@ -6,8 +6,12 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
+
+// 👉 Default Import
 import MonthlyCalendar from "../components/booking/MonthlyCalendar";
-import
+
+// 👉 Named Imports (ALLES in einem Block!)
+import {
   CalendarBlock,
   CalendarBooking,
   WORKING_SLOTS,
