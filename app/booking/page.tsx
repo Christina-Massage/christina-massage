@@ -141,7 +141,8 @@ const slotTemplate = [
   { time: "19:00" },
 ];
 
-const LAST_END_TIME_MINUTES = 20 * 15; // 20:15, damit 19:00 + 75 noch möglich bleibt
+// letzter möglicher Endzeitpunkt
+const LAST_END_TIME_MINUTES = 20 * 60 + 15;
 
 function timeToMinutes(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
@@ -157,12 +158,23 @@ function rangesOverlap(
   return startA < endB && endA > startB;
 }
 
+function isWeekend(dateString: string) {
+  if (!dateString) return false;
+  const date = new Date(`${dateString}T12:00:00`);
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
 function isSlotUnavailable(
   slotTime: string,
   duration: number,
   blockedTimes: BlockedTime[],
-  existingBookings: ExistingBooking[]
+  existingBookings: ExistingBooking[],
+  bookingDate: string
 ) {
+  if (!bookingDate) return true;
+  if (isWeekend(bookingDate)) return true;
+
   const slotStart = timeToMinutes(slotTime);
   const slotEnd = slotStart + duration;
 
@@ -185,6 +197,25 @@ function isSlotUnavailable(
   });
 
   return overlapsExistingBooking;
+}
+
+function getTodayString() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = `${today.getMonth() + 1}`.padStart(2, "0");
+  const d = `${today.getDate()}`.padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function getNextWorkingDay(startDate: Date) {
+  const next = new Date(startDate);
+  while (true) {
+    const day = next.getDay();
+    if (day !== 0 && day !== 6) {
+      return next;
+    }
+    next.setDate(next.getDate() + 1);
+  }
 }
 
 export default function BookingPage() {
@@ -301,6 +332,10 @@ export default function BookingPage() {
       selected: language === "de" ? "Ausgewählt" : "Kiválasztva",
       free: language === "de" ? "Frei" : "Szabad",
       blocked: language === "de" ? "Blockiert" : "Lezárva",
+      weekendClosed:
+        language === "de"
+          ? "Samstag und Sonntag werden keine Termine angeboten."
+          : "Szombaton és vasárnap nincs időpontfoglalás.",
       authSuccessRegister:
         language === "de"
           ? "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
@@ -330,9 +365,10 @@ export default function BookingPage() {
 
   useEffect(() => {
     const today = new Date();
-    const y = today.getFullYear();
-    const m = `${today.getMonth() + 1}`.padStart(2, "0");
-    const d = `${today.getDate()}`.padStart(2, "0");
+    const nextWorkingDay = getNextWorkingDay(today);
+    const y = nextWorkingDay.getFullYear();
+    const m = `${nextWorkingDay.getMonth() + 1}`.padStart(2, "0");
+    const d = `${nextWorkingDay.getDate()}`.padStart(2, "0");
     setBookingDate(`${y}-${m}-${d}`);
   }, []);
 
@@ -340,7 +376,13 @@ export default function BookingPage() {
   const selectedOption = selectedService.options[selectedOptionIndex];
 
   const bookingReady = useMemo(() => {
-    return isLoggedIn && acceptedTerms && !!selectedSlotTime && !!bookingDate;
+    return (
+      isLoggedIn &&
+      acceptedTerms &&
+      !!selectedSlotTime &&
+      !!bookingDate &&
+      !isWeekend(bookingDate)
+    );
   }, [isLoggedIn, acceptedTerms, selectedSlotTime, bookingDate]);
 
   const setStatusMessage = (text: string, type: StatusType = "info") => {
@@ -389,6 +431,13 @@ export default function BookingPage() {
     if (!bookingDate) return;
 
     const loadUnavailableTimes = async () => {
+      if (isWeekend(bookingDate)) {
+        setExistingBookings([]);
+        setBlockedTimes([]);
+        setSelectedSlotTime(null);
+        return;
+      }
+
       const { data: bookingsData, error: bookingsError } = await supabase
         .from("bookings")
         .select("booking_time, duration_minutes")
@@ -482,6 +531,11 @@ export default function BookingPage() {
   const handleBookingSubmit = async () => {
     setStatusMessage("", "info");
 
+    if (isWeekend(bookingDate)) {
+      setStatusMessage(t.weekendClosed, "error");
+      return;
+    }
+
     if (!bookingReady) {
       setStatusMessage(
         language === "de"
@@ -498,7 +552,8 @@ export default function BookingPage() {
         selectedSlotTime,
         selectedOption.duration,
         blockedTimes,
-        existingBookings
+        existingBookings,
+        bookingDate
       )
     ) {
       setStatusMessage(
@@ -681,6 +736,7 @@ export default function BookingPage() {
                       onClick={() => {
                         setSelectedServiceIndex(index);
                         setSelectedOptionIndex(0);
+                        setSelectedSlotTime(null);
                       }}
                       className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                         index === selectedServiceIndex
@@ -745,10 +801,17 @@ export default function BookingPage() {
                   <input
                     type="date"
                     value={bookingDate}
+                    min={getTodayString()}
                     onChange={(e) => setBookingDate(e.target.value)}
                     className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-700 outline-none focus:border-[#567a57]"
                   />
                 </div>
+
+                {isWeekend(bookingDate) && (
+                  <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    {t.weekendClosed}
+                  </div>
+                )}
 
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {slotTemplate.map((slot) => {
@@ -756,7 +819,8 @@ export default function BookingPage() {
                       slot.time,
                       selectedOption.duration,
                       blockedTimes,
-                      existingBookings
+                      existingBookings,
+                      bookingDate
                     );
 
                     return (

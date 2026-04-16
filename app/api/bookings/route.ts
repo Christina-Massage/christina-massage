@@ -27,7 +27,13 @@ function rangesOverlap(
   return startA < endB && endA > startB;
 }
 
-const LAST_END_TIME_MINUTES = 20 * 15; // 20:15
+function isWeekend(dateString: string) {
+  const date = new Date(`${dateString}T12:00:00`);
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
+const LAST_END_TIME_MINUTES = 20 * 60 + 15;
 
 export async function POST(req: Request) {
   try {
@@ -63,7 +69,20 @@ export async function POST(req: Request) {
 
     if (!accepted_terms) {
       return NextResponse.json(
-        { success: false, message: "Die Buchungsbedingungen wurden nicht akzeptiert." },
+        {
+          success: false,
+          message: "Die Buchungsbedingungen wurden nicht akzeptiert.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (isWeekend(date)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Samstag und Sonntag sind keine buchbaren Tage.",
+        },
         { status: 400 }
       );
     }
@@ -73,7 +92,10 @@ export async function POST(req: Request) {
 
     if (requestEnd > LAST_END_TIME_MINUTES) {
       return NextResponse.json(
-        { success: false, message: "Dieser Termin liegt außerhalb der verfügbaren Zeiten." },
+        {
+          success: false,
+          message: "Dieser Termin liegt außerhalb der verfügbaren Zeiten.",
+        },
         { status: 400 }
       );
     }
