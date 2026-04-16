@@ -150,7 +150,7 @@ export default function ChristinaMassageWebsite() {
             title: "Champi – Indische Kopfmassage",
             description:
               "Traditionelle ayurvedische Kopfmassage für tiefe Entspannung, mentale Ruhe und neue Energie.",
-            durations: ["45 Min · 45 €", "60 Min · 60 €"],
+            durations: ["45 Min · 45 €"],
             image: "/champi.png",
           },
         ] as ServiceCard[],
@@ -348,7 +348,7 @@ export default function ChristinaMassageWebsite() {
             title: "Champi – indiai fejmasszázs",
             description:
               "Hagyományos ájurvédikus fejmasszázs a mély relaxációért, mentális nyugalomért és új energiáért.",
-            durations: ["45 perc · 45 €", "60 perc · 60 €"],
+            durations: ["45 perc · 45 €"], 
             image: "/champi.png",
           },
         ] as ServiceCard[],
