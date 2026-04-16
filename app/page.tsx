@@ -172,14 +172,14 @@ export default function ChristinaMassageWebsite() {
             key: "flossing",
             title: "Flossing",
             text:
-              "Moderne physiotherapeutische Methode zur gezielten Behandlung von Faszien, Muskeln und Gelenken.",
+              "Komplexe physiotherapeutische Behandlung für Bindegewebe, Muskeln und Gelenke.",
             image: "/flossing.png",
           },
           {
             key: "schroepfen",
             title: "Schröpfen",
             text:
-              "Traditionelle Vakuumtherapie zur Förderung der Durchblutung, Entspannung der Muskulatur und Lösung von Verklebungen.",
+              "Traditionelle Vakuumtherapie zur Förderung der Durchblutung, Lockerung des Gewebes und Entspannung der Muskulatur.",
             image: "/cupping.png",
           },
           {
@@ -370,14 +370,14 @@ export default function ChristinaMassageWebsite() {
             key: "flossing",
             title: "Flossing",
             text:
-              "Modern fizioterápiás módszer a fasciák, izmok és ízületek célzott kezelésére.",
+              "Komplex fizioterápiás kezelés a kötőszövet, az izmok és az ízületek számára.",
             image: "/flossing.png",
           },
           {
             key: "schroepfen",
             title: "Köpölyözés",
             text:
-              "Hagyományos vákuumterápia a vérkeringés javítására, izomlazításra és letapadások oldására.",
+              "Hagyományos vákuumterápia a keringés javítására, izomlazításra és letapadások oldására.",
             image: "/cupping.png",
           },
           {
@@ -516,6 +516,37 @@ export default function ChristinaMassageWebsite() {
                 "Je nach Befund und Bedarf können ergänzend auch FDM, Schröpfen oder Flossing in die Behandlung integriert werden. Diese Techniken gehören damit bei Bedarf zur individuellen Massage und werden vor Ort passend entschieden.",
               ],
             },
+            {
+              heading: "Ziele der Individualmassage",
+              bullets: [
+                "Individuelle Linderung von Muskelverspannungen",
+                "Schmerzlinderung bei spezifischen Beschwerden",
+                "Förderung der Durchblutung und des Stoffwechsels",
+                "Verbesserung der Beweglichkeit",
+                "Stressabbau und mentale Entspannung",
+                "Unterstützung der Regeneration nach körperlicher Belastung",
+                "Steigerung des allgemeinen Wohlbefindens",
+              ],
+            },
+            {
+              heading: "Typische Techniken",
+              bullets: [
+                "Streichungen",
+                "Knetungen",
+                "Reibungen",
+                "Triggerpunkt-Therapie",
+                "Dehnungen und Mobilisationen",
+                "Fasziale Techniken",
+              ],
+            },
+            {
+              heading: "Dauer der Behandlung",
+              bullets: [
+                "60 Minuten – gezielte Behandlung einzelner Problemzonen",
+                "90 Minuten – umfassende, individuell angepasste Massage",
+                "120 Minuten – intensive Ganzkörperbehandlung mit Fokus auf mehrere Beschwerdebereiche",
+              ],
+            },
           ],
         },
         hu: {
@@ -645,6 +676,67 @@ export default function ChristinaMassageWebsite() {
         },
       },
 
+      flossing: {
+        de: {
+          title: "Flossing",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Flossing ist eine komplexe physiotherapeutische Behandlung, die das Bindegewebe, die Muskeln und die Gelenke betrifft.",
+                "Der Kern der Behandlung liegt im gezielten Druck eines speziellen elastischen Bandes, das über mechanische und physiologische Mechanismen positive Wirkungen entfaltet.",
+              ],
+            },
+            {
+              heading: "Hauptanwendungen",
+              bullets: [
+                "Verbesserung der Gelenkmobilität",
+                "Rehabilitation nach Verstauchungen und Zerrungen",
+                "Schmerzlinderung bei akuten und chronischen Zuständen",
+                "Reduktion von Ödemen und Schwellungen",
+                "Mobilisation von Narbengewebe",
+              ],
+            },
+            {
+              heading: "Behandlungsdauer",
+              bullets: [
+                "30 Minuten – gezielte Behandlung",
+                "Die Floss-Behandlung kann bei Bedarf innerhalb der individuellen Massagetherapie eingesetzt werden.",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Flossing",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A fogselyemhasználat egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
+                "A kezelés lényege egy speciális rugalmas szalag határozott nyomásában rejlik, amely mechanikai és fiziológiai mechanizmusokon keresztül fejti ki pozitív hatását.",
+              ],
+            },
+            {
+              heading: "Főbb alkalmazások",
+              bullets: [
+                "Ízületi mobilitás javítása",
+                "Rándulások és húzódások utáni rehabilitáció",
+                "Fájdalomcsillapítás akut és krónikus állapotokban",
+                "Ödéma és duzzanat csökkentése",
+                "Hegszövet mobilizálása",
+              ],
+            },
+            {
+              heading: "Kezelés időtartama",
+              bullets: [
+                "30 perc – Célzott kezelés",
+                "A floss kezelés az egyéni masszázsterápiában szükség szerint alkalmazható",
+              ],
+            },
+          ],
+        },
+      },
+
       fdm: {
         de: {
           title: "FDM",
@@ -652,7 +744,28 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Das Fascial Distortion Model (FDM) ist ein innovatives und wirkungsvolles Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparates.",
+                "Das Fascial Distortion Model (FDM) ist ein innovatives und wirksames Behandlungskonzept zur Therapie von Schmerzen und Bewegungseinschränkungen des Bewegungsapparats.",
+                "Es basiert auf der Annahme, dass viele Schmerzen und funktionelle Störungen auf Verformungen der Faszien zurückzuführen sind. Auf Grundlage der Körpersprache des Patienten kann häufig schon nach ein oder zwei Behandlungen eine schnelle Schmerzlinderung und mehr Bewegungsfreiheit erreicht werden.",
+              ],
+            },
+            {
+              heading: "Ziele der FDM-Behandlung",
+              bullets: [
+                "Schnelle Schmerzlinderung",
+                "Verbesserte Mobilität",
+                "Wiederherstellung der faszialen Funktion",
+                "Behandlung akuter und chronischer Zustände",
+                "Unterstützung der sportlichen Leistungsfähigkeit",
+                "Beschleunigung der Regeneration nach Verletzungen",
+              ],
+            },
+            {
+              heading: "Warum ist die FDM-Methode besonders?",
+              bullets: [
+                "Patientenzentrierte Diagnostik: Grundlage der Behandlung ist Ihre Körpersprache – spontane Gesten zur Beschreibung des Schmerzes zeigen die Art der faszialen Veränderung.",
+                "Schnelle Ergebnisse: Zielgerichtete manuelle Griffe erreichen oft bereits bei der ersten Sitzung eine deutliche schmerzlindernde Wirkung.",
+                "Natürlicher Ansatz: Die Methode baut auf den instinktiven Signalen des Körpers auf und behandelt genau dort, wo die Gewebeverzerrung entstanden ist.",
+                "Hohe Wirksamkeit: Sehr gut einsetzbar bei akuten Sportverletzungen, chronischen Beschwerden des Bewegungsapparates und eingeschränkten Bewegungsumfängen.",
               ],
             },
           ],
@@ -664,45 +777,65 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A Fasciális Distorció Modell (FDM) egy innovatív és hatékony kezelési koncepció a mozgásszervi rendszer fájdalmának és mozgáskorlátozottságának terápiájára.",
+                "Azon a feltételezésen alapul, hogy számos fájdalom és funkcionális rendellenesség a fascia torzulásainak köszönhető. A beteg testbeszédére építve gyors fájdalomcsillapítást és mozgásszabadságot eredményez, gyakran már egy-két kezelés után.",
+              ],
+            },
+            {
+              heading: "Az FDM kezelés céljai",
+              bullets: [
+                "Gyors fájdalomcsillapítás",
+                "Javított mobilitás",
+                "A fasciális funkció helyreállítása",
+                "Akut és krónikus állapotok kezelése",
+                "A sportteljesítmény támogatása",
+                "Sérülések utáni regeneráció felgyorsítása",
+              ],
+            },
+            {
+              heading: "Miért különleges az FDM módszer?",
+              bullets: [
+                "Páciensközpontú diagnosztika: A kezelés alapja az Ön testbeszéde – a fájdalom leírására használt spontán gesztusok pontosan megmutatják a fascia elváltozásának típusát.",
+                "Gyors eredmények: A célzott manuális fogások gyakran már az első alkalommal jelentős fájdalomcsillapító hatást érnek el.",
+                "Természetes megközelítés: A módszer a test ösztönös jelzéseire épít, így a kezelés pontosan ott avatkozik be, ahol a szöveti torzulás történt.",
+                "Hatékonyság: Kiválóan alkalmazható akut sportsérülések, krónikus mozgásszervi panaszok és beszűkült mozgástartomány esetén is.",
               ],
             },
           ],
         },
       },
-
-      flossing: {
-        de: {
-          title: "Flossing",
-          sections: [
-            {
-              heading: "Allgemeine Beschreibung",
-              paragraphs: [
-                "Flossing ist eine komplexe physiotherapeutische Behandlung, die vor allem das Bindegewebe, die Muskeln und die Gelenke beeinflusst.",
-              ],
-            },
-          ],
-        },
-        hu: {
-          title: "Flossing",
-          sections: [
-            {
-              heading: "Általános leírás",
-              paragraphs: [
-                "A flossing egy komplex fizioterápiás kezelés, amely a kötőszövetet, az izmokat és az ízületeket érinti.",
-              ],
-            },
-          ],
-        },
-      },
-
-      schroepfen: {
+            schroepfen: {
         de: {
           title: "Schröpfen",
           sections: [
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Schröpfen ist eine traditionelle Therapieform, bei der durch Unterdruck die Durchblutung angeregt, Verspannungen gelöst und der Stoffwechsel aktiviert werden.",
+                "Schröpfen ist eine Vakuumtherapie mit jahrtausendealter Tradition. Dabei wird mit Glas-, Silikon- oder Kunststoffbechern ein Unterdruck auf der Hautoberfläche erzeugt.",
+                "Dieser Saugeffekt fördert die lokale Blut- und Lymphzirkulation, löst Muskelknoten, lockert verklebtes Bindegewebe und unterstützt den Abtransport von Stoffwechselrückständen.",
+              ],
+            },
+            {
+              heading: "Wichtige Anwendungsbereiche und Wirkungen",
+              bullets: [
+                "Muskelentspannung: Wirksam bei Rücken-, Schulter- und Lendenschmerzen sowie bei muskulären und faszialen Verklebungen.",
+                "Verbesserung der Durchblutung: Fördert Stoffwechsel und Sauerstoffversorgung des Gewebes.",
+                "Schmerzlinderung: Reduziert myofasziale Spannungen und aktiviert das parasympathische Nervensystem.",
+                "Ausleitung: Die verstärkte Durchblutung unterstützt den Abtransport von Belastungsstoffen.",
+                "Gute Durchblutung – gute Funktion – gutes Bewegungsmuster – qualitativ gute Heilung.",
+              ],
+            },
+            {
+              heading: "Schröpftechniken",
+              bullets: [
+                "Trockenes / fixes Schröpfen: Die Becher bleiben 10–15 Minuten an einer Stelle.",
+                "Gleitendes / dynamisches Schröpfen: Auf eingeölter Haut wird der Becher massageartig bewegt. Eine Art „großes Rücken-Wellness“, die innere Funktionen harmonisieren kann.",
+              ],
+            },
+            {
+              heading: "Wichtige Hinweise",
+              bullets: [
+                "Nach der Behandlung entstehen häufig bläulich-violette Flecken, die sich meist innerhalb von 2–3 Tagen zurückbilden.",
+                "Nicht empfohlen bei Blutgerinnungsstörungen, Hauterkrankungen, großen Muttermalen, sehr empfindlicher Pergamenthaut älterer Patienten, akuter Thrombose, akuter Venenerweiterung, Tumorerkrankungen, Osteoporose sowie in der Schwangerschaft.",
               ],
             },
           ],
@@ -713,7 +846,31 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során vákuumot hoznak létre a bőr felszínén.",
+                "A köpölyözés egy évezredes hagyományokra visszatekintő vákuumterápia, amely során üveg-, szilikon- vagy műanyag csészékkel vákuumot hoznak létre a bőr felszínén. Ez a szívóhatás fokozza a helyi vér- és nyirokkeringést, oldja az izomcsomókat, lazítja a letapadt kötőszövetet, valamint segíti a méreganyagok eltávolítását.",
+              ],
+            },
+            {
+              heading: "Főbb alkalmazási területek és hatások",
+              bullets: [
+                "Izomlazítás: Hatékony hát-, váll- és derékfájdalmak, valamint mozgásszervi letapadások kezelésére.",
+                "Keringésjavítás: Fokozza a szövetek anyagcseréjét és oxigénellátását.",
+                "Fájdalomcsillapítás: Csökkenti a myofascialis feszültséget és aktiválja a paraszimpatikus idegrendszert.",
+                "Salaktalanítás: A fokozott vérbőség segíti a salakanyagok távozását.",
+                "jó keringés-jó funkció-jó mozgásminta-minöségi gyógyulás",
+              ],
+            },
+            {
+              heading: "Köpölyözési technikák",
+              bullets: [
+                "Száraz/fix köpölyözés: A csészéket 10-15 percig egy helyen hagyják.",
+                "Csúszó/dinamikus köpölyözés: Olajos bőrfelületen a csészét mozgatják, masszázs jelleggel. \"Nagy háti vellnes\" amely a belsöszervek müködését egymáshoz hangolják.",
+              ],
+            },
+            {
+              heading: "Fontos tudnivalók",
+              bullets: [
+                "A kezelés után gyakran lilás-kékes foltok (bevérzések) keletkeznek, amelyek 2-3 nap alatt maguktól felszívódnak.",
+                "Nem javasolt véralvadási problémák, bőrbetegségek, nagy anyajegyek, idös paciens pergamenbörének, akut trombozis esetén, akut vénatágulatnál, daganatos betegségek, csontritkulás esetén, illetve terhesség alatt.",
               ],
             },
           ],
@@ -727,7 +884,49 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Die Narbenbehandlung umfasst Maßnahmen zur ästhetischen und funktionellen Verbesserung des Narbengewebes.",
+                "Die Narbenbehandlung umfasst Verfahren zur ästhetischen und funktionellen Verbesserung des Narbengewebes. Dazu gehören manuelle Techniken wie Massage und Mobilisation.",
+                "Ziel ist es, Spannungen zu lösen, Verklebungen zu beseitigen, die Durchblutung zu fördern und die Sichtbarkeit von Narben zu verringern. Nach Operationen, zum Beispiel nach einem Kaiserschnitt, ist die Behandlung wichtig, um Beweglichkeit und Funktion wiederherzustellen.",
+              ],
+            },
+            {
+              heading: "Wichtige Methoden der Narbenbehandlung",
+              bullets: [
+                "Manuelle Narbenbehandlung / Massage: Vom Therapeuten durchgeführt oder für zuhause erlernbar. Dabei wird das Narbengewebe zunächst sanft kreisend, später auch in tieferen Schichten mobilisiert.",
+                "Schröpfen und Faszientechniken: Tief verklebte Narben können mit Schröpfen, Flossing, FDM-Techniken, Narbenbehandlungsstab und Kinesio-Tape gelöst werden.",
+              ],
+            },
+            {
+              heading: "Wann ist die Behandlung sinnvoll?",
+              bullets: [
+                "Bei verklebten Operationsnarben wie Kaiserschnitt oder Laparoskopie sowie bei Ödemen nach einer Operation.",
+                "Bei Narben nach Verbrennungen.",
+                "Bei spannenden, ziehenden, schmerzhaften oder rötlich-violetten Narben.",
+                "Wenn die Narbe die Beweglichkeit eines Körperbereichs einschränkt.",
+              ],
+            },
+            {
+              heading: "Mögliche Folgen unbehandelter Narben",
+              bullets: [
+                "Unbehandelte Narben können verkleben und chronische Schmerzen, Bewegungseinschränkungen, Beschwerden im unteren Rücken, Verstopfung oder Ödeme verursachen.",
+              ],
+            },
+            {
+              heading: "Narbenbildungsdefekte",
+              bullets: [
+                "Atroph: Die Haut ist auseinandergezogen oder eingerissen.",
+                "Hypertroph: Die Narbe ist erhaben, aber nur über der Wunde, rötlich und fest.",
+                "Keloid: Die Narbe ist erhaben, wächst weiter, glänzend weiß und hart.",
+                "Kontraktur: Die Narbe zieht das Gewebe nach innen.",
+              ],
+            },
+            {
+              heading: "Über Narben und Adhäsionen",
+              bullets: [
+                "Nach Immobilisation kann ein chaotisches Bindegewebsnetz im Bewegungsapparat, in der Bauchhöhle oder im Brustraum entstehen.",
+                "Es kann Schmerzen verursachen oder auch schmerzfrei bleiben.",
+                "Am häufigsten im Becken, in der Bauchhöhle und im Bereich Herz / Perikard.",
+                "In etwa 10 % der Fälle bestehen Adhäsionen auch ohne Operation, besonders ab 30 Jahren und bei sitzender Lebensweise.",
+                "30–40 % bemerken nie Beschwerden, 60–70 % entwickeln jedoch häufiger Darm- und Beckenorganprobleme sowie Beinödeme.",
               ],
             },
           ],
@@ -738,7 +937,48 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Általános leírás",
               paragraphs: [
-                "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége.",
+                "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége, amely magában foglalja a manuális technikákat (masszázs, mobilizálás). Célja a feszülés oldása, a letapadások megszüntetése, a vérkeringés fokozása és a hegek láthatóságának csökkentése. A kezelés elengedhetetlen műtétek (pl. császármetszés) után a mozgásterjedelem visszaállításához.",
+              ],
+            },
+            {
+              heading: "A hegkezelés főbb módszerei",
+              bullets: [
+                "Manuális hegkezelés/masszázs: a szakember által végzett, vagy otthon megtanulható, a hegszövet finom, körkörös, majd mélyebb rétegeket is érintő kimozgatása, kézi technikák",
+                "Köpölyözés és fascia technikák: A mélyebben letapadt hegek fellazítására használhatunk köpölyt, flosst, és FDM technikákat, valamint dolgozhatunk a hegkezelö pálcánkkal, alkalmazhatunk kienzio tape-t.",
+              ],
+            },
+            {
+              heading: "Mikor ajánlott?",
+              bullets: [
+                "Műtéti hegek (császármetszés, laporoszkópia) letapadása esetén, illetve mütét után fellépö ödéma esetén.",
+                "Égési sérülések utáni hegek kezelésére.",
+                "Feszülő, húzódó, fájdalmas, vagy vöröses-lilás hegek esetén.",
+                "Ha a heg korlátozza az érintett testrész mozgását.",
+              ],
+            },
+            {
+              heading: "Szövődmények",
+              bullets: [
+                "A kezeletlen heg letapadhat, ami krónikus fájdalmat, mozgáskorlátozottságot, vagy akár deréktáji panaszokat, székrekedést, ödémát is okozhat.",
+              ],
+            },
+            {
+              heading: "Hegesedési defektusok",
+              bullets: [
+                "Atróf: a bőr szétnyúlt, széjjelszakad",
+                "Hipertróf: a heg kiemelkedő, de csak a seb fölött, vöröses, kemény (vörös kukac)",
+                "Keloid: a heg kiemelkedő, folyton növő a seb, csillogó fehér, kemény",
+                "Kontratúrás: behúz a mélybe",
+              ],
+            },
+            {
+              heading: "Hegekröl és az adhéziókról (összetapadás)",
+              bullets: [
+                "immobilizálást követően létrejött kaotikus kötőszövetes háló mozgásszervben, hasüregben, mellüregben egyaránt",
+                "Fájhat vagy nem",
+                "Leggyakoribb: medencében, hasüregben, szív-pericardium területén",
+                "10%-ban akkor is van, ha soha nem volt operálva, 30 fölött, ülő életmódnál!",
+                "30-40%-ban soha nem fog zavarni, 60-70%-ban leggyakrabban bélelhalás és medence belszervi panaszokat okoz, valamint lábi ödémásodást.",
               ],
             },
           ],
@@ -772,7 +1012,8 @@ export default function ChristinaMassageWebsite() {
     }),
     []
   );
-    return (
+
+  return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 lg:px-10">
@@ -984,17 +1225,25 @@ export default function ChristinaMassageWebsite() {
 
                     <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
                       <div className="flex h-full min-h-[440px] w-full items-center justify-center bg-white">
-                        <img
-                          src={service.image}
-                          alt={service.title}
-                          className={`${
-                            service.key === "champi"
-                              ? "h-[280px] w-auto object-contain"
-                              : service.key === "individual"
-                              ? "max-h-[380px] w-auto object-contain p-4"
-                              : "h-full w-full object-cover"
-                          }`}
-                        />
+                        {service.key === "champi" ? (
+                          <img
+                            src={service.image}
+                            alt={service.title}
+                            className="h-full min-h-[440px] w-full object-cover object-center"
+                          />
+                        ) : service.key === "individual" ? (
+                          <img
+                            src={service.image}
+                            alt={service.title}
+                            className="h-full min-h-[440px] w-full object-cover object-center"
+                          />
+                        ) : (
+                          <img
+                            src={service.image}
+                            alt={service.title}
+                            className="h-full min-h-[440px] w-full object-cover"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1026,7 +1275,7 @@ export default function ChristinaMassageWebsite() {
                     alt={item.title}
                     className={`h-full w-full ${
                       item.key === "scarTreatment"
-                        ? "object-contain bg-stone-50 p-3"
+                        ? "object-cover object-center"
                         : "object-cover"
                     }`}
                   />
