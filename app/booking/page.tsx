@@ -33,6 +33,11 @@ type BlockedTime = {
   note?: string | null;
 };
 
+type ExistingBooking = {
+  booking_time: string;
+  duration_minutes: number;
+};
+
 const services: Service[] = [
   {
     key: "swedish",
@@ -109,10 +114,7 @@ const services: Service[] = [
       de: "Champi – Indische Kopfmassage",
       hu: "Champi – indiai fejmasszázs",
     },
-    options: [
-      { duration: 45, price: 45 },
-      { duration: 60, price: 60 },
-    ],
+    options: [{ duration: 45, price: 45 }],
   },
   {
     key: "scar-treatment",
@@ -128,27 +130,61 @@ const services: Service[] = [
 ];
 
 const slotTemplate = [
-  { time: "10:00" },
-  { time: "11:15" },
-  { time: "12:30" },
-  { time: "14:15" },
-  { time: "15:30" },
-  { time: "16:45" },
+  { time: "09:00" },
+  { time: "10:15" },
+  { time: "11:30" },
+  { time: "12:45" },
+  { time: "14:00" },
+  { time: "15:15" },
+  { time: "16:30" },
+  { time: "17:45" },
+  { time: "19:00" },
 ];
+
+const LAST_END_TIME_MINUTES = 20 * 15; // 20:15, damit 19:00 + 75 noch möglich bleibt
 
 function timeToMinutes(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
   return hours * 60 + minutes;
 }
 
-function isSlotBlocked(slotTime: string, blockedTimes: BlockedTime[]) {
-  const slotMinutes = timeToMinutes(slotTime);
+function rangesOverlap(
+  startA: number,
+  endA: number,
+  startB: number,
+  endB: number
+) {
+  return startA < endB && endA > startB;
+}
 
-  return blockedTimes.some((block) => {
-    const start = timeToMinutes(block.start_time);
-    const end = timeToMinutes(block.end_time);
-    return slotMinutes >= start && slotMinutes < end;
+function isSlotUnavailable(
+  slotTime: string,
+  duration: number,
+  blockedTimes: BlockedTime[],
+  existingBookings: ExistingBooking[]
+) {
+  const slotStart = timeToMinutes(slotTime);
+  const slotEnd = slotStart + duration;
+
+  if (slotEnd > LAST_END_TIME_MINUTES) {
+    return true;
+  }
+
+  const overlapsBlockedTime = blockedTimes.some((block) => {
+    const blockStart = timeToMinutes(block.start_time);
+    const blockEnd = timeToMinutes(block.end_time);
+    return rangesOverlap(slotStart, slotEnd, blockStart, blockEnd);
   });
+
+  if (overlapsBlockedTime) return true;
+
+  const overlapsExistingBooking = existingBookings.some((booking) => {
+    const bookingStart = timeToMinutes(booking.booking_time);
+    const bookingEnd = bookingStart + booking.duration_minutes;
+    return rangesOverlap(slotStart, slotEnd, bookingStart, bookingEnd);
+  });
+
+  return overlapsExistingBooking;
 }
 
 export default function BookingPage() {
@@ -167,7 +203,7 @@ export default function BookingPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [existingBookings, setExistingBookings] = useState<ExistingBooking[]>([]);
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -291,7 +327,8 @@ export default function BookingPage() {
           : "Ezt az időpontot éppen most más foglalta le. Kérjük válassz másik időpontot.",
     };
   }, [language]);
-    useEffect(() => {
+
+  useEffect(() => {
     const today = new Date();
     const y = today.getFullYear();
     const m = `${today.getMonth() + 1}`.padStart(2, "0");
@@ -354,14 +391,14 @@ export default function BookingPage() {
     const loadUnavailableTimes = async () => {
       const { data: bookingsData, error: bookingsError } = await supabase
         .from("bookings")
-        .select("booking_time")
+        .select("booking_time, duration_minutes")
         .eq("booking_date", bookingDate)
         .in("status", ["requested", "confirmed"]);
 
       if (!bookingsError && bookingsData) {
-        setBookedSlots(bookingsData.map((item) => item.booking_time));
+        setExistingBookings(bookingsData as ExistingBooking[]);
       } else {
-        setBookedSlots([]);
+        setExistingBookings([]);
       }
 
       const { data: blockedData, error: blockedError } = await supabase
@@ -455,11 +492,19 @@ export default function BookingPage() {
       return;
     }
 
-    if (selectedSlotTime && isSlotBlocked(selectedSlotTime, blockedTimes)) {
+    if (
+      selectedSlotTime &&
+      isSlotUnavailable(
+        selectedSlotTime,
+        selectedOption.duration,
+        blockedTimes,
+        existingBookings
+      )
+    ) {
       setStatusMessage(
         language === "de"
-          ? "Dieser Zeitraum ist blockiert. Bitte wähle eine andere Uhrzeit."
-          : "Ez az időszak le van zárva. Kérjük válassz másik időpontot.",
+          ? "Dieser Zeitraum ist nicht verfügbar. Bitte wähle eine andere Uhrzeit."
+          : "Ez az időszak nem elérhető. Kérjük válassz másik időpontot.",
         "error"
       );
       return;
@@ -514,9 +559,13 @@ export default function BookingPage() {
         return;
       }
 
-      setBookedSlots((prev) =>
-        prev.includes(selectedSlotTime!) ? prev : [...prev, selectedSlotTime!]
-      );
+      setExistingBookings((prev) => [
+        ...prev,
+        {
+          booking_time: selectedSlotTime!,
+          duration_minutes: selectedOption.duration,
+        },
+      ]);
 
       setStatusMessage(t.bookingSuccess, "success");
       setSelectedSlotTime(null);
@@ -553,7 +602,8 @@ export default function BookingPage() {
       : messageType === "error"
       ? "border-red-200 bg-red-50 text-red-800"
       : "border-stone-200 bg-stone-50 text-stone-700";
-        return (
+
+  return (
     <div className="min-h-screen bg-[#f6efe5] text-stone-800">
       <header className="sticky top-0 z-50 border-b border-[#6f7d58] bg-[#7a8662]/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
@@ -665,7 +715,10 @@ export default function BookingPage() {
                   {selectedService.options.map((option, index) => (
                     <button
                       key={`${selectedService.key}-${option.duration}`}
-                      onClick={() => setSelectedOptionIndex(index)}
+                      onClick={() => {
+                        setSelectedOptionIndex(index);
+                        setSelectedSlotTime(null);
+                      }}
                       className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                         index === selectedOptionIndex
                           ? "border-[#567a57] bg-[#eef3e6] text-[#2e3a28]"
@@ -699,9 +752,12 @@ export default function BookingPage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {slotTemplate.map((slot) => {
-                    const booked = bookedSlots.includes(slot.time);
-                    const blocked = isSlotBlocked(slot.time, blockedTimes);
-                    const unavailable = booked || blocked;
+                    const unavailable = isSlotUnavailable(
+                      slot.time,
+                      selectedOption.duration,
+                      blockedTimes,
+                      existingBookings
+                    );
 
                     return (
                       <button
@@ -720,9 +776,7 @@ export default function BookingPage() {
                       >
                         <div className="text-lg font-semibold">{slot.time}</div>
                         <div className="mt-1 text-xs uppercase tracking-wide">
-                          {booked
-                            ? t.unavailable
-                            : blocked
+                          {unavailable
                             ? t.blocked
                             : selectedSlotTime === slot.time
                             ? t.selected

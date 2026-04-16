@@ -1,19 +1,33 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import {
-  sendAdminNotification,
-  sendCustomerConfirmation,
-} from "@/app/lib/email";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
 
-const supabaseServer = createClient(supabaseUrl, anonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
+function timeToMinutes(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function rangesOverlap(
+  startA: number,
+  endA: number,
+  startB: number,
+  endB: number
+) {
+  return startA < endB && endA > startB;
+}
+
+const LAST_END_TIME_MINUTES = 20 * 15; // 20:15
 
 export async function POST(req: Request) {
   try {
@@ -39,85 +53,114 @@ export async function POST(req: Request) {
       !date ||
       !time ||
       !duration ||
-      !price
+      price == null
     ) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Fehlende Buchungsdaten.",
-        },
+        { success: false, message: "Fehlende Buchungsdaten." },
         { status: 400 }
       );
     }
 
-    const { data, error } = await supabaseServer.rpc("create_booking", {
-      p_user_id: user_id,
-      p_full_name: name,
-      p_email: email,
-      p_service_name: service,
-      p_duration_minutes: duration,
-      p_price_eur: price,
-      p_booking_date: date,
-      p_booking_time: time,
-      p_accepted_terms: accepted_terms ?? false,
-    });
-
-    if (error) {
-      console.error("create_booking rpc error:", error);
-
+    if (!accepted_terms) {
       return NextResponse.json(
-        {
-          success: false,
-          message: error.message || "Fehler beim Speichern der Buchung.",
-          code: (error as any)?.code ?? null,
-          details: (error as any)?.details ?? null,
-          hint: (error as any)?.hint ?? null,
-        },
+        { success: false, message: "Die Buchungsbedingungen wurden nicht akzeptiert." },
+        { status: 400 }
+      );
+    }
+
+    const requestStart = timeToMinutes(time);
+    const requestEnd = requestStart + Number(duration);
+
+    if (requestEnd > LAST_END_TIME_MINUTES) {
+      return NextResponse.json(
+        { success: false, message: "Dieser Termin liegt außerhalb der verfügbaren Zeiten." },
+        { status: 400 }
+      );
+    }
+
+    const { data: existingBookings, error: bookingsError } = await supabase
+      .from("bookings")
+      .select("booking_time, duration_minutes")
+      .eq("booking_date", date)
+      .in("status", ["requested", "confirmed"]);
+
+    if (bookingsError) {
+      return NextResponse.json(
+        { success: false, message: bookingsError.message },
         { status: 500 }
       );
     }
 
-    try {
-      await sendAdminNotification({
-        name,
-        email,
-        service,
-        date,
-        time,
-        duration,
-      });
-    } catch (adminMailError) {
-      console.error("Admin-Mail fehlgeschlagen:", adminMailError);
+    const overlapsBooking = (existingBookings ?? []).some((booking) => {
+      const bookingStart = timeToMinutes(booking.booking_time);
+      const bookingEnd = bookingStart + booking.duration_minutes;
+      return rangesOverlap(requestStart, requestEnd, bookingStart, bookingEnd);
+    });
+
+    if (overlapsBooking) {
+      return NextResponse.json(
+        { success: false, message: "Dieser Zeitraum ist bereits belegt." },
+        { status: 409 }
+      );
     }
 
-    try {
-      await sendCustomerConfirmation({
-        name,
-        email,
-        service,
-        date,
-        time,
-        duration,
-      });
-    } catch (customerMailError) {
-      console.error("Kunden-Mail fehlgeschlagen:", customerMailError);
+    const { data: blockedTimes, error: blockedError } = await supabase
+      .from("blocked_times")
+      .select("start_time, end_time")
+      .eq("block_date", date);
+
+    if (blockedError) {
+      return NextResponse.json(
+        { success: false, message: blockedError.message },
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json(
+    const overlapsBlocked = (blockedTimes ?? []).some((block) => {
+      const blockStart = timeToMinutes(block.start_time);
+      const blockEnd = timeToMinutes(block.end_time);
+      return rangesOverlap(requestStart, requestEnd, blockStart, blockEnd);
+    });
+
+    if (overlapsBlocked) {
+      return NextResponse.json(
+        { success: false, message: "Dieser Zeitraum ist blockiert." },
+        { status: 409 }
+      );
+    }
+
+    const { data, error } = await supabase.from("bookings").insert([
       {
-        success: true,
-        data,
-        message: "Buchung erfolgreich gespeichert.",
+        user_id,
+        full_name: name,
+        email,
+        service_name: service,
+        booking_date: date,
+        booking_time: time,
+        duration_minutes: Number(duration),
+        price_eur: Number(price),
+        accepted_terms: Boolean(accepted_terms),
+        status: "requested",
       },
-      { status: 200 }
-    );
-  } catch (err: any) {
-    console.error("API bookings route error:", err);
+    ]);
 
+    if (error) {
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data,
+      message: "Buchung erfolgreich erstellt.",
+    });
+  } catch (error: any) {
     return NextResponse.json(
       {
         success: false,
-        message: err?.message || "Serverfehler bei der Buchung.",
+        message: error?.message || "Unbekannter Serverfehler.",
       },
       { status: 500 }
     );

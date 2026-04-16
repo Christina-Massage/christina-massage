@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+
 type Booking = {
   id: string;
+  user_id: string;
   service_name: string;
   duration_minutes: number;
   price_eur: number;
@@ -20,9 +22,23 @@ export default function MyBookingsPage() {
   const loadBookings = async () => {
     setLoading(true);
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setBookings([]);
+      setMessage("Bitte zuerst einloggen.");
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("bookings")
-      .select("*")
+      .select(
+        "id, user_id, service_name, duration_minutes, price_eur, booking_date, booking_time, status"
+      )
+      .eq("user_id", user.id)
       .order("booking_date", { ascending: true })
       .order("booking_time", { ascending: true });
 

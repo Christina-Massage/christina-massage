@@ -53,7 +53,7 @@ export default function AdminPage() {
 
   const [blockDate, setBlockDate] = useState(todayString());
   const [startTime, setStartTime] = useState("13:00");
-  const [endTime, setEndTime] = useState("14:15");
+  const [endTime, setEndTime] = useState("14:00");
   const [title, setTitle] = useState("Mittagspause");
   const [blockType, setBlockType] = useState("pause");
   const [note, setNote] = useState("");
@@ -155,7 +155,8 @@ export default function AdminPage() {
     if (!isAdmin) return;
     loadAdminData(selectedDate);
   }, [selectedDate, isAdmin]);
-    const handleLogout = async () => {
+
+  const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/booking";
   };
@@ -167,7 +168,7 @@ export default function AdminPage() {
     setSaving(true);
 
     try {
-      const response = await fetch("/api/admin/update-booking-status", {
+      const response = await fetch("/api/update-booking-status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +206,7 @@ export default function AdminPage() {
       } else {
         setStatusMessage("Buchungsstatus erfolgreich aktualisiert.", "success");
       }
-    } catch (error) {
+    } catch {
       setSaving(false);
       setStatusMessage("Es ist ein unerwarteter Fehler aufgetreten.", "error");
     }
@@ -372,7 +373,8 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-                    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
             <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
               <h2 className="text-2xl font-semibold text-stone-900">
                 Buchungen am {selectedDate}
