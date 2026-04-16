@@ -1,9 +1,10 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import MonthlyCalendar from "@/app/components/booking/MonthlyCalendar";
 import { supabase } from "../lib/supabase";
 import {
   CalendarBlock,
