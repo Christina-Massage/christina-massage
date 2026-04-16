@@ -473,25 +473,6 @@ export default function ChristinaMassageWebsite() {
               "Keine Ausfallzeit",
             ],
           },
-          {
-            heading: "Mögliche Ergebnisse",
-            bullets: [
-              "Verbesserung der Beckenbodenkraft",
-              "Unterstützung bei Harninkontinenz",
-              "Aktivierung und Kräftigung des Gewebes",
-              "Verbesserung von Kontrolle und Körpergefühl",
-            ],
-          },
-          {
-            heading: "Kontraindikationen",
-            bullets: [
-              "Schwangerschaft",
-              "Elektronische Implantate wie Pacemaker",
-              "Metallische Implantate im Behandlungsbereich",
-              "Frische Operationen im Beckenbereich",
-              "Akute Entzündungen oder Blutungen",
-            ],
-          },
         ],
       },
       hu: {
@@ -513,25 +494,6 @@ export default function ChristinaMassageWebsite() {
               "Diszkrét, ruhában végezhető",
               "Csak 30 perc egy alkalom",
               "Nincs felépülési idő",
-            ],
-          },
-          {
-            heading: "Lehetséges eredmények",
-            bullets: [
-              "A medencefenék erősítése",
-              "Segítség vizeletinkontinencia esetén",
-              "A szövetek aktiválása és erősítése",
-              "A kontroll és testérzet javítása",
-            ],
-          },
-          {
-            heading: "Ellenjavallatok",
-            bullets: [
-              "Terhesség",
-              "Pacemaker vagy más elektronikus implantátum",
-              "Fém implantátum a kezelési területen",
-              "Friss kismedencei műtét",
-              "Akut gyulladás vagy vérzés",
             ],
           },
         ],
@@ -567,6 +529,37 @@ export default function ChristinaMassageWebsite() {
                 "Szükség esetén az FDM, a köpölyözés vagy a flossing is beépíthető a kezelésbe, attól függően, hogy mire van szükség.",
               ],
             },
+            {
+              heading: "Az egyéni masszázs céljai",
+              bullets: [
+                "Az izomfeszültség egyénre szabott enyhítése",
+                "Fájdalomcsillapítás specifikus betegségek esetén",
+                "A vérkeringés és az anyagcsere elősegítése",
+                "A mobilitás javítása",
+                "Stresszcsökkentés és mentális relaxáció",
+                "A regeneráció támogatása fizikai megterhelés után",
+                "Az általános jólét növelése",
+              ],
+            },
+            {
+              heading: "Tipikus technikák",
+              bullets: [
+                "Simítás",
+                "Gyúrás",
+                "Dörzsölés",
+                "Triggerpont terápia",
+                "Nyújtások és mobilizációk",
+                "Fasciális technikák",
+              ],
+            },
+            {
+              heading: "A kezelés időtartama",
+              bullets: [
+                "60 perc – Az egyes problémás területek célzott kezelése",
+                "90 perc – Átfogó, személyre szabott masszázs",
+                "120 perc – Intenzív teljes testes kezelés, amely a kellemetlenségek több területére összpontosít",
+              ],
+            },
           ],
         },
       },
@@ -592,58 +585,60 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A nyak- és hátmasszázs egy célzott részleges testmasszázs, amely kifejezetten a feszültség által leggyakrabban érintett testrészekre összpontosít.",
-                "A hosszan tartó ülés, a stressz, az ismétlődő megterhelés vagy a fizikai túlterhelés gyakran izomfeszültséghez vezet a nyakban, a vállakban és a hátban.",
-                "Ez a fajta masszázs célja a fájdalom enyhítése, a feszültség oldása és az általános közérzet javítása.",
+                "A hosszan tartó ülés, a stressz, az ismétlődő megterhelés vagy a fizikai túlterhelés gyakran izomfeszültséghez vezet a nyakban, a vállakban és a hátban. Ez a fajta masszázs célja a fájdalom enyhítése, a feszültség oldása és az általános közérzet javítása.",
               ],
             },
-          ],
-        },
-      },
-
-      vagus: {
-        de: {
-          title: "Vagus-Massage",
-          sections: [
             {
-              heading: "Allgemeine Beschreibung",
-              paragraphs: [
-                "Die Vagus-Massage ist eine sanfte und tief entspannende Behandlung, die darauf abzielt, den Vagusnerv zu stimulieren.",
+              heading: "Nyak- és hátmasszázs céljai",
+              bullets: [
+                "A nyak és a hát izomfeszültségének enyhítése",
+                "A feszültség és a rossz testtartás okozta fájdalom csillapítása",
+                "Az izmok vérkeringésének és oxigénellátásának elősegítése",
+                "A nyak és a vállak mozgékonyságának javítása",
+                "Stresszcsökkentés és mentális relaxáció",
+                "Fejfájás és feszültség okozta fejfájás megelőzése",
+                "Az egészséges testtartás támogatása",
               ],
             },
-          ],
-        },
-        hu: {
-          title: "Vagus masszázs",
-          sections: [
             {
-              heading: "Általános leírás",
-              paragraphs: [
-                "A vagus masszázs egy gyengéd és mélyen ellazító kezelés, amelynek célja a vagus ideg stimulálása.",
+              heading: "Tipikus masszázstechnikák",
+              bullets: [
+                "Simítás",
+                "Gyúrás",
+                "Dörzsölés",
+                "Triggerpont terápia",
+                "Nyújtások és mobilizációk",
               ],
             },
-          ],
-        },
-      },
-
-      champi: {
-        de: {
-          title: "Champi Kopfmassage",
-          sections: [
             {
-              heading: "Allgemeine Beschreibung",
-              paragraphs: [
-                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda.",
+              heading: "A kezelés időtartama",
+              bullets: [
+                "45 perc – Rövid, célzott kezelés akut feszültség esetén",
+                "60 perc – Intenzívebb kezelés, amely a problémás területekre összpontosít",
+                "75 perc – Átfogó és különösen pihentető terápia",
               ],
             },
-          ],
-        },
-        hu: {
-          title: "Champi fejmasszázs",
-          sections: [
             {
-              heading: "Általános leírás",
-              paragraphs: [
-                "A Champi fejmasszázs, más néven indiai fejmasszázs, egy hagyományos kezelés, amely az indiai ájurvéda gyógyító művészetéből ered.",
+              heading: "Pozitív hatások",
+              bullets: [
+                "Izommerevség és fájdalom csökkentése",
+                "Javuló testtartás",
+                "Mozgástartomány növelése",
+                "A paraszimpatikus idegrendszer aktiválása",
+                "Ellazulás és belső béke elősegítése",
+                "Javuló alvásminőség",
+              ],
+            },
+            {
+              heading: "Ellenjavallatok",
+              bullets: [
+                "Akut gyulladás vagy fertőzés",
+                "Láz",
+                "Friss vagy műtét utáni sérülések vagy műtétek",
+                "Akut porckorongsérv",
+                "Trombózis vagy súlyos érbetegség",
+                "Nyílt sebek vagy bőrsérülések betegségek",
+                "Súlyos neurológiai rendellenességek",
               ],
             },
           ],
@@ -744,6 +739,31 @@ export default function ChristinaMassageWebsite() {
               heading: "Általános leírás",
               paragraphs: [
                 "A hegkezelés a hegszövet esztétikai és funkcionális javítását célzó eljárások összessége.",
+              ],
+            },
+          ],
+        },
+      },
+
+      champi: {
+        de: {
+          title: "Champi Kopfmassage",
+          sections: [
+            {
+              heading: "Allgemeine Beschreibung",
+              paragraphs: [
+                "Die Champi Kopfmassage, auch bekannt als indische Kopfmassage, ist eine traditionelle Behandlung mit Ursprung in der indischen Heilkunst des Ayurveda.",
+              ],
+            },
+          ],
+        },
+        hu: {
+          title: "Champi fejmasszázs",
+          sections: [
+            {
+              heading: "Általános leírás",
+              paragraphs: [
+                "A Champi fejmasszázs, más néven indiai fejmasszázs, egy hagyományos kezelés, amely az indiai ájurvéda gyógyító művészetéből ered.",
               ],
             },
           ],
@@ -963,17 +983,19 @@ export default function ChristinaMassageWebsite() {
                     </div>
 
                     <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(120,100,80,0.12)]">
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className={`h-full min-h-[440px] w-full ${
-                          service.key === "champi"
-                            ? "object-contain bg-[#f3eee6] p-6"
-                            : service.key === "individual"
-                            ? "object-contain bg-white p-4"
-                            : "object-cover"
-                        }`}
-                      />
+                      <div className="flex h-full min-h-[440px] w-full items-center justify-center bg-white">
+                        <img
+                          src={service.image}
+                          alt={service.title}
+                          className={`${
+                            service.key === "champi"
+                              ? "h-[280px] w-auto object-contain"
+                              : service.key === "individual"
+                              ? "max-h-[380px] w-auto object-contain p-4"
+                              : "h-full w-full object-cover"
+                          }`}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
