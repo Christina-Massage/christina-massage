@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import {
+  sendCustomerBookingRequestEmail,
+  sendOwnerBookingRequestEmail,
+} from "@/app/lib/email";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -9,13 +13,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
     "Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
   );
 }
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
 
 function timeToMinutes(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
@@ -41,6 +38,40 @@ const LAST_END_TIME_MINUTES = 20 * 60 + 15;
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "").trim();
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: "Nicht autorisiert." },
+        { status: 401 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return NextResponse.json(
+        { success: false, message: "Ungültige Sitzung." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
 
     const {
@@ -68,6 +99,13 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { success: false, message: "Fehlende Buchungsdaten." },
         { status: 400 }
+      );
+    }
+
+    if (user.id !== user_id) {
+      return NextResponse.json(
+        { success: false, message: "Ungültige Benutzerzuordnung." },
+        { status: 403 }
       );
     }
 
@@ -171,13 +209,38 @@ export async function POST(req: Request) {
           status: "requested",
         },
       ])
-      .select();
+      .select()
+      .single();
 
     if (error) {
       return NextResponse.json(
         { success: false, message: error.message },
         { status: 500 }
       );
+    }
+
+    try {
+      await sendCustomerBookingRequestEmail({
+        name,
+        email,
+        service,
+        date,
+        time,
+        duration: Number(duration),
+        price: Number(price),
+      });
+
+      await sendOwnerBookingRequestEmail({
+        name,
+        email,
+        service,
+        date,
+        time,
+        duration: Number(duration),
+        price: Number(price),
+      });
+    } catch (mailError) {
+      console.error("E-Mail Fehler:", mailError);
     }
 
     return NextResponse.json({
