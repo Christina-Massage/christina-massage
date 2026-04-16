@@ -4,37 +4,19 @@ import {
   sendCustomerBookingRequestEmail,
   sendOwnerBookingRequestEmail,
 } from "@/app/lib/email";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
-  );
-}
-
-function timeToMinutes(value: string) {
-  const [hours, minutes] = value.split(":").map(Number);
-  return hours * 60 + minutes;
-}
-
-function rangesOverlap(
-  startA: number,
-  endA: number,
-  startB: number,
-  endB: number
-) {
-  return startA < endB && endA > startB;
-}
+import {
+  CalendarBlock,
+  CalendarBooking,
+  LAST_END_TIME_MINUTES,
+  rangesOverlap,
+  timeToMinutes,
+} from "@/app/lib/booking-utils";
 
 function isWeekend(dateString: string) {
   const date = new Date(`${dateString}T12:00:00`);
   const day = date.getDay();
   return day === 0 || day === 6;
 }
-
-const LAST_END_TIME_MINUTES = 20 * 60 + 15;
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +30,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !anonKey) {
+      return NextResponse.json(
+        { success: false, message: "Supabase Konfiguration fehlt." },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, anonKey, {
       global: {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -142,20 +134,32 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: existingBookings, error: bookingsError } = await supabase
-      .from("bookings")
-      .select("booking_time, duration_minutes")
-      .eq("booking_date", date)
-      .in("status", ["requested", "confirmed"]);
+    const availabilityResponse = await fetch(
+      `${new URL(req.url).origin}/api/calendar-availability?date=${date}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    if (bookingsError) {
+    const availability = await availabilityResponse.json();
+
+    if (!availabilityResponse.ok) {
       return NextResponse.json(
-        { success: false, message: bookingsError.message },
+        {
+          success: false,
+          message:
+            availability?.message || "Verfügbarkeiten konnten nicht geladen werden.",
+        },
         { status: 500 }
       );
     }
 
-    const overlapsBooking = (existingBookings ?? []).some((booking) => {
+    const existingBookings = (availability.bookings || []) as CalendarBooking[];
+    const blocks = (availability.blocks || []) as CalendarBlock[];
+
+    const overlapsBooking = existingBookings.some((booking) => {
       const bookingStart = timeToMinutes(booking.booking_time);
       const bookingEnd = bookingStart + booking.duration_minutes;
       return rangesOverlap(requestStart, requestEnd, bookingStart, bookingEnd);
@@ -168,25 +172,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: blockedTimes, error: blockedError } = await supabase
-      .from("blocked_times")
-      .select("start_time, end_time")
-      .eq("block_date", date);
-
-    if (blockedError) {
-      return NextResponse.json(
-        { success: false, message: blockedError.message },
-        { status: 500 }
-      );
-    }
-
-    const overlapsBlocked = (blockedTimes ?? []).some((block) => {
+    const overlapsBlock = blocks.some((block) => {
       const blockStart = timeToMinutes(block.start_time);
       const blockEnd = timeToMinutes(block.end_time);
       return rangesOverlap(requestStart, requestEnd, blockStart, blockEnd);
     });
 
-    if (overlapsBlocked) {
+    if (overlapsBlock) {
       return NextResponse.json(
         { success: false, message: "Dieser Zeitraum ist blockiert." },
         { status: 409 }
