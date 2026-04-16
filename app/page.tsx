@@ -709,9 +709,9 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Typische Massagetechniken",
               bullets: [
-                "Effleurage (Streichungen)",
-                "Petrissage (Knetungen)",
-                "Friktionen (Reibungen)",
+                "Streichungen",
+                "Knetungen",
+                "Reibungen",
                 "Triggerpunkt-Therapie",
                 "Dehnungen und Mobilisationen",
               ],
@@ -774,9 +774,9 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Tipikus masszázstechnikák",
               bullets: [
-                "Effleurage (simogatás)",
-                "Petrissage (gyúrás)",
-                "Dörzsölés (frikcó)",
+                "simogatás",
+                "gyúrás",
+                "Dörzsölés ",
                 "Triggerpont terápia",
                 "Nyújtások és mobilizációk",
               ],
@@ -841,12 +841,12 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Typische Techniken",
               bullets: [
-                "Effleurage (Streichungen)",
-                "Petrissage (Knetungen)",
-                "Friktionen (Reibungen)",
+                "Streichungen",
+                "Knetungen",
+                "Reibungen",
                 "Triggerpunkt-Therapie",
                 "Dehnungen und Mobilisationen",
-                "Fasziale Techniken",
+                "Fasziale Techniken (FDM, Flossing, Schöpfen)",
               ],
             },
             {
@@ -873,7 +873,7 @@ export default function ChristinaMassageWebsite() {
               heading: "Az egyéni masszázs céljai",
               bullets: [
                 "Az izomfeszültség egyénre szabott enyhítése",
-                "Fájdalomcsillapítás specifikus betegségek esetén",
+                "Fájdalomcsillapítás specifikus panasz esetén",
                 "A vérkeringés és az anyagcsere elősegítése",
                 "A mobilitás javítása",
                 "Stresszcsökkentés és mentális relaxáció",
@@ -884,12 +884,12 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Tipikus technikák",
               bullets: [
-                "Effleurage (simogatás)",
-                "Petrissage (gyúrás)",
-                "Dörzsölés (frikcó)",
+                "simogatás",
+                "gyúrás",
+                "Dörzsölés ",
                 "Triggerpont terápia",
                 "Nyújtások és mobilizációk",
-                "Fasciális technikák",
+                "Fasciális technikák Flossing,köpöly,FDM kezeles",
               ],
             },
             {
@@ -1036,7 +1036,10 @@ export default function ChristinaMassageWebsite() {
                 "A nyirokkeringés támogatása",
                 "A duzzanatok csökkentése",
                 "A szövetek tehermentesítése",
-                "A regeneráció gyengéd támogatása",
+                "A immunrendszer támogatása",
+                "duzzanat okozta fájdalomcsillapitás",
+                "A méregtelenítés elösegítése",
+                "Mély ellazulás és stresszcsökkentést",
               ],
             },
             {
@@ -1087,6 +1090,7 @@ export default function ChristinaMassageWebsite() {
               paragraphs: [
                 "A vagus masszázs egy gyengéd és mélyen ellazító kezelés, amelynek célja az idegrendszer megnyugtatása és a test mély regenerációjának támogatása.",
                 "A nyugodt, figyelmes érintések támogatják a paraszimpatikus szabályozást.",
+                "A nyak, a torok, a fej és az arc célzott, nyugtató érintésein keresztül aktiválódik a paraszimpatikus idegrendszer – más néven a test nyugalmi és regenerációs üzemmódja.",
               ],
             },
             {
@@ -1095,7 +1099,13 @@ export default function ChristinaMassageWebsite() {
                 "A stressz és belső feszültség csökkentése",
                 "A nyugalom és egyensúly támogatása",
                 "A regeneráció elősegítése",
-                "A testérzet javítása",
+                "A paraszimpatikus idegrendszer aktiválása",
+                "A belső béke és nyugalom elősegítése",
+                "Az alvásminőség javítása",
+                "Az érzelmi egyensúly támogatása",
+                "A pulzusszám szabályozása",
+                "Az emésztés elősegítése",
+                "A feszültség okozta fejfájás enyhítése",
               ],
             },
             {
@@ -1137,7 +1147,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Dauer der Behandlung",
               bullets: [
                 "45 Minuten – Umfassende Massage von Kopf, Nacken und Schultern",
-                "60 Minuten – Intensivere Behandlung mit zusätzlicher Gesichtsmassage",
               ],
             },
           ],
@@ -1169,7 +1178,6 @@ export default function ChristinaMassageWebsite() {
               heading: "Kezelés időtartama",
               bullets: [
                 "45 perc – A fej, a nyak és a vállak átfogó masszázsa",
-                "60 perc – Intenzív kezelés arcmasszázzsal",
               ],
             },
           ],
@@ -1316,7 +1324,7 @@ export default function ChristinaMassageWebsite() {
             {
               heading: "Allgemeine Beschreibung",
               paragraphs: [
-                "Das Schröpfen ist eine jahrtausendealte Vakuumtherapie, bei der mit Glas-, Silikon- oder Kunststoffbechern ein Unterdruck auf der Hautoberfläche erzeugt wird. Dieser Sogeffekt fördert die lokale Blut- und Lymphzirkulation, löst Muskelverhärtungen, lockert verklebtes Bindegewebe und unterstützt die Ausleitung von Stoffwechselabbauprodukten.",
+                "Schröpfen ist eine Vakuumtherapie mit jahrtausendealter Tradition. Dabei werden Glas-, Silikon- oder Kunststoffgläser verwendet, um auf der Hautoberfläche ein Vakuum zu erzeugen. Dieser Sog fördert die lokale Blut- und Lymphzirkulation, löst Muskelverhärtungen, lockert verklebtes Bindegewebe und unterstützt den Abtransport von Giftstoffen.",
               ],
             },
             {
@@ -1333,13 +1341,13 @@ export default function ChristinaMassageWebsite() {
               heading: "Schröpftechniken",
               bullets: [
                 "Trockenes / fixes Schröpfen: Die Schröpfgläser verbleiben für etwa 10–15 Minuten an einer Stelle.",
-                "Gleitendes / dynamisches Schröpfen: Auf eingeölter Haut werden die Schröpfgläser bewegt, wodurch ein massierender Effekt entsteht. Diese Technik wird auch als „große Rücken-Wellness“ bezeichnet und kann die Funktion der inneren Organe harmonisieren.",
+                "Gleitendes / dynamisches Schröpfen: Das Glas wird in massierenden Bewegungen über die eingeölte Haut bewegt. „Wohlbefinden für den Rücken“ harmonisiert die Funktion der inneren Organe.",
               ],
             },
             {
               heading: "Wichtige Hinweise",
               paragraphs: [
-                "Nach der Behandlung können häufig lilafarbene bis bläuliche Hautverfärbungen (Hämatome) auftreten, die in der Regel innerhalb von 2–3 Tagen von selbst abklingen.",
+                "Nach der Behandlung können violett-blaue Flecken (Blutungen) auftreten, die innerhalb von 2–3 Tagen von selbst abklingen. Nicht empfohlen bei Blutgerinnungsstörungen, Hauterkrankungen, großen Muttermalen, älteren Patienten mit pergamentartiger Haut, akuter Thrombose, akuten Krampfadern, Krebs, Osteoporose oder während der Schwangerschaft.",
               ],
             },
             {
@@ -1380,7 +1388,7 @@ export default function ChristinaMassageWebsite() {
               heading: "Köpölyözési technikák:",
               bullets: [
                 "Száraz/fix köpölyözés: A csészéket 10-15 percig egy helyen hagyják.",
-                'Csúszó/dinamikus köpölyözés: Olajos bőrfelületen a csészét mozgatják, masszázs jelleggel. "Nagy háti vellnes" amely a belsöszervek müködését egymáshoz hangolják.',
+                'Csúszó/dinamikus köpölyözés: Olajos bőrfelületen a csészét mozgatják, masszázs jelleggel. "Nagy háti wellness" amely a belsöszervek müködését egymáshoz hangolják.',
               ],
             },
             {
