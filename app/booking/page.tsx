@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 import MonthlyCalendar from "../components/booking/MonthlyCalendar";
 import {
@@ -110,7 +110,6 @@ const services: Service[] = [
 
 export default function BookingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [language, setLanguage] = useState<Language>("de");
   const [visibleMonth, setVisibleMonth] = useState<Date>(new Date());
@@ -312,11 +311,14 @@ export default function BookingPage() {
     );
   }, []);
 
-  useEffect(() => {
-    if (searchParams.get("auth") === "1") {
-      setShowAuth(true);
-    }
-  }, [searchParams]);
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("auth") === "1") {
+    setShowAuth(true);
+  }
+}, []);
 
   useEffect(() => {
     const loadSession = async () => {
