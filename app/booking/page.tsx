@@ -481,15 +481,140 @@ export default function BookingPage() {
   const handleBookingSubmit = async () => {
     setStatusMessage("", "info");
 
-    if (!bookingReady || !selectedDate || !selectedSlotTime) {
-      setStatusMessage(
-        language === "de"
-          ? "Bitte einloggen, Bedingungen bestätigen und einen freien Termin auswählen."
-          : "Kérjük jelentkezz be, fogadd el a feltételeket és válassz szabad időpontot.",
-        "error"
-      );
+    const handleBookingSubmit = async () => {
+  setStatusMessage("", "info");
+
+  if (!selectedDate || !selectedSlotTime) {
+    setStatusMessage(
+      language === "de"
+        ? "Bitte zuerst einen Tag und eine freie Uhrzeit auswählen."
+        : "Kérjük először válassz napot és szabad időpontot.",
+      "error"
+    );
+    return;
+  }
+
+  if (!acceptedTerms) {
+    setStatusMessage(
+      language === "de"
+        ? "Bitte akzeptiere zuerst die Buchungsbedingungen."
+        : "Kérjük fogadd el a foglalási feltételeket.",
+      "error"
+    );
+    return;
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.user) {
+    setShowAuth(true);
+    setStatusMessage(
+      language === "de"
+        ? "Bitte zuerst einloggen oder registrieren."
+        : "Kérjük először jelentkezz be vagy regisztrálj.",
+      "error"
+    );
+    return;
+  }
+
+  const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
+  if (!selectedSlot || selectedSlot.unavailable) {
+    setStatusMessage(
+      language === "de"
+        ? "Dieser Zeitraum ist nicht verfügbar."
+        : "Ez az időpont nem elérhető.",
+      "error"
+    );
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const user = session.user;
+    const finalName =
+      fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
+
+    const response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        name: finalName,
+        email: user.email ?? email.trim(),
+        service: selectedService.name[language],
+        date: selectedDate,
+        time: selectedSlotTime,
+        duration: selectedOption.duration,
+        price: selectedOption.price,
+        accepted_terms: acceptedTerms,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      if (
+        result?.message?.includes("duplicate key") ||
+        result?.message?.includes("23505")
+      ) {
+        setStatusMessage(t.duplicateError, "error");
+      } else {
+        setStatusMessage(result?.message || t.bookingError, "error");
+      }
       return;
     }
+
+    setStatusMessage(t.bookingSuccess, "success");
+    setAcceptedTerms(false);
+    setSelectedSlotTime(null);
+
+    const { data: bookingsData } = await supabase
+      .from("bookings")
+      .select(
+        "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+      )
+      .eq("booking_date", selectedDate)
+      .in("status", ["requested", "confirmed"])
+      .order("booking_time", { ascending: true });
+
+    setDailyBookings((bookingsData ?? []) as CalendarBooking[]);
+
+    const monthStart = getMonthStart(visibleMonth);
+    const monthEnd = getMonthEnd(visibleMonth);
+    const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
+    const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
+
+    const { data: monthBookingsData } = await supabase
+      .from("bookings")
+      .select(
+        "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+      )
+      .gte("booking_date", startKey)
+      .lte("booking_date", endKey)
+      .in("status", ["requested", "confirmed"]);
+
+    setCalendarBookings((monthBookingsData ?? []) as CalendarBooking[]);
+
+    setTimeout(() => {
+      router.push("/my-bookings");
+    }, 800);
+  } catch (error) {
+    console.error(error);
+    setStatusMessage(
+      language === "de"
+        ? "Es ist ein unerwarteter Fehler aufgetreten."
+        : "Váratlan hiba történt.",
+      "error"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
     const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
     if (!selectedSlot || selectedSlot.unavailable) {
@@ -721,7 +846,7 @@ export default function BookingPage() {
                           (block) => block.block_date === date
                         );
 
-                        return getDayStatus(date, dayBookings, dayBlocks);
+                        return getDayStatus(date, dayBookings, dayBlocks, selectedOption.duration);
                       }}
                     />
                   )}
@@ -974,16 +1099,38 @@ export default function BookingPage() {
               </div>
 
               <button
-                onClick={handleBookingSubmit}
-                disabled={!bookingReady || loading}
-                className={`mt-6 w-full rounded-2xl px-5 py-3 text-sm font-semibold transition ${
-                  bookingReady && !loading
-                    ? "bg-white text-[#405e3f] hover:opacity-90"
-                    : "cursor-not-allowed bg-white/20 text-white/60"
-                }`}
-              >
-                {loading ? t.saving : t.requestNow}
-              </button>
+  onClick={handleBookingSubmit}
+  disabled={!bookingReady || loading}
+  className={`mt-6 w-full rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+    bookingReady && !loading
+      ? "bg-white text-[#405e3f] hover:opacity-90"
+      : "cursor-not-allowed bg-white/20 text-white/60"
+  }`}
+>
+  {loading ? t.saving : t.requestNow}
+</button>
+
+{!bookingReady && (
+  <div className="mt-3 rounded-2xl bg-white/10 px-4 py-3 text-sm text-white/80">
+    {!isLoggedIn
+      ? language === "de"
+        ? "Bitte zuerst einloggen oder registrieren."
+        : "Kérjük először jelentkezz be vagy regisztrálj."
+      : !selectedDate
+      ? language === "de"
+        ? "Bitte zuerst einen Tag auswählen."
+        : "Kérjük először válassz napot."
+      : !selectedSlotTime
+      ? language === "de"
+        ? "Bitte eine freie Uhrzeit auswählen."
+        : "Kérjük válassz szabad időpontot."
+      : !acceptedTerms
+      ? language === "de"
+        ? "Bitte die Buchungsbedingungen bestätigen."
+        : "Kérjük fogadd el a foglalási feltételeket."
+      : ""}
+  </div>
+)}
 
               <Link
                 href="/my-bookings"
