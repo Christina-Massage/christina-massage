@@ -113,9 +113,7 @@ export default function MonthlyCalendar({
                   <div className="mt-3 text-[11px] leading-4 md:text-xs">
                     <div className="font-semibold">{meta.label}</div>
                     {meta.bookingCount > 0 && (
-                      <div className="mt-1">
-                        Termine: {meta.bookingCount}
-                      </div>
+                      <div className="mt-1">Termine: {meta.bookingCount}</div>
                     )}
                     {meta.blockCount > 0 && <div>Blocks: {meta.blockCount}</div>}
                   </div>

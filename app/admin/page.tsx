@@ -1,24 +1,46 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import MonthlyCalendar from "@/app/components/booking/MonthlyCalendar";
 import { supabase } from "../lib/supabase";
+import MonthlyCalendar from "../components/booking/MonthlyCalendar";
 import {
   CalendarBlock,
   CalendarBooking,
-  formatDateKey,
   getDailyEvents,
   getDayStatus,
+  getMonthEnd,
   getMonthStart,
   getTodayString,
 } from "@/app/lib/booking-utils";
 
 type BookingStatus = "requested" | "confirmed" | "cancelled";
 
-function monthKey(date: Date) {
-  return `${date.getFullYear()}-${`${date.getMonth() + 1}`.padStart(2, "0")}`;
-}
+type Booking = {
+  id: string;
+  full_name: string;
+  email: string;
+  service_name: string;
+  duration_minutes: number;
+  price_eur: number;
+  booking_date: string;
+  booking_time: string;
+  status: BookingStatus;
+  created_at?: string;
+};
+
+type BlockedTime = {
+  id: string;
+  block_date: string;
+  start_time: string;
+  end_time: string;
+  title: string;
+  block_type: string;
+  note: string | null;
+  created_at?: string;
+};
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
@@ -26,11 +48,13 @@ export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [sessionEmail, setSessionEmail] = useState("");
 
-  const [visibleMonth, setVisibleMonth] = useState(getMonthStart(new Date()));
+  const [visibleMonth, setVisibleMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(getTodayString());
 
   const [monthBookings, setMonthBookings] = useState<CalendarBooking[]>([]);
   const [monthBlocks, setMonthBlocks] = useState<CalendarBlock[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "info">(
@@ -39,11 +63,10 @@ export default function AdminPage() {
 
   const [blockDate, setBlockDate] = useState(getTodayString());
   const [startTime, setStartTime] = useState("13:00");
-  const [endTime, setEndTime] = useState("14:00");
+  const [endTime, setEndTime] = useState("14:15");
   const [title, setTitle] = useState("Mittagspause");
   const [blockType, setBlockType] = useState("pause");
   const [note, setNote] = useState("");
-  const [isFullDay, setIsFullDay] = useState(false);
 
   const setStatusMessage = (
     text: string,
@@ -60,45 +83,104 @@ export default function AdminPage() {
       ? "border-red-200 bg-red-50 text-red-800"
       : "border-stone-200 bg-stone-50 text-stone-700";
 
-  useEffect(() => {
-    setBlockDate(selectedDate);
-  }, [selectedDate]);
-
-  const loadAdminMonth = async (baseMonth: Date) => {
-    setLoading(true);
-
-    const { data: monthData, error } = await supabase.auth.getSession();
-
-    if (error || !monthData.session?.access_token) {
-      setLoading(false);
-      return;
-    }
-
-    const response = await fetch(
-      `/api/calendar-availability?month=${monthKey(baseMonth)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${monthData.session.access_token}`,
-        },
-      }
+  const sortedBookings = useMemo(() => {
+    return [...bookings].sort((a, b) =>
+      a.booking_time.localeCompare(b.booking_time)
     );
+  }, [bookings]);
 
-    const result = await response.json();
+  const sortedBlockedTimes = useMemo(() => {
+    return [...blockedTimes].sort((a, b) =>
+      a.start_time.localeCompare(b.start_time)
+    );
+  }, [blockedTimes]);
 
-    if (!response.ok) {
-      setStatusMessage(
-        result?.message || "Kalenderdaten konnten nicht geladen werden.",
-        "error"
-      );
-      setMonthBookings([]);
-      setMonthBlocks([]);
-      setLoading(false);
+  const dailyEvents = useMemo(() => {
+    return getDailyEvents(
+      bookings.map((item) => ({
+        booking_date: item.booking_date,
+        booking_time: item.booking_time,
+        duration_minutes: item.duration_minutes,
+        service_name: item.service_name,
+        full_name: item.full_name,
+        status: item.status,
+      })),
+      blockedTimes.map((item) => ({
+        block_date: item.block_date,
+        start_time: item.start_time,
+        end_time: item.end_time,
+        title: item.title,
+        block_type: item.block_type,
+        note: item.note,
+      }))
+    );
+  }, [bookings, blockedTimes]);
+
+  const loadMonthData = async (month: Date) => {
+    const monthStart = getMonthStart(month);
+    const monthEnd = getMonthEnd(month);
+
+    const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
+    const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
+
+    const { data: bookingsData, error: bookingsError } = await supabase
+      .from("bookings")
+      .select(
+        "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+      )
+      .gte("booking_date", startKey)
+      .lte("booking_date", endKey)
+      .in("status", ["requested", "confirmed"]);
+
+    if (bookingsError) {
+      setStatusMessage(bookingsError.message, "error");
       return;
     }
 
-    setMonthBookings(result.bookings ?? []);
-    setMonthBlocks(result.blocks ?? []);
-    setLoading(false);
+    const { data: blocksData, error: blocksError } = await supabase
+      .from("blocked_times")
+      .select("id, block_date, start_time, end_time, title, block_type, note")
+      .gte("block_date", startKey)
+      .lte("block_date", endKey);
+
+    if (blocksError) {
+      setStatusMessage(blocksError.message, "error");
+      return;
+    }
+
+    setMonthBookings((bookingsData ?? []) as CalendarBooking[]);
+    setMonthBlocks((blocksData ?? []) as CalendarBlock[]);
+  };
+
+  const loadDayData = async (date: string) => {
+    const { data: bookingsData, error: bookingsError } = await supabase
+      .from("bookings")
+      .select(
+        "id, full_name, email, service_name, duration_minutes, price_eur, booking_date, booking_time, status, created_at"
+      )
+      .eq("booking_date", date)
+      .order("booking_time", { ascending: true });
+
+    if (bookingsError) {
+      setStatusMessage(bookingsError.message, "error");
+      return;
+    }
+
+    const { data: blocksData, error: blocksError } = await supabase
+      .from("blocked_times")
+      .select(
+        "id, block_date, start_time, end_time, title, block_type, note, created_at"
+      )
+      .eq("block_date", date)
+      .order("start_time", { ascending: true });
+
+    if (blocksError) {
+      setStatusMessage(blocksError.message, "error");
+      return;
+    }
+
+    setBookings((bookingsData ?? []) as Booking[]);
+    setBlockedTimes((blocksData ?? []) as BlockedTime[]);
   };
 
   useEffect(() => {
@@ -110,7 +192,7 @@ export default function AdminPage() {
       } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        window.location.href = "/booking";
+        window.location.href = "/booking?auth=1";
         return;
       }
 
@@ -129,7 +211,9 @@ export default function AdminPage() {
       }
 
       setIsAdmin(true);
-      await loadAdminMonth(visibleMonth);
+      await loadMonthData(visibleMonth);
+      await loadDayData(selectedDate);
+      setLoading(false);
     };
 
     bootstrap();
@@ -137,34 +221,18 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isAdmin) return;
-    loadAdminMonth(visibleMonth);
+    loadMonthData(visibleMonth);
   }, [visibleMonth, isAdmin]);
 
-  const bookingsByDate = useMemo(() => {
-    return monthBookings.reduce<Record<string, CalendarBooking[]>>((acc, item) => {
-      acc[item.booking_date] = acc[item.booking_date]
-        ? [...acc[item.booking_date], item]
-        : [item];
-      return acc;
-    }, {});
-  }, [monthBookings]);
-
-  const blocksByDate = useMemo(() => {
-    return monthBlocks.reduce<Record<string, CalendarBlock[]>>((acc, item) => {
-      acc[item.block_date] = acc[item.block_date]
-        ? [...acc[item.block_date], item]
-        : [item];
-      return acc;
-    }, {});
-  }, [monthBlocks]);
-
-  const selectedDayBookings = bookingsByDate[selectedDate] || [];
-  const selectedDayBlocks = blocksByDate[selectedDate] || [];
-  const selectedDayEvents = getDailyEvents(selectedDayBookings, selectedDayBlocks);
+  useEffect(() => {
+    if (!isAdmin || !selectedDate) return;
+    loadDayData(selectedDate);
+    setBlockDate(selectedDate);
+  }, [selectedDate, isAdmin]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/booking";
+    window.location.href = "/booking?auth=1";
   };
 
   const updateBookingStatus = async (
@@ -174,21 +242,10 @@ export default function AdminPage() {
     setSaving(true);
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session?.access_token) {
-        setSaving(false);
-        setStatusMessage("Nicht autorisiert.", "error");
-        return;
-      }
-
       const response = await fetch("/api/update-booking-status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ bookingId, status }),
       });
@@ -204,11 +261,8 @@ export default function AdminPage() {
         return;
       }
 
-      setMonthBookings((prev) =>
-        prev.map((booking) =>
-          booking.id === bookingId ? { ...booking, status } : booking
-        )
-      );
+      await loadMonthData(visibleMonth);
+      await loadDayData(selectedDate);
 
       if (status === "confirmed") {
         setStatusMessage(
@@ -233,16 +287,12 @@ export default function AdminPage() {
     e.preventDefault();
     setStatusMessage("", "info");
 
-    const finalStart = isFullDay ? "00:00" : startTime;
-    const finalEnd = isFullDay ? "23:59" : endTime;
-    const finalType = isFullDay ? "full-day" : blockType;
-
-    if (!blockDate || !finalStart || !finalEnd || !title.trim()) {
+    if (!blockDate || !startTime || !endTime || !title.trim()) {
       setStatusMessage("Bitte alle Pflichtfelder ausfüllen.", "error");
       return;
     }
 
-    if (!isFullDay && finalStart >= finalEnd) {
+    if (startTime >= endTime) {
       setStatusMessage("Die Endzeit muss nach der Startzeit liegen.", "error");
       return;
     }
@@ -253,21 +303,17 @@ export default function AdminPage() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
-      .from("blocked_times")
-      .insert([
-        {
-          block_date: blockDate,
-          start_time: finalStart,
-          end_time: finalEnd,
-          title: title.trim(),
-          block_type: finalType,
-          note: note.trim() || null,
-          created_by: user?.id ?? null,
-        },
-      ])
-      .select()
-      .single();
+    const { error } = await supabase.from("blocked_times").insert([
+      {
+        block_date: blockDate,
+        start_time: startTime,
+        end_time: endTime,
+        title: title.trim(),
+        block_type: blockType,
+        note: note.trim() || null,
+        created_by: user?.id ?? null,
+      },
+    ]);
 
     setSaving(false);
 
@@ -276,15 +322,13 @@ export default function AdminPage() {
       return;
     }
 
-    setMonthBlocks((prev) => [...prev, data as CalendarBlock]);
     setStatusMessage("Sperrzeit erfolgreich angelegt.", "success");
+    await loadMonthData(visibleMonth);
+    await loadDayData(selectedDate);
 
     setTitle("Mittagspause");
     setBlockType("pause");
     setNote("");
-    setIsFullDay(false);
-    setStartTime("13:00");
-    setEndTime("14:00");
   };
 
   const deleteBlockedTime = async (blockId: string) => {
@@ -302,11 +346,12 @@ export default function AdminPage() {
       return;
     }
 
-    setMonthBlocks((prev) => prev.filter((item) => item.id !== blockId));
+    await loadMonthData(visibleMonth);
+    await loadDayData(selectedDate);
     setStatusMessage("Sperrzeit gelöscht.", "success");
   };
 
-  if (loading && !isAdmin) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#f6efe5] px-6 py-16 text-stone-800">
         <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/5">
@@ -366,13 +411,13 @@ export default function AdminPage() {
       </header>
 
       <div className="px-4 py-6 sm:px-6 md:px-10">
-        <div className="mx-auto max-w-7xl space-y-6">
-          <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
             <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
               Admin Dashboard
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-stone-900">
-              Monatskalender & Terminverwaltung
+              Termine & Pausen verwalten
             </h1>
             <p className="mt-2 text-sm text-stone-600">
               Eingeloggt als: <strong>{sessionEmail}</strong>
@@ -387,132 +432,52 @@ export default function AdminPage() {
             )}
           </div>
 
-          <MonthlyCalendar
-            visibleMonth={visibleMonth}
-            selectedDate={selectedDate}
-            onPrevMonth={() =>
-              setVisibleMonth(
-                new Date(
-                  visibleMonth.getFullYear(),
-                  visibleMonth.getMonth() - 1,
-                  1
-                )
-              )
-            }
-            onNextMonth={() =>
-              setVisibleMonth(
-                new Date(
-                  visibleMonth.getFullYear(),
-                  visibleMonth.getMonth() + 1,
-                  1
-                )
-              )
-            }
-            onSelectDate={(date) => setSelectedDate(date)}
-            getDayMeta={(date) =>
-              getDayStatus(
-                date,
-                bookingsByDate[date] || [],
-                blocksByDate[date] || [],
-                45
-              )
-            }
-          />
-
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
             <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
               <h2 className="text-2xl font-semibold text-stone-900">
-                Tagesdetails am {selectedDate}
+                Monatsübersicht
               </h2>
 
-              <div className="mt-5 space-y-4">
-                {selectedDayEvents.length === 0 ? (
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
-                    Für dieses Datum liegen noch keine Buchungen oder Sperrzeiten vor.
-                  </div>
-                ) : (
-                  selectedDayEvents.map((event, index) => (
-                    <div
-                      key={`${event.type}-${event.start}-${index}`}
-                      className={`rounded-2xl border p-4 ${
-                        event.type === "booking"
-                          ? "border-red-200 bg-red-50"
-                          : "border-red-300 bg-red-100"
-                      }`}
-                    >
-                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                        <div>
-                          <div className="text-lg font-semibold text-stone-900">
-                            {event.start} – {event.end}
-                          </div>
-                          <div className="mt-1 text-sm text-stone-700">
-                            {event.title}
-                          </div>
-                          {event.subtitle && (
-                            <div className="mt-1 text-sm text-stone-600">
-                              {event.subtitle}
-                            </div>
-                          )}
-                        </div>
-
-                        {event.type === "booking" && (
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() =>
-                                updateBookingStatus(
-                                  (selectedDayBookings[index]?.id || "") as string,
-                                  "confirmed"
-                                )
-                              }
-                              disabled={saving || !selectedDayBookings[index]?.id}
-                              className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                            >
-                              Bestätigen
-                            </button>
-                            <button
-                              onClick={() =>
-                                updateBookingStatus(
-                                  (selectedDayBookings[index]?.id || "") as string,
-                                  "cancelled"
-                                )
-                              }
-                              disabled={saving || !selectedDayBookings[index]?.id}
-                              className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                            >
-                              Stornieren
-                            </button>
-                          </div>
-                        )}
-
-                        {event.type === "block" && (
-                          <button
-                            onClick={() =>
-                              deleteBlockedTime(
-                                (selectedDayBlocks.find(
-                                  (block) =>
-                                    block.start_time === event.start &&
-                                    block.end_time === event.end &&
-                                    block.title === event.title
-                                )?.id || "") as string
-                              )
-                            }
-                            disabled={saving}
-                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                          >
-                            Löschen
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
+              <div className="mt-5">
+                <MonthlyCalendar
+                  visibleMonth={visibleMonth}
+                  selectedDate={selectedDate}
+                  onPrevMonth={() =>
+                    setVisibleMonth(
+                      new Date(
+                        visibleMonth.getFullYear(),
+                        visibleMonth.getMonth() - 1,
+                        1
+                      )
+                    )
+                  }
+                  onNextMonth={() =>
+                    setVisibleMonth(
+                      new Date(
+                        visibleMonth.getFullYear(),
+                        visibleMonth.getMonth() + 1,
+                        1
+                      )
+                    )
+                  }
+                  onSelectDate={(date) => setSelectedDate(date)}
+                  getDayMeta={(date) => {
+                    const dayBookings = monthBookings.filter(
+                      (booking) => booking.booking_date === date
+                    );
+                    const dayBlocks = monthBlocks.filter(
+                      (block) => block.block_date === date
+                    );
+                    return getDayStatus(date, dayBookings, dayBlocks);
+                  }}
+                />
               </div>
             </section>
 
             <section className="space-y-6">
               <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
                 <h2 className="text-2xl font-semibold text-stone-900">
-                  Pause / Urlaub / WhatsApp-Termin blockieren
+                  Pause / Sperrzeit anlegen
                 </h2>
 
                 <form onSubmit={createBlockedTime} className="mt-5 space-y-4">
@@ -528,42 +493,31 @@ export default function AdminPage() {
                     />
                   </div>
 
-                  <label className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700">
-                    <input
-                      type="checkbox"
-                      checked={isFullDay}
-                      onChange={(e) => setIsFullDay(e.target.checked)}
-                    />
-                    Ganzen Tag blockieren
-                  </label>
-
-                  {!isFullDay && (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-stone-700">
-                          Startzeit
-                        </label>
-                        <input
-                          type="time"
-                          value={startTime}
-                          onChange={(e) => setStartTime(e.target.value)}
-                          className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="mb-2 block text-sm font-medium text-stone-700">
-                          Endzeit
-                        </label>
-                        <input
-                          type="time"
-                          value={endTime}
-                          onChange={(e) => setEndTime(e.target.value)}
-                          className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                        />
-                      </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-stone-700">
+                        Startzeit
+                      </label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      />
                     </div>
-                  )}
+
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-stone-700">
+                        Endzeit
+                      </label>
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
+                      />
+                    </div>
+                  </div>
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-stone-700">
@@ -574,7 +528,7 @@ export default function AdminPage() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="w-full rounded-2xl border border-stone-200 px-4 py-3 outline-none focus:border-[#567a57]"
-                      placeholder="z. B. Mittagspause oder WhatsApp-Termin"
+                      placeholder="z. B. Mittagspause"
                     />
                   </div>
 
@@ -590,7 +544,7 @@ export default function AdminPage() {
                       <option value="pause">Pause</option>
                       <option value="closed">Geschlossen</option>
                       <option value="vacation">Urlaub</option>
-                      <option value="manual-booking">WhatsApp / Persönlicher Termin</option>
+                      <option value="full-day">Ganzer Tag</option>
                       <option value="other">Sonstiges</option>
                     </select>
                   </div>
@@ -616,6 +570,184 @@ export default function AdminPage() {
                     Sperrzeit speichern
                   </button>
                 </form>
+              </div>
+            </section>
+          </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h2 className="text-2xl font-semibold text-stone-900">
+                Buchungen am {selectedDate}
+              </h2>
+
+              <div className="mt-5 space-y-4">
+                {sortedBookings.length === 0 ? (
+                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+                    Für dieses Datum liegen noch keine Buchungen vor.
+                  </div>
+                ) : (
+                  sortedBookings.map((booking) => {
+                    const statusClass =
+                      booking.status === "confirmed"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : booking.status === "cancelled"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-amber-100 text-amber-800";
+
+                    const statusLabel =
+                      booking.status === "confirmed"
+                        ? "Bestätigt"
+                        : booking.status === "cancelled"
+                        ? "Storniert"
+                        : "Offen";
+
+                    return (
+                      <div
+                        key={booking.id}
+                        className="rounded-2xl border border-stone-200 p-4"
+                      >
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <div className="text-lg font-semibold text-stone-900">
+                              {booking.booking_time} · {booking.full_name}
+                            </div>
+                            <div className="mt-1 text-sm text-stone-600">
+                              {booking.service_name}
+                            </div>
+                            <div className="mt-1 text-sm text-stone-600">
+                              {booking.duration_minutes} Min · {booking.price_eur} €
+                            </div>
+                            <div className="mt-1 text-sm text-stone-600">
+                              {booking.email}
+                            </div>
+
+                            <div className="mt-3">
+                              <span
+                                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
+                              >
+                                {statusLabel}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() =>
+                                updateBookingStatus(booking.id, "confirmed")
+                              }
+                              disabled={saving}
+                              className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                            >
+                              Bestätigen
+                            </button>
+                            <button
+                              onClick={() =>
+                                updateBookingStatus(booking.id, "cancelled")
+                              }
+                              disabled={saving}
+                              className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                            >
+                              Stornieren
+                            </button>
+                            <button
+                              onClick={() =>
+                                updateBookingStatus(booking.id, "requested")
+                              }
+                              disabled={saving}
+                              className="rounded-xl bg-stone-700 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                            >
+                              Offen
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </section>
+
+            <section className="space-y-6">
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+                <h2 className="text-2xl font-semibold text-stone-900">
+                  Tagesübersicht {selectedDate}
+                </h2>
+
+                <div className="mt-5 space-y-3">
+                  {dailyEvents.length === 0 ? (
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+                      Für dieses Datum sind keine Einträge vorhanden.
+                    </div>
+                  ) : (
+                    dailyEvents.map((event, index) => (
+                      <div
+                        key={`${event.type}-${event.start}-${index}`}
+                        className={`rounded-2xl border p-4 ${
+                          event.type === "booking"
+                            ? "border-red-200 bg-red-50"
+                            : "border-amber-200 bg-amber-50"
+                        }`}
+                      >
+                        <div className="text-sm font-semibold text-stone-900">
+                          {event.start} – {event.end}
+                        </div>
+                        <div className="mt-1 text-sm text-stone-700">
+                          {event.title}
+                        </div>
+                        {event.subtitle && (
+                          <div className="mt-1 text-xs text-stone-500">
+                            {event.subtitle}
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+                <h2 className="text-2xl font-semibold text-stone-900">
+                  Sperrzeiten am {selectedDate}
+                </h2>
+
+                <div className="mt-5 space-y-4">
+                  {sortedBlockedTimes.length === 0 ? (
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+                      Für dieses Datum sind keine Sperrzeiten eingetragen.
+                    </div>
+                  ) : (
+                    sortedBlockedTimes.map((block) => (
+                      <div
+                        key={block.id}
+                        className="rounded-2xl border border-stone-200 p-4"
+                      >
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div>
+                            <div className="text-lg font-semibold text-stone-900">
+                              {block.start_time} – {block.end_time}
+                            </div>
+                            <div className="mt-1 text-sm text-stone-600">
+                              {block.title} · {block.block_type}
+                            </div>
+                            {block.note && (
+                              <div className="mt-1 text-sm text-stone-600">
+                                {block.note}
+                              </div>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => deleteBlockedTime(block.id)}
+                            disabled={saving}
+                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                          >
+                            Löschen
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </section>
           </div>

@@ -6,27 +6,21 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabase";
-
-// 👉 Default Import
 import MonthlyCalendar from "../components/booking/MonthlyCalendar";
-
-// 👉 Named Imports (ALLES in einem Block!)
 import {
   CalendarBlock,
   CalendarBooking,
-  WORKING_SLOTS,
-  formatDateKey,
   getDailyEvents,
   getDayStatus,
+  getMonthEnd,
   getMonthStart,
   getNextWorkingDay,
   getSlotAvailability,
   getTodayString,
-  isWeekend,
+  parseDateKey,
 } from "@/app/lib/booking-utils";
 
 type Language = "de" | "hu";
-type StatusType = "success" | "error" | "info";
 
 type DurationOption = {
   duration: number;
@@ -41,6 +35,8 @@ type Service = {
   };
   options: DurationOption[];
 };
+
+type StatusType = "success" | "error" | "info";
 
 const services: Service[] = [
   {
@@ -117,11 +113,16 @@ export default function BookingPage() {
   const searchParams = useSearchParams();
 
   const [language, setLanguage] = useState<Language>("de");
-  const [visibleMonth, setVisibleMonth] = useState<Date>(getMonthStart(new Date()));
+  const [visibleMonth, setVisibleMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedSlotTime, setSelectedSlotTime] = useState<string | null>(null);
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
+  const [selectedSlotTime, setSelectedSlotTime] = useState<string | null>(null);
+
+  const [calendarBookings, setCalendarBookings] = useState<CalendarBooking[]>([]);
+  const [calendarBlockedTimes, setCalendarBlockedTimes] = useState<CalendarBlock[]>([]);
+  const [dailyBookings, setDailyBookings] = useState<CalendarBooking[]>([]);
+  const [dailyBlockedTimes, setDailyBlockedTimes] = useState<CalendarBlock[]>([]);
 
   const [showAuth, setShowAuth] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(true);
@@ -132,40 +133,69 @@ export default function BookingPage() {
   const [password, setPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  const [monthBookings, setMonthBookings] = useState<CalendarBooking[]>([]);
-  const [monthBlocks, setMonthBlocks] = useState<CalendarBlock[]>([]);
-
-  const [loadingCalendar, setLoadingCalendar] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [calendarLoading, setCalendarLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<StatusType>("info");
-
-  const selectedService = services[selectedServiceIndex];
-  const selectedOption = selectedService.options[selectedOptionIndex];
 
   const t = useMemo(() => {
     return {
       back: language === "de" ? "Zurück zur Startseite" : "Vissza a főoldalra",
+      onlineBooking:
+        language === "de" ? "Online Buchung" : "Online foglalás",
       title: language === "de" ? "Termin buchen" : "Időpontfoglalás",
       subtitle:
         language === "de"
-          ? "Wähle zuerst einen Tag im Kalender. Danach kannst du freie Uhrzeiten sowie Massage und Dauer auswählen."
-          : "Először válassz egy napot a naptárban. Ezután kiválaszthatod a szabad időpontot, a kezelést és az időtartamot.",
-      monthTitle:
-        language === "de" ? "1. Tag auswählen" : "1. Nap kiválasztása",
-      dayTitle:
-        language === "de" ? "2. Uhrzeit auswählen" : "2. Időpont kiválasztása",
-      serviceTitle:
+          ? "Wähle zuerst einen Tag im Kalender und danach eine freie Uhrzeit, Behandlung und Dauer."
+          : "Először válassz napot a naptárban, majd egy szabad időpontot, kezelést és időtartamot.",
+      loginRequired:
         language === "de"
-          ? "3. Massage & Dauer auswählen"
-          : "3. Kezelés és időtartam kiválasztása",
+          ? "Login oder Registrierung sind vor der Buchung verpflichtend."
+          : "Foglalás előtt a bejelentkezés vagy regisztráció kötelező.",
+      stepCalendar:
+        language === "de" ? "1. Tag auswählen" : "1. Nap kiválasztása",
+      stepTime:
+        language === "de" ? "2. Uhrzeit auswählen" : "2. Időpont kiválasztása",
+      stepService:
+        language === "de" ? "3. Behandlung wählen" : "3. Kezelés kiválasztása",
+      stepDuration:
+        language === "de" ? "4. Dauer auswählen" : "4. Időtartam kiválasztása",
+      conditionsTitle:
+        language === "de"
+          ? "Buchungs- und Stornobedingungen"
+          : "Foglalási és lemondási feltételek",
+      conditionsText:
+        language === "de"
+          ? "Termine können bis 24 Stunden vorher kostenfrei abgesagt werden. Bei späterer Absage oder Nichterscheinen kann eine Ausfallpauschale von 10 € berechnet werden."
+          : "Az időpontok legkésőbb 24 órával korábban díjmentesen lemondhatók. Későbbi lemondás vagy meg nem jelenés esetén 10 € rendelkezésre állási díj számítható fel.",
+      authTitle:
+        language === "de"
+          ? "Einloggen oder registrieren"
+          : "Bejelentkezés vagy regisztráció",
+      authText:
+        language === "de"
+          ? "Vor der Buchung ist ein Konto nötig."
+          : "Foglalás előtt fiók szükséges.",
+      authButton:
+        language === "de"
+          ? "Login / Registrierung"
+          : "Bejelentkezés / Regisztráció",
+      loggedInAs:
+        language === "de" ? "Eingeloggt als" : "Bejelentkezve mint",
+      loggedInText:
+        language === "de"
+          ? "Du kannst jetzt deinen Termin verbindlich anfragen."
+          : "Most már véglegesítheted az időpontfoglalási kérelmedet.",
+      logout: language === "de" ? "Logout" : "Kijelentkezés",
+      acceptTerms:
+        language === "de"
+          ? "Ich akzeptiere die Buchungs- und Stornobedingungen."
+          : "Elfogadom a foglalási és lemondási feltételeket.",
       summary: language === "de" ? "Zusammenfassung" : "Összegzés",
-      appointment: language === "de" ? "Termin" : "Időpont",
-      service: language === "de" ? "Massage" : "Masszázs",
+      service: language === "de" ? "Behandlung" : "Kezelés",
       durationPrice:
         language === "de" ? "Dauer & Preis" : "Időtartam és ár",
-      free: language === "de" ? "Frei" : "Szabad",
-      blocked: language === "de" ? "Blockiert" : "Lezárva",
+      appointment: language === "de" ? "Termin" : "Időpont",
       choosePlease:
         language === "de" ? "Bitte wählen" : "Kérjük válassz",
       requestNow:
@@ -176,46 +206,17 @@ export default function BookingPage() {
         language === "de"
           ? "Bereits gebuchte Termine kannst du unter /my-bookings verwalten und stornieren."
           : "A már lefoglalt időpontokat a /my-bookings oldalon kezelheted és lemondhatod.",
-      liveConnected:
-        language === "de" ? "Monatsübersicht" : "Havi nézet",
-      authTitle:
-        language === "de"
-          ? "Einloggen oder registrieren"
-          : "Bejelentkezés vagy regisztráció",
-      authText:
-        language === "de"
-          ? "Bitte zuerst einloggen oder registrieren, bevor du einen Termin verbindlich anfragst."
-          : "Kérjük először jelentkezz be vagy regisztrálj, mielőtt végleges időpontkérést küldesz.",
-      authButton:
-        language === "de"
-          ? "Login / Registrierung"
-          : "Bejelentkezés / Regisztráció",
-      loggedInAs:
-        language === "de" ? "Eingeloggt als" : "Bejelentkezve mint",
-      logout: language === "de" ? "Logout" : "Kijelentkezés",
-      acceptTerms:
-        language === "de"
-          ? "Ich akzeptiere die Buchungs- und Stornobedingungen. Eine kostenfreie Absage ist bis 24 Stunden vorher möglich. Bei späterer Absage oder Nichterscheinen kann eine Ausfallpauschale von 10 € berechnet werden."
-          : "Elfogadom a foglalási és lemondási feltételeket. Az időpont legkésőbb 24 órával korábban díjmentesen lemondható. Későbbi lemondás vagy meg nem jelenés esetén 10 € díj számítható fel.",
-      conditionsTitle:
-        language === "de"
-          ? "Buchungs- und Stornobedingungen"
-          : "Foglalási és lemondási feltételek",
-      conditionsText:
-        language === "de"
-          ? "Termine können bis 24 Stunden vorher kostenfrei abgesagt werden. Bei späterer Absage oder Nichterscheinen kann eine Ausfallpauschale von 10 € berechnet werden."
-          : "Az időpontok legkésőbb 24 órával korábban díjmentesen lemondhatók. Későbbi lemondás vagy meg nem jelenés esetén 10 € rendelkezésre állási díj számítható fel.",
       close: language === "de" ? "Schließen" : "Bezárás",
       account: language === "de" ? "Konto" : "Fiók",
       register: language === "de" ? "Registrieren" : "Regisztráció",
       login: language === "de" ? "Einloggen" : "Bejelentkezés",
       name: language === "de" ? "Name" : "Név",
+      email: "E-Mail",
+      password: language === "de" ? "Passwort" : "Jelszó",
       fullNamePlaceholder:
         language === "de" ? "Vor- und Nachname" : "Teljes név",
-      email: "E-Mail",
       emailPlaceholder:
         language === "de" ? "deine@email.de" : "email@pelda.hu",
-      password: language === "de" ? "Passwort" : "Jelszó",
       passwordPlaceholder:
         language === "de" ? "Passwort" : "Jelszó",
       alreadyHaveAccount:
@@ -226,10 +227,15 @@ export default function BookingPage() {
         language === "de"
           ? "Noch kein Konto? Jetzt registrieren"
           : "Még nincs fiókod? Regisztráció",
+      unavailable:
+        language === "de" ? "Nicht verfügbar" : "Nem elérhető",
+      selected: language === "de" ? "Ausgewählt" : "Kiválasztva",
+      free: language === "de" ? "Frei" : "Szabad",
+      blocked: language === "de" ? "Blockiert" : "Lezárva",
       authSuccessRegister:
         language === "de"
-          ? "Registrierung erfolgreich. Falls E-Mail-Bestätigung aktiv ist, prüfe bitte dein Postfach."
-          : "Sikeres regisztráció. Ha aktív az e-mail megerősítés, kérjük ellenőrizd a postaládádat.",
+          ? "Registrierung erfolgreich. Bitte prüfe gegebenenfalls dein Postfach."
+          : "Sikeres regisztráció. Kérjük ellenőrizd a postaládádat.",
       authSuccessLogin:
         language === "de" ? "Erfolgreich eingeloggt." : "Sikeres bejelentkezés.",
       pleaseLoginFirst:
@@ -248,32 +254,67 @@ export default function BookingPage() {
         language === "de"
           ? "Dieser Termin wurde gerade von jemand anderem gebucht. Bitte wähle eine andere Uhrzeit."
           : "Ezt az időpontot éppen most más foglalta le. Kérjük válassz másik időpontot.",
-      weekendClosed:
+      dailyOverview:
+        language === "de" ? "Tagesübersicht" : "Napi áttekintés",
+      noEvents:
         language === "de"
-          ? "Samstag und Sonntag werden keine Termine angeboten."
-          : "Szombaton és vasárnap nincs időpontfoglalás.",
-      eventsToday:
-        language === "de"
-          ? "Bereits eingetragene Zeiten am gewählten Tag"
-          : "A kiválasztott nap már rögzített időpontjai",
-      noEventsToday:
-        language === "de"
-          ? "An diesem Tag sind bisher keine Termine oder Blocks eingetragen."
-          : "Erre a napra még nincs rögzített időpont vagy blokkolás.",
+          ? "Für diesen Tag gibt es noch keine Einträge."
+          : "Erre a napra még nincs bejegyzés.",
+      freeSlotsTitle:
+        language === "de" ? "Freie Zeiten" : "Szabad időpontok",
+      calendarLoading:
+        language === "de" ? "Kalender wird geladen..." : "Naptár betöltése...",
     };
   }, [language]);
 
+  const selectedService = services[selectedServiceIndex];
+  const selectedOption = selectedService.options[selectedOptionIndex];
+
+  const bookingReady = useMemo(() => {
+    return isLoggedIn && acceptedTerms && !!selectedSlotTime && !!selectedDate;
+  }, [isLoggedIn, acceptedTerms, selectedSlotTime, selectedDate]);
+
+  const availableSlots = useMemo(() => {
+    if (!selectedDate) return [];
+    return getSlotAvailability(
+      selectedDate,
+      selectedOption.duration,
+      dailyBookings,
+      dailyBlockedTimes
+    );
+  }, [selectedDate, selectedOption.duration, dailyBookings, dailyBlockedTimes]);
+
+  const dailyEvents = useMemo(() => {
+    return getDailyEvents(dailyBookings, dailyBlockedTimes);
+  }, [dailyBookings, dailyBlockedTimes]);
+
+  const setStatusMessage = (text: string, type: StatusType = "info") => {
+    setMessage(text);
+    setMessageType(type);
+  };
+
   useEffect(() => {
     const nextWorkingDay = getNextWorkingDay(new Date());
-    const initialDate = formatDateKey(nextWorkingDay);
-    setSelectedDate(initialDate);
-    setVisibleMonth(getMonthStart(nextWorkingDay));
+    const dateKey = getTodayString();
+    const isTodayWeekend =
+      parseDateKey(dateKey).getDay() === 0 || parseDateKey(dateKey).getDay() === 6;
+
+    const startDate = isTodayWeekend
+      ? nextWorkingDay
+      : new Date(`${dateKey}T12:00:00`);
+
+    setVisibleMonth(new Date(startDate.getFullYear(), startDate.getMonth(), 1));
+    setSelectedDate(
+      `${startDate.getFullYear()}-${`${startDate.getMonth() + 1}`.padStart(
+        2,
+        "0"
+      )}-${`${startDate.getDate()}`.padStart(2, "0")}`
+    );
   }, []);
 
   useEffect(() => {
     if (searchParams.get("auth") === "1") {
       setShowAuth(true);
-      setIsRegisterMode(false);
     }
   }, [searchParams]);
 
@@ -316,96 +357,63 @@ export default function BookingPage() {
 
   useEffect(() => {
     const loadMonthData = async () => {
-      setLoadingCalendar(true);
-      setMessage("");
+      setCalendarLoading(true);
 
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+      const monthStart = getMonthStart(visibleMonth);
+      const monthEnd = getMonthEnd(visibleMonth);
 
-        if (!session?.access_token) {
-          setMonthBookings([]);
-          setMonthBlocks([]);
-          setLoadingCalendar(false);
-          return;
-        }
+      const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
+      const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
 
-        const monthKey = `${visibleMonth.getFullYear()}-${`${visibleMonth.getMonth() + 1}`.padStart(2, "0")}`;
+      const { data: bookingsData } = await supabase
+        .from("bookings")
+        .select(
+          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+        )
+        .gte("booking_date", startKey)
+        .lte("booking_date", endKey)
+        .in("status", ["requested", "confirmed"]);
 
-        const response = await fetch(
-          `/api/calendar-availability?month=${monthKey}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
-          }
-        );
+      const { data: blockedData } = await supabase
+        .from("blocked_times")
+        .select("id, block_date, start_time, end_time, title, block_type, note")
+        .gte("block_date", startKey)
+        .lte("block_date", endKey);
 
-        const result = await response.json();
-
-        if (!response.ok) {
-          setMessage(result?.message || "Kalenderdaten konnten nicht geladen werden.");
-          setMonthBookings([]);
-          setMonthBlocks([]);
-          return;
-        }
-
-        setMonthBookings(result.bookings ?? []);
-        setMonthBlocks(result.blocks ?? []);
-      } catch (error) {
-        console.error(error);
-        setMessage("Kalenderdaten konnten nicht geladen werden.");
-        setMonthBookings([]);
-        setMonthBlocks([]);
-      } finally {
-        setLoadingCalendar(false);
-      }
+      setCalendarBookings((bookingsData ?? []) as CalendarBooking[]);
+      setCalendarBlockedTimes((blockedData ?? []) as CalendarBlock[]);
+      setCalendarLoading(false);
     };
 
     loadMonthData();
   }, [visibleMonth]);
 
-  const bookingsByDate = useMemo(() => {
-    return monthBookings.reduce<Record<string, CalendarBooking[]>>((acc, item) => {
-      const key = item.booking_date;
-      acc[key] = acc[key] ? [...acc[key], item] : [item];
-      return acc;
-    }, {});
-  }, [monthBookings]);
+  useEffect(() => {
+    if (!selectedDate) return;
 
-  const blocksByDate = useMemo(() => {
-    return monthBlocks.reduce<Record<string, CalendarBlock[]>>((acc, item) => {
-      const key = item.block_date;
-      acc[key] = acc[key] ? [...acc[key], item] : [item];
-      return acc;
-    }, {});
-  }, [monthBlocks]);
+    const loadDayData = async () => {
+      const { data: bookingsData } = await supabase
+        .from("bookings")
+        .select(
+          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+        )
+        .eq("booking_date", selectedDate)
+        .in("status", ["requested", "confirmed"])
+        .order("booking_time", { ascending: true });
 
-  const selectedDayBookings = selectedDate ? bookingsByDate[selectedDate] || [] : [];
-  const selectedDayBlocks = selectedDate ? blocksByDate[selectedDate] || [] : [];
-  const selectedDayEvents = getDailyEvents(selectedDayBookings, selectedDayBlocks);
+      const { data: blockedData } = await supabase
+        .from("blocked_times")
+        .select("id, block_date, start_time, end_time, title, block_type, note")
+        .eq("block_date", selectedDate)
+        .order("start_time", { ascending: true });
 
-  const slotStates = selectedDate
-    ? getSlotAvailability(
-        selectedDate,
-        selectedOption.duration,
-        selectedDayBookings,
-        selectedDayBlocks
-      )
-    : [];
+      setDailyBookings((bookingsData ?? []) as CalendarBooking[]);
+      setDailyBlockedTimes((blockedData ?? []) as CalendarBlock[]);
+      setSelectedSlotTime(null);
+    };
 
-  const bookingReady =
-    isLoggedIn &&
-    acceptedTerms &&
-    !!selectedDate &&
-    !!selectedSlotTime &&
-    !isWeekend(selectedDate);
-
-  const setStatusMessage = (text: string, type: StatusType = "info") => {
-    setMessage(text);
-    setMessageType(type);
-  };
+    loadDayData();
+  }, [selectedDate]);
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -471,16 +479,22 @@ export default function BookingPage() {
   const handleBookingSubmit = async () => {
     setStatusMessage("", "info");
 
-    if (!selectedDate || isWeekend(selectedDate)) {
-      setStatusMessage(t.weekendClosed, "error");
+    if (!bookingReady || !selectedDate || !selectedSlotTime) {
+      setStatusMessage(
+        language === "de"
+          ? "Bitte einloggen, Bedingungen bestätigen und einen freien Termin auswählen."
+          : "Kérjük jelentkezz be, fogadd el a feltételeket és válassz szabad időpontot.",
+        "error"
+      );
       return;
     }
 
-    if (!bookingReady) {
+    const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
+    if (!selectedSlot || selectedSlot.unavailable) {
       setStatusMessage(
         language === "de"
-          ? "Bitte einloggen, AGB bestätigen, einen Tag und eine freie Uhrzeit auswählen."
-          : "Kérjük jelentkezz be, fogadd el a feltételeket, majd válassz napot és szabad időpontot.",
+          ? "Dieser Zeitraum ist nicht verfügbar."
+          : "Ez az időpont nem elérhető.",
         "error"
       );
       return;
@@ -490,12 +504,10 @@ export default function BookingPage() {
 
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      const user = session?.user;
-
-      if (!user || !session?.access_token) {
+      if (!user) {
         setStatusMessage(t.pleaseLoginFirst, "error");
         return;
       }
@@ -503,19 +515,16 @@ export default function BookingPage() {
       const finalName =
         fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
 
-      const serviceName = selectedService.name[language];
-
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           user_id: user.id,
           name: finalName,
           email: user.email ?? email.trim(),
-          service: serviceName,
+          service: selectedService.name[language],
           date: selectedDate,
           time: selectedSlotTime,
           duration: selectedOption.duration,
@@ -538,27 +547,48 @@ export default function BookingPage() {
         return;
       }
 
-      setMonthBookings((prev) => [
-        ...prev,
-        {
-          booking_date: selectedDate,
-          booking_time: selectedSlotTime!,
-          duration_minutes: selectedOption.duration,
-          service_name: serviceName,
-          status: "requested",
-        },
-      ]);
-
       setStatusMessage(t.bookingSuccess, "success");
-      setSelectedSlotTime(null);
       setAcceptedTerms(false);
+      setSelectedSlotTime(null);
+
+      const { data: bookingsData } = await supabase
+        .from("bookings")
+        .select(
+          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+        )
+        .eq("booking_date", selectedDate)
+        .in("status", ["requested", "confirmed"])
+        .order("booking_time", { ascending: true });
+
+      setDailyBookings((bookingsData ?? []) as CalendarBooking[]);
+
+      const monthStart = getMonthStart(visibleMonth);
+      const monthEnd = getMonthEnd(visibleMonth);
+      const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
+      const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
+
+      const { data: monthBookingsData } = await supabase
+        .from("bookings")
+        .select(
+          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
+        )
+        .gte("booking_date", startKey)
+        .lte("booking_date", endKey)
+        .in("status", ["requested", "confirmed"]);
+
+      setCalendarBookings((monthBookingsData ?? []) as CalendarBooking[]);
 
       setTimeout(() => {
         router.push("/my-bookings");
-      }, 900);
+      }, 800);
     } catch (error) {
       console.error(error);
-      setStatusMessage(t.bookingError, "error");
+      setStatusMessage(
+        language === "de"
+          ? "Es ist ein unerwarteter Fehler aufgetreten."
+          : "Váratlan hiba történt.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -599,57 +629,39 @@ export default function BookingPage() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            {!isLoggedIn ? (
-              <button
-                onClick={() => setShowAuth(true)}
-                className="rounded-full border border-white/70 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
-              >
-                {t.authButton}
-              </button>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className="rounded-full border border-white/70 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
-              >
-                {t.logout}
-              </button>
-            )}
-
-            <div className="rounded-full border border-[#d8d0c2] bg-white/90 p-1">
-              <button
-                onClick={() => setLanguage("de")}
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
-                  language === "de"
-                    ? "bg-stone-800 text-white"
-                    : "text-stone-700"
-                }`}
-              >
-                DE
-              </button>
-              <button
-                onClick={() => setLanguage("hu")}
-                className={`rounded-full px-3 py-1 text-xs font-medium ${
-                  language === "hu"
-                    ? "bg-stone-800 text-white"
-                    : "text-stone-700"
-                }`}
-              >
-                HU
-              </button>
-            </div>
+          <div className="rounded-full border border-[#d8d0c2] bg-white/90 p-1">
+            <button
+              onClick={() => setLanguage("de")}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                language === "de"
+                  ? "bg-stone-800 text-white"
+                  : "text-stone-700"
+              }`}
+            >
+              DE
+            </button>
+            <button
+              onClick={() => setLanguage("hu")}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                language === "hu"
+                  ? "bg-stone-800 text-white"
+                  : "text-stone-700"
+              }`}
+            >
+              HU
+            </button>
           </div>
         </div>
       </header>
 
       <div className="min-h-[calc(100vh-88px)] p-4 sm:p-6 md:p-10">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5">
             <div className="border-b border-stone-200 px-5 py-5 sm:px-6 md:px-8">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-4">
                 <div>
                   <p className="text-sm font-medium uppercase tracking-[0.2em] text-stone-500">
-                    {t.liveConnected}
+                    {t.onlineBooking}
                   </p>
                   <h1 className="mt-2 text-3xl font-semibold tracking-tight text-stone-900">
                     {t.title}
@@ -658,140 +670,141 @@ export default function BookingPage() {
                     {t.subtitle}
                   </p>
                 </div>
+
+                <div className="w-fit rounded-2xl bg-[#eef3e6] px-4 py-3 text-sm font-medium text-[#556246]">
+                  {t.loginRequired}
+                </div>
               </div>
             </div>
 
-            <div className="space-y-8 px-5 py-6 sm:px-6 md:px-8 md:py-8">
+            <div className="grid gap-8 px-5 py-6 sm:px-6 md:px-8 md:py-8">
               <div>
-                <h2 className="mb-4 text-lg font-semibold text-stone-900">
-                  {t.monthTitle}
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.stepCalendar}
                 </h2>
 
-                <MonthlyCalendar
-                  visibleMonth={visibleMonth}
-                  selectedDate={selectedDate}
-                  onPrevMonth={() =>
-                    setVisibleMonth(
-                      new Date(
-                        visibleMonth.getFullYear(),
-                        visibleMonth.getMonth() - 1,
-                        1
-                      )
-                    )
-                  }
-                  onNextMonth={() =>
-                    setVisibleMonth(
-                      new Date(
-                        visibleMonth.getFullYear(),
-                        visibleMonth.getMonth() + 1,
-                        1
-                      )
-                    )
-                  }
-                  onSelectDate={(date) => {
-                    setSelectedDate(date);
-                    setSelectedSlotTime(null);
-                  }}
-                  getDayMeta={(date) =>
-                    getDayStatus(
-                      date,
-                      bookingsByDate[date] || [],
-                      blocksByDate[date] || [],
-                      45
-                    )
-                  }
-                />
+                <div className="mt-4">
+                  {calendarLoading ? (
+                    <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5 text-sm text-stone-600">
+                      {t.calendarLoading}
+                    </div>
+                  ) : (
+                    <MonthlyCalendar
+                      visibleMonth={visibleMonth}
+                      selectedDate={selectedDate}
+                      onPrevMonth={() =>
+                        setVisibleMonth(
+                          new Date(
+                            visibleMonth.getFullYear(),
+                            visibleMonth.getMonth() - 1,
+                            1
+                          )
+                        )
+                      }
+                      onNextMonth={() =>
+                        setVisibleMonth(
+                          new Date(
+                            visibleMonth.getFullYear(),
+                            visibleMonth.getMonth() + 1,
+                            1
+                          )
+                        )
+                      }
+                      onSelectDate={(date) => setSelectedDate(date)}
+                      getDayMeta={(date) => {
+                        const dayBookings = calendarBookings.filter(
+                          (booking) => booking.booking_date === date
+                        );
+                        const dayBlocks = calendarBlockedTimes.filter(
+                          (block) => block.block_date === date
+                        );
+
+                        return getDayStatus(date, dayBookings, dayBlocks);
+                      }}
+                    />
+                  )}
+                </div>
               </div>
 
-              {selectedDate && (
-                <div>
-                  <h2 className="text-lg font-semibold text-stone-900">
-                    {t.dayTitle}
-                  </h2>
+              <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.dailyOverview}
+                </h2>
 
-                  <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                    <div className="text-sm font-medium text-stone-700">
-                      {selectedDate}
-                    </div>
-                    {isWeekend(selectedDate) && (
-                      <div className="mt-2 rounded-xl bg-red-100 px-3 py-2 text-sm font-medium text-red-800">
-                        {t.weekendClosed}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-4 rounded-2xl border border-stone-200 bg-white p-4">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-stone-500">
-                      {t.eventsToday}
-                    </h3>
-
-                    {selectedDayEvents.length === 0 ? (
-                      <p className="mt-3 text-sm text-stone-600">
-                        {t.noEventsToday}
-                      </p>
-                    ) : (
-                      <div className="mt-4 grid gap-3">
-                        {selectedDayEvents.map((event, index) => (
-                          <div
-                            key={`${event.type}-${event.start}-${index}`}
-                            className={`rounded-2xl border px-4 py-3 text-sm ${
-                              event.type === "booking"
-                                ? "border-red-200 bg-red-50 text-red-800"
-                                : "border-red-300 bg-red-100 text-red-900"
-                            }`}
-                          >
-                            <div className="font-semibold">
-                              {event.start} – {event.end}
-                            </div>
-                            <div className="mt-1">{event.title}</div>
-                            {event.subtitle && (
-                              <div className="mt-1 text-xs opacity-80">
-                                {event.subtitle}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {slotStates.map((slot) => (
-                      <button
-                        key={slot.time}
-                        type="button"
-                        onClick={() => {
-                          if (slot.unavailable) return;
-                          setSelectedSlotTime(slot.time);
-                        }}
-                        className={`rounded-2xl border px-4 py-4 text-left transition ${
-                          slot.unavailable
-                            ? "cursor-not-allowed border-red-200 bg-red-50 text-red-800"
-                            : selectedSlotTime === slot.time
-                            ? "border-emerald-500 bg-emerald-100 text-emerald-900 shadow-sm"
-                            : "border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-400"
+                {!selectedDate ? (
+                  <p className="mt-3 text-sm text-stone-600">{t.choosePlease}</p>
+                ) : dailyEvents.length === 0 ? (
+                  <p className="mt-3 text-sm text-stone-600">{t.noEvents}</p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {dailyEvents.map((event, index) => (
+                      <div
+                        key={`${event.type}-${event.start}-${index}`}
+                        className={`rounded-2xl border p-4 ${
+                          event.type === "booking"
+                            ? "border-red-200 bg-red-50"
+                            : "border-amber-200 bg-amber-50"
                         }`}
                       >
-                        <div className="text-lg font-semibold">{slot.time}</div>
-                        <div className="mt-1 text-xs uppercase tracking-wide">
-                          {slot.unavailable ? t.blocked : t.free}
+                        <div className="text-sm font-semibold text-stone-900">
+                          {event.start} – {event.end}
                         </div>
-                      </button>
+                        <div className="mt-1 text-sm text-stone-700">
+                          {event.title}
+                        </div>
+                        {event.subtitle && (
+                          <div className="mt-1 text-xs text-stone-500">
+                            {event.subtitle}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               <div>
                 <h2 className="text-lg font-semibold text-stone-900">
-                  {t.serviceTitle}
+                  {t.stepTime}
                 </h2>
 
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {availableSlots.map((slot) => (
+                    <button
+                      key={slot.time}
+                      onClick={() => {
+                        if (slot.unavailable) return;
+                        setSelectedSlotTime(slot.time);
+                      }}
+                      className={`rounded-2xl border px-4 py-4 text-left transition ${
+                        slot.unavailable
+                          ? "cursor-not-allowed border-red-200 bg-red-50 text-red-400"
+                          : selectedSlotTime === slot.time
+                          ? "border-[#567a57] bg-[#eef3e6] text-[#2e3a28] shadow-sm"
+                          : "border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-400"
+                      }`}
+                    >
+                      <div className="text-lg font-semibold">{slot.time}</div>
+                      <div className="mt-1 text-xs uppercase tracking-wide">
+                        {slot.unavailable
+                          ? t.blocked
+                          : selectedSlotTime === slot.time
+                          ? t.selected
+                          : t.free}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.stepService}
+                </h2>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   {services.map((service, index) => (
                     <button
                       key={service.key}
-                      type="button"
                       onClick={() => {
                         setSelectedServiceIndex(index);
                         setSelectedOptionIndex(0);
@@ -813,19 +826,21 @@ export default function BookingPage() {
                             : "text-stone-500"
                         }`}
                       >
-                        {service.options
-                          .map((o) => `${o.duration} Min`)
-                          .join(" / ")}
+                        {service.options.map((o) => `${o.duration} Min`).join(" / ")}
                       </div>
                     </button>
                   ))}
                 </div>
+              </div>
 
+              <div>
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.stepDuration}
+                </h2>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                   {selectedService.options.map((option, index) => (
                     <button
                       key={`${selectedService.key}-${option.duration}`}
-                      type="button"
                       onClick={() => {
                         setSelectedOptionIndex(index);
                         setSelectedSlotTime(null);
@@ -886,6 +901,9 @@ export default function BookingPage() {
                       <h3 className="text-lg font-semibold text-[#2e3a28]">
                         {t.loggedInAs} {sessionEmail}
                       </h3>
+                      <p className="mt-1 text-sm text-[#556246]">
+                        {t.loggedInText}
+                      </p>
                     </div>
 
                     <button
@@ -915,12 +933,6 @@ export default function BookingPage() {
                   {message}
                 </div>
               )}
-
-              {loadingCalendar && (
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700">
-                  Kalenderdaten werden geladen...
-                </div>
-              )}
             </div>
           </section>
 
@@ -931,18 +943,6 @@ export default function BookingPage() {
               </p>
 
               <div className="mt-5 space-y-4">
-                <div className="rounded-2xl border border-[#d6e2cf] bg-white/10 p-4">
-                  <div className="text-sm text-white/70">{t.appointment}</div>
-                  <div className="mt-1 text-lg font-semibold">
-                    {selectedDate || "-"}
-                  </div>
-                  <div className="text-white/80">
-                    {selectedSlotTime
-                      ? `${selectedSlotTime} Uhr`
-                      : t.choosePlease}
-                  </div>
-                </div>
-
                 <div className="rounded-2xl border border-[#d6e2cf] bg-white/10 p-4">
                   <div className="text-sm text-white/70">{t.service}</div>
                   <div className="mt-1 text-lg font-semibold">
@@ -956,6 +956,18 @@ export default function BookingPage() {
                     {selectedOption.duration} Min
                   </div>
                   <div className="text-white/80">{selectedOption.price} €</div>
+                </div>
+
+                <div className="rounded-2xl border border-[#d6e2cf] bg-white/10 p-4">
+                  <div className="text-sm text-white/70">{t.appointment}</div>
+                  <div className="mt-1 text-lg font-semibold">
+                    {selectedDate || "-"}
+                  </div>
+                  <div className="text-white/80">
+                    {selectedSlotTime
+                      ? `${selectedSlotTime} Uhr`
+                      : t.choosePlease}
+                  </div>
                 </div>
               </div>
 

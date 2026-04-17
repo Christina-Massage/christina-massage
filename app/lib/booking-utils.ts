@@ -54,12 +54,6 @@ export function rangesOverlap(
   return startA < endB && endA > startB;
 }
 
-export function isWeekend(dateString: string) {
-  const date = new Date(`${dateString}T12:00:00`);
-  const day = date.getDay();
-  return day === 0 || day === 6;
-}
-
 export function formatDateKey(date: Date) {
   const y = date.getFullYear();
   const m = `${date.getMonth() + 1}`.padStart(2, "0");
@@ -73,6 +67,12 @@ export function parseDateKey(dateString: string) {
 
 export function getTodayString() {
   return formatDateKey(new Date());
+}
+
+export function isWeekend(dateString: string) {
+  const date = parseDateKey(dateString);
+  const day = date.getDay();
+  return day === 0 || day === 6;
 }
 
 export function getNextWorkingDay(startDate: Date) {
