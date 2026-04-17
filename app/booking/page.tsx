@@ -119,10 +119,16 @@ export default function BookingPage() {
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [selectedSlotTime, setSelectedSlotTime] = useState<string | null>(null);
 
-  const [calendarBookings, setCalendarBookings] = useState<CalendarBooking[]>([]);
-  const [calendarBlockedTimes, setCalendarBlockedTimes] = useState<CalendarBlock[]>([]);
+  const [calendarBookings, setCalendarBookings] = useState<CalendarBooking[]>(
+    []
+  );
+  const [calendarBlockedTimes, setCalendarBlockedTimes] = useState<
+    CalendarBlock[]
+  >([]);
   const [dailyBookings, setDailyBookings] = useState<CalendarBooking[]>([]);
-  const [dailyBlockedTimes, setDailyBlockedTimes] = useState<CalendarBlock[]>([]);
+  const [dailyBlockedTimes, setDailyBlockedTimes] = useState<CalendarBlock[]>(
+    []
+  );
 
   const [showAuth, setShowAuth] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(true);
@@ -238,10 +244,6 @@ export default function BookingPage() {
           : "Sikeres regisztráció. Kérjük ellenőrizd a postaládádat.",
       authSuccessLogin:
         language === "de" ? "Erfolgreich eingeloggt." : "Sikeres bejelentkezés.",
-      pleaseLoginFirst:
-        language === "de"
-          ? "Bitte zuerst einloggen."
-          : "Kérjük először jelentkezz be.",
       bookingSuccess:
         language === "de"
           ? "Dein Termin wurde erfolgreich angefragt."
@@ -262,8 +264,6 @@ export default function BookingPage() {
           : "Erre a napra még nincs bejegyzés.",
       calendarLoading:
         language === "de" ? "Kalender wird geladen..." : "Naptár betöltése...",
-      freeSlotsTitle:
-        language === "de" ? "Freie Zeiten" : "Szabad időpontok",
     };
   }, [language]);
 
@@ -334,6 +334,9 @@ export default function BookingPage() {
         if (session.user.user_metadata?.full_name) {
           setFullName(session.user.user_metadata.full_name);
         }
+      } else {
+        setIsLoggedIn(false);
+        setSessionEmail("");
       }
     };
 
@@ -482,6 +485,21 @@ export default function BookingPage() {
   const handleBookingSubmit = async () => {
     setStatusMessage("", "info");
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      setShowAuth(true);
+      setStatusMessage(
+        language === "de"
+          ? "Bitte zuerst einloggen oder registrieren."
+          : "Kérjük először jelentkezz be vagy regisztrálj.",
+        "error"
+      );
+      return;
+    }
+
     if (!selectedDate || !selectedSlotTime) {
       setStatusMessage(
         language === "de"
@@ -502,22 +520,8 @@ export default function BookingPage() {
       return;
     }
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session?.user) {
-      setShowAuth(true);
-      setStatusMessage(
-        language === "de"
-          ? "Bitte zuerst einloggen oder registrieren."
-          : "Kérjük először jelentkezz be vagy regisztrálj.",
-        "error"
-      );
-      return;
-    }
-
     const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
+
     if (!selectedSlot || selectedSlot.unavailable) {
       setStatusMessage(
         language === "de"
@@ -570,33 +574,6 @@ export default function BookingPage() {
       setStatusMessage(t.bookingSuccess, "success");
       setAcceptedTerms(false);
       setSelectedSlotTime(null);
-
-      const { data: bookingsData } = await supabase
-        .from("bookings")
-        .select(
-          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
-        )
-        .eq("booking_date", selectedDate)
-        .in("status", ["requested", "confirmed"])
-        .order("booking_time", { ascending: true });
-
-      setDailyBookings((bookingsData ?? []) as CalendarBooking[]);
-
-      const monthStart = getMonthStart(visibleMonth);
-      const monthEnd = getMonthEnd(visibleMonth);
-      const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
-      const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
-
-      const { data: monthBookingsData } = await supabase
-        .from("bookings")
-        .select(
-          "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
-        )
-        .gte("booking_date", startKey)
-        .lte("booking_date", endKey)
-        .in("status", ["requested", "confirmed"]);
-
-      setCalendarBookings((monthBookingsData ?? []) as CalendarBooking[]);
 
       setTimeout(() => {
         router.push("/my-bookings");

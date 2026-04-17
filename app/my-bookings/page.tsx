@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "../lib/supabase";
 
 type Booking = {
   id: string;
-  user_id: string;
   service_name: string;
   duration_minutes: number;
   price_eur: number;
@@ -21,12 +21,13 @@ export default function MyBookingsPage() {
 
   const loadBookings = async () => {
     setLoading(true);
+    setMessage("");
 
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (!user) {
+    if (!session?.user) {
       setBookings([]);
       setMessage("Bitte zuerst einloggen.");
       setLoading(false);
@@ -36,13 +37,14 @@ export default function MyBookingsPage() {
     const { data, error } = await supabase
       .from("bookings")
       .select(
-        "id, user_id, service_name, duration_minutes, price_eur, booking_date, booking_time, status"
+        "id, service_name, duration_minutes, price_eur, booking_date, booking_time, status"
       )
-      .eq("user_id", user.id)
+      .eq("user_id", session.user.id)
       .order("booking_date", { ascending: true })
       .order("booking_time", { ascending: true });
 
     if (error) {
+      setBookings([]);
       setMessage(error.message);
     } else {
       setBookings(data ?? []);
@@ -102,9 +104,18 @@ export default function MyBookingsPage() {
   return (
     <div className="min-h-screen bg-[#f6efe5] p-6 md:p-10">
       <div className="mx-auto max-w-6xl rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <h1 className="text-3xl font-semibold text-neutral-900">
-          Meine Termine
-        </h1>
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-3xl font-semibold text-neutral-900">
+            Meine Termine
+          </h1>
+
+          <Link
+            href="/booking"
+            className="rounded-2xl bg-neutral-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Neuer Termin
+          </Link>
+        </div>
 
         {message && (
           <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">

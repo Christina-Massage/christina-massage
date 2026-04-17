@@ -1,167 +1,185 @@
-"use client";
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-type Booking = {
-  id: string;
-  service_name: string;
-  duration_minutes: number;
-  price_eur: number;
-  booking_date: string;
-  booking_time: string;
-  status: string;
-};
+function errorResponse(
+  message: string,
+  status = 500,
+  extra?: Record<string, unknown>
+) {
+  return NextResponse.json(
+    {
+      success: false,
+      message,
+      ...extra,
+    },
+    { status }
+  );
+}
 
-export default function MyBookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+function timeToMinutes(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
 
-  const loadBookings = async () => {
-    setLoading(true);
-    setMessage("");
+function rangesOverlap(
+  startA: number,
+  endA: number,
+  startB: number,
+  endB: number
+) {
+  return startA < endB && endA > startB;
+}
+
+export async function POST(req: Request) {
+  try {
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      return errorResponse("Supabase ENV Variablen fehlen.", 500, {
+        hasUrl: !!supabaseUrl,
+        hasServiceRoleKey: !!supabaseServiceRoleKey,
+      });
+    }
+
+    const supabaseAdmin = createClient(
+      supabaseUrl,
+      supabaseServiceRoleKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
+
+    const body = await req.json();
 
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      user_id,
+      name,
+      email,
+      service,
+      date,
+      time,
+      duration,
+      price,
+      accepted_terms,
+    } = body ?? {};
 
-    if (!session?.user) {
-      setMessage("Bitte zuerst einloggen.");
-      setBookings([]);
-      setLoading(false);
-      return;
+    if (
+      !user_id ||
+      !name ||
+      !email ||
+      !service ||
+      !date ||
+      !time ||
+      duration === undefined ||
+      price === undefined
+    ) {
+      return errorResponse("Fehlende Pflichtfelder.", 400);
     }
 
-    const { data, error } = await supabase
+    if (!accepted_terms) {
+      return errorResponse("AGB wurden nicht akzeptiert.", 400);
+    }
+
+    const numericDuration = Number(duration);
+    const numericPrice = Number(price);
+
+    if (
+      Number.isNaN(numericDuration) ||
+      numericDuration <= 0 ||
+      Number.isNaN(numericPrice) ||
+      numericPrice < 0
+    ) {
+      return errorResponse("Dauer oder Preis sind ungültig.", 400);
+    }
+
+    const requestedStart = timeToMinutes(time);
+    const requestedEnd = requestedStart + numericDuration;
+
+    const { data: existingBookings, error: existingBookingsError } =
+      await supabaseAdmin
+        .from("bookings")
+        .select("id, booking_time, duration_minutes, status")
+        .eq("booking_date", date)
+        .in("status", ["requested", "confirmed"]);
+
+    if (existingBookingsError) {
+      console.error("BOOKINGS SELECT ERROR:", existingBookingsError);
+      return errorResponse(existingBookingsError.message, 500);
+    }
+
+    const { data: existingBlocks, error: existingBlocksError } =
+      await supabaseAdmin
+        .from("blocked_times")
+        .select("id, start_time, end_time, title, block_type")
+        .eq("block_date", date);
+
+    if (existingBlocksError) {
+      console.error("BLOCKS SELECT ERROR:", existingBlocksError);
+      return errorResponse(existingBlocksError.message, 500);
+    }
+
+    const overlapsBooking = (existingBookings ?? []).some((booking) => {
+      const bookingStart = timeToMinutes(booking.booking_time);
+      const bookingEnd = bookingStart + Number(booking.duration_minutes);
+      return rangesOverlap(requestedStart, requestedEnd, bookingStart, bookingEnd);
+    });
+
+    if (overlapsBooking) {
+      return errorResponse(
+        "Dieser Termin wurde gerade bereits vergeben.",
+        409
+      );
+    }
+
+    const overlapsBlock = (existingBlocks ?? []).some((block) => {
+      const blockStart = timeToMinutes(block.start_time);
+      const blockEnd = timeToMinutes(block.end_time);
+      return rangesOverlap(requestedStart, requestedEnd, blockStart, blockEnd);
+    });
+
+    if (overlapsBlock) {
+      return errorResponse("Dieser Zeitraum ist blockiert.", 409);
+    }
+
+    const insertPayload = {
+      user_id,
+      full_name: name,
+      email,
+      service_name: service,
+      booking_date: date,
+      booking_time: time,
+      duration_minutes: numericDuration,
+      price_eur: numericPrice,
+      status: "requested",
+      accepted_terms: true,
+    };
+
+    const { data: insertedBooking, error: insertError } = await supabaseAdmin
       .from("bookings")
-      .select("id, service_name, duration_minutes, price_eur, booking_date, booking_time, status")
-      .eq("user_id", session.user.id)
-      .order("booking_date", { ascending: true })
-      .order("booking_time", { ascending: true });
+      .insert([insertPayload])
+      .select()
+      .single();
 
-    if (error) {
-      setMessage(error.message);
-      setBookings([]);
-    } else {
-      setBookings(data ?? []);
+    if (insertError) {
+      console.error("BOOKING INSERT ERROR:", insertError);
+      return errorResponse(insertError.message, 500);
     }
 
-    setLoading(false);
-  };
+    return NextResponse.json({
+      success: true,
+      message: "Buchung erfolgreich gespeichert.",
+      booking: insertedBooking,
+    });
+  } catch (error: any) {
+    console.error("API /api/bookings SERVER ERROR:", error);
+    return errorResponse(error?.message || "Serverfehler.", 500);
+  }
+}
 
-  useEffect(() => {
-    loadBookings();
-  }, []);
-
-  const canCancelFree = (bookingDate: string, bookingTime: string) => {
-    const bookingDateTime = new Date(`${bookingDate}T${bookingTime}:00`);
-    const now = new Date();
-    const diffMs = bookingDateTime.getTime() - now.getTime();
-    return diffMs >= 24 * 60 * 60 * 1000;
-  };
-
-  const cancelBooking = async (booking: Booking) => {
-    const freeCancellation = canCancelFree(
-      booking.booking_date,
-      booking.booking_time
-    );
-
-    const confirmText = freeCancellation
-      ? "Möchtest du diesen Termin wirklich stornieren?"
-      : "Dieser Termin liegt innerhalb von 24 Stunden. Bei späterer Absage kann eine Ausfallpauschale von 10 € berechnet werden. Trotzdem stornieren?";
-
-    if (!window.confirm(confirmText)) return;
-
-    const { error } = await supabase
-      .from("bookings")
-      .update({
-        status: "cancelled",
-        cancelled_at: new Date().toISOString(),
-        cancellation_note: freeCancellation
-          ? "Kostenfrei storniert"
-          : "Spät storniert - mögliche 10 € Ausfallpauschale",
-      })
-      .eq("id", booking.id);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setMessage(
-      freeCancellation
-        ? "Termin erfolgreich storniert."
-        : "Termin storniert. Hinweis: mögliche 10 € Ausfallpauschale."
-    );
-
-    loadBookings();
-  };
-
-  return (
-    <div className="min-h-screen bg-[#f6efe5] p-6 md:p-10">
-      <div className="mx-auto max-w-6xl rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <h1 className="text-3xl font-semibold text-neutral-900">
-          Meine Termine
-        </h1>
-
-        {message && (
-          <div className="mt-4 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-            {message}
-          </div>
-        )}
-
-        {loading ? (
-          <p className="mt-6 text-neutral-600">Lade Termine...</p>
-        ) : bookings.length === 0 ? (
-          <p className="mt-6 text-neutral-600">Noch keine Termine vorhanden.</p>
-        ) : (
-          <div className="mt-6 grid gap-4">
-            {bookings.map((booking) => {
-              const freeCancellation = canCancelFree(
-                booking.booking_date,
-                booking.booking_time
-              );
-
-              return (
-                <div
-                  key={booking.id}
-                  className="rounded-3xl border border-neutral-200 bg-neutral-50 p-5"
-                >
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <h2 className="text-xl font-semibold text-neutral-900">
-                        {booking.service_name}
-                      </h2>
-                      <p className="mt-2 text-neutral-600">
-                        {booking.booking_date} · {booking.booking_time} Uhr
-                      </p>
-                      <p className="text-neutral-600">
-                        {booking.duration_minutes} Minuten · {booking.price_eur} €
-                      </p>
-                      <p className="mt-2 text-sm text-neutral-500">
-                        Status: {booking.status}
-                      </p>
-                    </div>
-
-                    {(booking.status === "requested" ||
-                      booking.status === "confirmed") && (
-                      <button
-                        onClick={() => cancelBooking(booking)}
-                        className="rounded-2xl bg-neutral-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-                      >
-                        {freeCancellation
-                          ? "Kostenfrei stornieren"
-                          : "Termin stornieren"}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+export async function GET() {
+  return errorResponse("Method GET not allowed. Use POST instead.", 405);
 }

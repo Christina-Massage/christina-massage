@@ -252,7 +252,12 @@ export function getDayStatus(
     };
   }
 
-  const slots = getSlotAvailability(dateString, previewDuration, bookings, blocks);
+  const slots = getSlotAvailability(
+    dateString,
+    previewDuration,
+    bookings,
+    blocks
+  );
   const freeSlots = slots.filter((slot) => !slot.unavailable).length;
 
   if (freeSlots <= 0) {
