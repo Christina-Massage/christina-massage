@@ -1,16 +1,36 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+export async function POST() {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+    console.log("URL:", url);
+    console.log("KEY START:", key?.slice(0, 20));
+
+    const supabase = createClient(url, key);
+
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .limit(1);
+
+    if (error) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (err: any) {
+    return NextResponse.json(
+      { message: err.message },
+      { status: 500 }
+    );
   }
-);
+}
 
 export async function POST(req: Request) {
   try {
