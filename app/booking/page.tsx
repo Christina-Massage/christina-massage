@@ -114,6 +114,7 @@ export default function BookingPage() {
   const [language, setLanguage] = useState<Language>("de");
   const [visibleMonth, setVisibleMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [selectedSlotTime, setSelectedSlotTime] = useState<string | null>(null);
@@ -145,20 +146,20 @@ export default function BookingPage() {
       title: language === "de" ? "Termin buchen" : "Időpontfoglalás",
       subtitle:
         language === "de"
-          ? "Wähle zuerst einen Tag im Kalender und danach eine freie Uhrzeit, Behandlung und Dauer."
-          : "Először válassz napot a naptárban, majd egy szabad időpontot, kezelést és időtartamot.",
+          ? "Wähle zuerst einen Tag im Kalender, dann Behandlung, Dauer und eine freie Uhrzeit."
+          : "Először válassz napot a naptárban, majd kezelést, időtartamot és szabad időpontot.",
       loginRequired:
         language === "de"
           ? "Login oder Registrierung sind vor der Buchung verpflichtend."
           : "Foglalás előtt a bejelentkezés vagy regisztráció kötelező.",
       stepCalendar:
         language === "de" ? "1. Tag auswählen" : "1. Nap kiválasztása",
-      stepTime:
-        language === "de" ? "2. Uhrzeit auswählen" : "2. Időpont kiválasztása",
       stepService:
-        language === "de" ? "3. Behandlung wählen" : "3. Kezelés kiválasztása",
+        language === "de" ? "2. Behandlung wählen" : "2. Kezelés kiválasztása",
       stepDuration:
-        language === "de" ? "4. Dauer auswählen" : "4. Időtartam kiválasztása",
+        language === "de" ? "3. Dauer auswählen" : "3. Időtartam kiválasztása",
+      stepTime:
+        language === "de" ? "4. Uhrzeit auswählen" : "4. Időpont kiválasztása",
       conditionsTitle:
         language === "de"
           ? "Buchungs- und Stornobedingungen"
@@ -259,10 +260,10 @@ export default function BookingPage() {
         language === "de"
           ? "Für diesen Tag gibt es noch keine Einträge."
           : "Erre a napra még nincs bejegyzés.",
-      freeSlotsTitle:
-        language === "de" ? "Freie Zeiten" : "Szabad időpontok",
       calendarLoading:
         language === "de" ? "Kalender wird geladen..." : "Naptár betöltése...",
+      freeSlotsTitle:
+        language === "de" ? "Freie Zeiten" : "Szabad időpontok",
     };
   }, [language]);
 
@@ -294,31 +295,31 @@ export default function BookingPage() {
 
   useEffect(() => {
     const nextWorkingDay = getNextWorkingDay(new Date());
-    const dateKey = getTodayString();
+    const todayKey = getTodayString();
     const isTodayWeekend =
-      parseDateKey(dateKey).getDay() === 0 || parseDateKey(dateKey).getDay() === 6;
+      parseDateKey(todayKey).getDay() === 0 ||
+      parseDateKey(todayKey).getDay() === 6;
 
     const startDate = isTodayWeekend
       ? nextWorkingDay
-      : new Date(`${dateKey}T12:00:00`);
+      : new Date(`${todayKey}T12:00:00`);
+
+    const startKey = `${startDate.getFullYear()}-${`${startDate.getMonth() + 1}`.padStart(
+      2,
+      "0"
+    )}-${`${startDate.getDate()}`.padStart(2, "0")}`;
 
     setVisibleMonth(new Date(startDate.getFullYear(), startDate.getMonth(), 1));
-    setSelectedDate(
-      `${startDate.getFullYear()}-${`${startDate.getMonth() + 1}`.padStart(
-        2,
-        "0"
-      )}-${`${startDate.getDate()}`.padStart(2, "0")}`
-    );
+    setSelectedDate(startKey);
   }, []);
 
- useEffect(() => {
-  if (typeof window === "undefined") return;
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("auth") === "1") {
-    setShowAuth(true);
-  }
-}, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("auth") === "1") {
+      setShowAuth(true);
+    }
+  }, []);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -415,7 +416,7 @@ export default function BookingPage() {
     };
 
     loadDayData();
-  }, [selectedDate]);
+  }, [selectedDate, selectedOption.duration]);
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -481,140 +482,40 @@ export default function BookingPage() {
   const handleBookingSubmit = async () => {
     setStatusMessage("", "info");
 
-    const handleBookingSubmit = async () => {
-  setStatusMessage("", "info");
-
-  if (!selectedDate || !selectedSlotTime) {
-    setStatusMessage(
-      language === "de"
-        ? "Bitte zuerst einen Tag und eine freie Uhrzeit auswählen."
-        : "Kérjük először válassz napot és szabad időpontot.",
-      "error"
-    );
-    return;
-  }
-
-  if (!acceptedTerms) {
-    setStatusMessage(
-      language === "de"
-        ? "Bitte akzeptiere zuerst die Buchungsbedingungen."
-        : "Kérjük fogadd el a foglalási feltételeket.",
-      "error"
-    );
-    return;
-  }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session?.user) {
-    setShowAuth(true);
-    setStatusMessage(
-      language === "de"
-        ? "Bitte zuerst einloggen oder registrieren."
-        : "Kérjük először jelentkezz be vagy regisztrálj.",
-      "error"
-    );
-    return;
-  }
-
-  const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
-  if (!selectedSlot || selectedSlot.unavailable) {
-    setStatusMessage(
-      language === "de"
-        ? "Dieser Zeitraum ist nicht verfügbar."
-        : "Ez az időpont nem elérhető.",
-      "error"
-    );
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const user = session.user;
-    const finalName =
-      fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
-
-    const response = await fetch("/api/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: user.id,
-        name: finalName,
-        email: user.email ?? email.trim(),
-        service: selectedService.name[language],
-        date: selectedDate,
-        time: selectedSlotTime,
-        duration: selectedOption.duration,
-        price: selectedOption.price,
-        accepted_terms: acceptedTerms,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      if (
-        result?.message?.includes("duplicate key") ||
-        result?.message?.includes("23505")
-      ) {
-        setStatusMessage(t.duplicateError, "error");
-      } else {
-        setStatusMessage(result?.message || t.bookingError, "error");
-      }
+    if (!selectedDate || !selectedSlotTime) {
+      setStatusMessage(
+        language === "de"
+          ? "Bitte zuerst einen Tag und eine freie Uhrzeit auswählen."
+          : "Kérjük először válassz napot és szabad időpontot.",
+        "error"
+      );
       return;
     }
 
-    setStatusMessage(t.bookingSuccess, "success");
-    setAcceptedTerms(false);
-    setSelectedSlotTime(null);
+    if (!acceptedTerms) {
+      setStatusMessage(
+        language === "de"
+          ? "Bitte akzeptiere zuerst die Buchungsbedingungen."
+          : "Kérjük fogadd el a foglalási feltételeket.",
+        "error"
+      );
+      return;
+    }
 
-    const { data: bookingsData } = await supabase
-      .from("bookings")
-      .select(
-        "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
-      )
-      .eq("booking_date", selectedDate)
-      .in("status", ["requested", "confirmed"])
-      .order("booking_time", { ascending: true });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    setDailyBookings((bookingsData ?? []) as CalendarBooking[]);
-
-    const monthStart = getMonthStart(visibleMonth);
-    const monthEnd = getMonthEnd(visibleMonth);
-    const startKey = `${monthStart.getFullYear()}-${`${monthStart.getMonth() + 1}`.padStart(2, "0")}-${`${monthStart.getDate()}`.padStart(2, "0")}`;
-    const endKey = `${monthEnd.getFullYear()}-${`${monthEnd.getMonth() + 1}`.padStart(2, "0")}-${`${monthEnd.getDate()}`.padStart(2, "0")}`;
-
-    const { data: monthBookingsData } = await supabase
-      .from("bookings")
-      .select(
-        "id, booking_date, booking_time, duration_minutes, service_name, full_name, email, price_eur, status"
-      )
-      .gte("booking_date", startKey)
-      .lte("booking_date", endKey)
-      .in("status", ["requested", "confirmed"]);
-
-    setCalendarBookings((monthBookingsData ?? []) as CalendarBooking[]);
-
-    setTimeout(() => {
-      router.push("/my-bookings");
-    }, 800);
-  } catch (error) {
-    console.error(error);
-    setStatusMessage(
-      language === "de"
-        ? "Es ist ein unerwarteter Fehler aufgetreten."
-        : "Váratlan hiba történt.",
-      "error"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!session?.user) {
+      setShowAuth(true);
+      setStatusMessage(
+        language === "de"
+          ? "Bitte zuerst einloggen oder registrieren."
+          : "Kérjük először jelentkezz be vagy regisztrálj.",
+        "error"
+      );
+      return;
+    }
 
     const selectedSlot = availableSlots.find((slot) => slot.time === selectedSlotTime);
     if (!selectedSlot || selectedSlot.unavailable) {
@@ -630,15 +531,7 @@ export default function BookingPage() {
     setLoading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setStatusMessage(t.pleaseLoginFirst, "error");
-        return;
-      }
-
+      const user = session.user;
       const finalName =
         fullName || user.user_metadata?.full_name || "Unbekannter Kunde";
 
@@ -846,10 +739,80 @@ export default function BookingPage() {
                           (block) => block.block_date === date
                         );
 
-                        return getDayStatus(date, dayBookings, dayBlocks, selectedOption.duration);
+                        return getDayStatus(
+                          date,
+                          dayBookings,
+                          dayBlocks,
+                          selectedOption.duration
+                        );
                       }}
                     />
                   )}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.stepService}
+                </h2>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  {services.map((service, index) => (
+                    <button
+                      key={service.key}
+                      onClick={() => {
+                        setSelectedServiceIndex(index);
+                        setSelectedOptionIndex(0);
+                        setSelectedSlotTime(null);
+                      }}
+                      className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+                        index === selectedServiceIndex
+                          ? "border-[#405e3f] bg-[#405e3f] text-white"
+                          : "border-stone-200 bg-white text-stone-900"
+                      }`}
+                    >
+                      <div className="text-base font-semibold">
+                        {service.name[language]}
+                      </div>
+                      <div
+                        className={`mt-2 text-sm ${
+                          index === selectedServiceIndex
+                            ? "text-white/70"
+                            : "text-stone-500"
+                        }`}
+                      >
+                        {service.options.map((o) => `${o.duration} Min`).join(" / ")}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-stone-900">
+                  {t.stepDuration}
+                </h2>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                  {selectedService.options.map((option, index) => (
+                    <button
+                      key={`${selectedService.key}-${option.duration}`}
+                      onClick={() => {
+                        setSelectedOptionIndex(index);
+                        setSelectedSlotTime(null);
+                      }}
+                      className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+                        index === selectedOptionIndex
+                          ? "border-[#567a57] bg-[#eef3e6] text-[#2e3a28]"
+                          : "border-stone-200 bg-white text-stone-900"
+                      }`}
+                    >
+                      <div className="text-base font-semibold">
+                        {option.duration} Min
+                      </div>
+                      <div className="mt-5 text-xl font-semibold">
+                        {option.price} €
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -924,71 +887,6 @@ export default function BookingPage() {
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-lg font-semibold text-stone-900">
-                  {t.stepService}
-                </h2>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {services.map((service, index) => (
-                    <button
-                      key={service.key}
-                      onClick={() => {
-                        setSelectedServiceIndex(index);
-                        setSelectedOptionIndex(0);
-                        setSelectedSlotTime(null);
-                      }}
-                      className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
-                        index === selectedServiceIndex
-                          ? "border-[#405e3f] bg-[#405e3f] text-white"
-                          : "border-stone-200 bg-white text-stone-900"
-                      }`}
-                    >
-                      <div className="text-base font-semibold">
-                        {service.name[language]}
-                      </div>
-                      <div
-                        className={`mt-2 text-sm ${
-                          index === selectedServiceIndex
-                            ? "text-white/70"
-                            : "text-stone-500"
-                        }`}
-                      >
-                        {service.options.map((o) => `${o.duration} Min`).join(" / ")}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-semibold text-stone-900">
-                  {t.stepDuration}
-                </h2>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                  {selectedService.options.map((option, index) => (
-                    <button
-                      key={`${selectedService.key}-${option.duration}`}
-                      onClick={() => {
-                        setSelectedOptionIndex(index);
-                        setSelectedSlotTime(null);
-                      }}
-                      className={`rounded-3xl border p-5 text-left transition hover:-translate-y-0.5 hover:shadow-md ${
-                        index === selectedOptionIndex
-                          ? "border-[#567a57] bg-[#eef3e6] text-[#2e3a28]"
-                          : "border-stone-200 bg-white text-stone-900"
-                      }`}
-                    >
-                      <div className="text-base font-semibold">
-                        {option.duration} Min
-                      </div>
-                      <div className="mt-5 text-xl font-semibold">
-                        {option.price} €
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5">
                 <h3 className="font-semibold text-amber-900">
                   {t.conditionsTitle}
@@ -1050,6 +948,40 @@ export default function BookingPage() {
                     />
                     <span>{t.acceptTerms}</span>
                   </label>
+
+                  <button
+                    onClick={handleBookingSubmit}
+                    disabled={!bookingReady || loading}
+                    className={`mt-4 w-full rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                      bookingReady && !loading
+                        ? "bg-[#405e3f] text-white hover:opacity-90"
+                        : "cursor-not-allowed bg-stone-300 text-stone-500"
+                    }`}
+                  >
+                    {loading ? t.saving : t.requestNow}
+                  </button>
+
+                  {!bookingReady && (
+                    <div className="mt-3 rounded-2xl bg-white p-4 text-sm text-stone-700">
+                      {!isLoggedIn
+                        ? language === "de"
+                          ? "Bitte zuerst einloggen oder registrieren."
+                          : "Kérjük először jelentkezz be vagy regisztrálj."
+                        : !selectedDate
+                        ? language === "de"
+                          ? "Bitte zuerst einen Tag auswählen."
+                          : "Kérjük először válassz napot."
+                        : !selectedSlotTime
+                        ? language === "de"
+                          ? "Bitte eine freie Uhrzeit auswählen."
+                          : "Kérjük válassz szabad időpontot."
+                        : !acceptedTerms
+                        ? language === "de"
+                          ? "Bitte die Buchungsbedingungen bestätigen."
+                          : "Kérjük fogadd el a foglalási feltételeket."
+                        : ""}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1097,40 +1029,6 @@ export default function BookingPage() {
                   </div>
                 </div>
               </div>
-
-              <button
-  onClick={handleBookingSubmit}
-  disabled={!bookingReady || loading}
-  className={`mt-6 w-full rounded-2xl px-5 py-3 text-sm font-semibold transition ${
-    bookingReady && !loading
-      ? "bg-white text-[#405e3f] hover:opacity-90"
-      : "cursor-not-allowed bg-white/20 text-white/60"
-  }`}
->
-  {loading ? t.saving : t.requestNow}
-</button>
-
-{!bookingReady && (
-  <div className="mt-3 rounded-2xl bg-white/10 px-4 py-3 text-sm text-white/80">
-    {!isLoggedIn
-      ? language === "de"
-        ? "Bitte zuerst einloggen oder registrieren."
-        : "Kérjük először jelentkezz be vagy regisztrálj."
-      : !selectedDate
-      ? language === "de"
-        ? "Bitte zuerst einen Tag auswählen."
-        : "Kérjük először válassz napot."
-      : !selectedSlotTime
-      ? language === "de"
-        ? "Bitte eine freie Uhrzeit auswählen."
-        : "Kérjük válassz szabad időpontot."
-      : !acceptedTerms
-      ? language === "de"
-        ? "Bitte die Buchungsbedingungen bestätigen."
-        : "Kérjük fogadd el a foglalási feltételeket."
-      : ""}
-  </div>
-)}
 
               <Link
                 href="/my-bookings"
