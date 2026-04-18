@@ -5,16 +5,16 @@ import {
   sendCustomerConfirmedEmail,
 } from "@/app/lib/email";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase environment variables. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
-  );
-}
-
-type BookingStatus = "requested" | "confirmed" | "cancelled";
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
 
 type UpdatedBooking = {
   id: string;
@@ -29,53 +29,6 @@ type UpdatedBooking = {
 
 export async function POST(req: Request) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const token = authHeader?.replace("Bearer ", "").trim();
-
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "Nicht autorisiert." },
-        { status: 401 }
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    });
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return NextResponse.json(
-        { success: false, message: "Ungültige Sitzung." },
-        { status: 401 }
-      );
-    }
-
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (profileError || !profile?.is_admin) {
-      return NextResponse.json(
-        { success: false, message: "Kein Admin-Zugriff." },
-        { status: 403 }
-      );
-    }
-
     const { bookingId, status } = await req.json();
 
     if (!bookingId || !status) {
@@ -85,23 +38,31 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data, error } = await supabase
-      .from("bookings")
-      .update({ status })
-      .eq("id", bookingId)
-      .select(
-        "id, full_name, email, service_name, booking_date, booking_time, duration_minutes, status"
-      )
-      .single();
+    const { data, error } = await supabase.rpc(
+      "admin_update_booking_status",
+      {
+        p_booking_id: bookingId,
+        p_status: status,
+      }
+    );
 
     if (error) {
+      console.error("RPC Error:", error);
       return NextResponse.json(
         { success: false, message: error.message },
         { status: 500 }
       );
     }
 
-    const booking = data as UpdatedBooking;
+    const booking: UpdatedBooking | undefined =
+      Array.isArray(data) && data.length > 0 ? data[0] : undefined;
+
+    if (!booking) {
+      return NextResponse.json(
+        { success: false, message: "Buchung nicht gefunden." },
+        { status: 404 }
+      );
+    }
 
     try {
       if (status === "confirmed") {
@@ -133,6 +94,7 @@ export async function POST(req: Request) {
       message: "Status erfolgreich aktualisiert.",
     });
   } catch (err: any) {
+    console.error("Server Error:", err);
     return NextResponse.json(
       { success: false, message: err?.message || "Serverfehler." },
       { status: 500 }

@@ -236,52 +236,59 @@ export default function AdminPage() {
   };
 
   const updateBookingStatus = async (
-    bookingId: string,
-    status: BookingStatus
-  ) => {
-    setSaving(true);
+  bookingId: string,
+  status: BookingStatus
+) => {
+  setSaving(true);
+  setStatusMessage("", "info");
 
-    try {
-      const response = await fetch("/api/update-booking-status", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bookingId, status }),
-      });
+  try {
+    const response = await fetch("/api/update-booking-status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bookingId, status }),
+    });
 
-      const result = await response.json();
-      setSaving(false);
+    const result = await response.json();
+    setSaving(false);
 
-      if (!response.ok) {
-        setStatusMessage(
-          result?.message || "Status konnte nicht aktualisiert werden.",
-          "error"
-        );
-        return;
-      }
-
-      await loadMonthData(visibleMonth);
-      await loadDayData(selectedDate);
-
-      if (status === "confirmed") {
-        setStatusMessage(
-          "Buchung bestätigt und Bestätigungs-E-Mail gesendet.",
-          "success"
-        );
-      } else if (status === "cancelled") {
-        setStatusMessage(
-          "Buchung storniert und Stornierungs-E-Mail gesendet.",
-          "success"
-        );
-      } else {
-        setStatusMessage("Buchungsstatus erfolgreich aktualisiert.", "success");
-      }
-    } catch {
-      setSaving(false);
-      setStatusMessage("Es ist ein unerwarteter Fehler aufgetreten.", "error");
+    if (!response.ok) {
+      setStatusMessage(
+        result?.message || "Status konnte nicht aktualisiert werden.",
+        "error"
+      );
+      return;
     }
-  };
+
+    setBookings((prev) =>
+      prev.map((booking) =>
+        booking.id === bookingId ? { ...booking, status } : booking
+      )
+    );
+
+    if (status === "confirmed") {
+      setStatusMessage(
+        "Buchung bestätigt und Bestätigungs-E-Mail gesendet.",
+        "success"
+      );
+    } else if (status === "cancelled") {
+      setStatusMessage(
+        "Buchung storniert und Stornierungs-E-Mail gesendet.",
+        "success"
+      );
+    } else {
+      setStatusMessage("Buchungsstatus erfolgreich aktualisiert.", "success");
+    }
+
+    await loadDayData(selectedDate);
+    await loadMonthData(visibleMonth);
+  } catch (error) {
+    setSaving(false);
+    setStatusMessage("Es ist ein unerwarteter Fehler aufgetreten.", "error");
+  }
+};
 
   const createBlockedTime = async (e: React.FormEvent) => {
     e.preventDefault();
