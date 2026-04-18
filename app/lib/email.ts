@@ -1,17 +1,18 @@
 import { Resend } from "resend";
 
 const resendApiKey = process.env.RESEND_API_KEY;
-const ownerEmail = process.env.OWNER_NOTIFICATION_EMAIL;
+const ownerNotificationEmail = process.env.OWNER_NOTIFICATION_EMAIL;
 
 if (!resendApiKey) {
   throw new Error("Missing RESEND_API_KEY.");
 }
 
-if (!ownerEmail) {
+if (!ownerNotificationEmail) {
   throw new Error("Missing OWNER_NOTIFICATION_EMAIL.");
 }
 
 const resend = new Resend(resendApiKey);
+const ownerEmail: string = ownerNotificationEmail;
 const FROM_EMAIL = "buchung@christina-massage.com";
 
 type BookingMailData = {
